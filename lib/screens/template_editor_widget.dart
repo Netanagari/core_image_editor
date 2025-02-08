@@ -233,8 +233,7 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                           key: _stackKey,
                           children: [
                             Image.network(
-                              "http://192.168.1.6:8000" +
-                                  widget.template['base_image'],
+                              widget.template['base_image'],
                               width: _viewportSize.width,
                               height: _viewportSize.height,
                               fit: BoxFit.contain,
@@ -289,8 +288,7 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                           key: _stackKey,
                           children: [
                             Image.network(
-                              "http://192.168.1.6:8000" +
-                                  widget.template['base_image'],
+                              widget.template['base_image'],
                               width: _viewportSize.width,
                               height: _viewportSize.height,
                               fit: BoxFit.contain,
