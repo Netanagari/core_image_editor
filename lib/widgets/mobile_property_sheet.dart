@@ -1,3 +1,4 @@
+import 'package:core_image_editor/models/editor_config.dart';
 import 'package:core_image_editor/models/template_types.dart';
 import 'package:core_image_editor/widgets/property_sidebar.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ class MobilePropertySheet extends StatelessWidget {
   final Size viewportSize;
   final VoidCallback onUpdate;
   final VoidCallback onClose;
+  final EditorConfiguration configuration;
   final Function(TemplateElement) onDelete;
 
   const MobilePropertySheet({
@@ -16,6 +18,7 @@ class MobilePropertySheet extends StatelessWidget {
     required this.onUpdate,
     required this.onClose,
     required this.onDelete,
+    required this.configuration,
   });
 
   @override
@@ -39,6 +42,7 @@ class MobilePropertySheet extends StatelessWidget {
           ),
           child: PropertySidebar(
             element: element,
+            configuration: configuration,
             viewportSize: viewportSize,
             onUpdate: onUpdate,
             onDelete: onDelete,

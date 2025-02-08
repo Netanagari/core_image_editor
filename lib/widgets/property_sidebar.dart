@@ -1,3 +1,4 @@
+import 'package:core_image_editor/models/editor_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,18 +12,7 @@ class PropertySidebar extends StatelessWidget {
   final VoidCallback onUpdate;
   final VoidCallback onClose;
   final Function(TemplateElement) onDelete;
-
-  static const availableFonts = [
-    'Roboto',
-    'Lato',
-    'Open Sans',
-    'Montserrat',
-    'Poppins',
-    'Raleway',
-    'Ubuntu',
-    'Playfair Display',
-    'Merriweather',
-  ];
+  final EditorConfiguration configuration;
 
   const PropertySidebar({
     super.key,
@@ -31,6 +21,7 @@ class PropertySidebar extends StatelessWidget {
     required this.onUpdate,
     required this.onDelete,
     required this.onClose,
+    required this.configuration,
   });
 
   Widget _buildImageFitSelector() {
@@ -142,7 +133,7 @@ class PropertySidebar extends StatelessWidget {
               isDense: true,
               border: OutlineInputBorder(),
             ),
-            items: availableFonts.map((String font) {
+            items: configuration.availableFonts.map((String font) {
               return DropdownMenuItem<String>(
                 value: font,
                 child: Text(
@@ -551,10 +542,11 @@ class PropertySidebar extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => onDelete(element),
-                    ),
+                    if (configuration.can(EditorCapability.deleteElements))
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => onDelete(element),
+                      ),
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () {
@@ -571,41 +563,56 @@ class PropertySidebar extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               children: [
                 _buildSectionTitle(context, 'Position & Size'),
-                _buildNumberInput(
-                  label: 'X Position',
-                  value: element.box.xPercent,
-                  onChanged: (value) => element.box.xPercent = value,
-                  min: 0,
-                  max: 100 - element.box.widthPercent,
-                  suffix: '%',
-                ),
-                _buildNumberInput(
-                  label: 'Y Position',
-                  value: element.box.yPercent,
-                  onChanged: (value) => element.box.yPercent = value,
-                  min: 0,
-                  max: 100 - element.box.heightPercent,
-                  suffix: '%',
-                ),
-                _buildNumberInput(
-                  label: 'Width',
-                  value: element.box.widthPercent,
-                  onChanged: (value) => element.box.widthPercent = value,
-                  min: 1,
-                  max: 100 - element.box.xPercent,
-                  suffix: '%',
-                ),
-                _buildNumberInput(
-                  label: 'Height',
-                  value: element.box.heightPercent,
-                  onChanged: (value) => element.box.heightPercent = value,
-                  min: 1,
-                  max: 100 - element.box.yPercent,
-                  suffix: '%',
-                ),
-                _buildSectionTitle(context, 'Alignment'),
-                _buildBorderControls(context),
-                _buildAlignmentSelector(),
+                // repositionElements capability is required to show position controls
+                if (configuration.can(EditorCapability.repositionElements)) ...[
+                  _buildNumberInput(
+                    label: 'X Position',
+                    value: element.box.xPercent,
+                    onChanged: (value) => element.box.xPercent = value,
+                    min: 0,
+                    max: 100 - element.box.widthPercent,
+                    suffix: '%',
+                  ),
+                  _buildNumberInput(
+                    label: 'Y Position',
+                    value: element.box.yPercent,
+                    onChanged: (value) => element.box.yPercent = value,
+                    min: 0,
+                    max: 100 - element.box.heightPercent,
+                    suffix: '%',
+                  ),
+                ],
+                //
+                if (configuration.can(EditorCapability.resizeElements)) ...[
+                  _buildNumberInput(
+                    label: 'Width',
+                    value: element.box.widthPercent,
+                    onChanged: (value) => element.box.widthPercent = value,
+                    min: 1,
+                    max: 100 - element.box.xPercent,
+                    suffix: '%',
+                  ),
+                  _buildNumberInput(
+                    label: 'Height',
+                    value: element.box.heightPercent,
+                    onChanged: (value) => element.box.heightPercent = value,
+                    min: 1,
+                    max: 100 - element.box.yPercent,
+                    suffix: '%',
+                  ),
+                ],
+                //
+
+                if (configuration.can(EditorCapability.changeAlignment)) ...[
+                  _buildSectionTitle(context, 'Alignment'),
+                  _buildAlignmentSelector(),
+                ],
+                //
+
+                if (configuration.can(EditorCapability.changeBorders)) ...[
+                  _buildBorderControls(context),
+                ],
+
                 if (element.type == 'text') ...[
                   _buildTextStyleControls(context),
                 ] else if (element.type == 'image') ...[
@@ -933,7 +940,8 @@ class PropertySidebar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionTitle(context, 'Text Style'),
-        _buildFontFamilySelector(),
+        if (configuration.can(EditorCapability.changeFonts))
+          _buildFontFamilySelector(),
         _buildNumberInput(
           label: 'Font Size',
           value: element.style.fontSizeVw,
@@ -942,18 +950,22 @@ class PropertySidebar extends StatelessWidget {
           max: 20,
           suffix: 'vw',
         ),
-        _buildFontWeightSelector(context),
-        _buildTextDecorations(),
-        _buildColorPicker(context),
-        _buildTextInput(
-          context,
-          'Text Content',
-          element.content['text'] ?? '',
-          (value) {
-            element.content['text'] = value;
-            onUpdate();
-          },
-        ),
+        if (configuration.can(EditorCapability.changeFonts))
+          _buildFontWeightSelector(context),
+        if (configuration.can(EditorCapability.changeFonts))
+          _buildTextDecorations(),
+        if (configuration.can(EditorCapability.changeColors))
+          _buildColorPicker(context),
+        if (configuration.can(EditorCapability.changeTextContent))
+          _buildTextInput(
+            context,
+            'Text Content',
+            element.content['text'] ?? '',
+            (value) {
+              element.content['text'] = value;
+              onUpdate();
+            },
+          ),
       ],
     );
   }

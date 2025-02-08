@@ -1,3 +1,4 @@
+import 'package:core_image_editor/models/editor_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -19,6 +20,7 @@ import '../widgets/property_sidebar.dart';
 
 class CoreImageEditor extends StatefulWidget {
   final Map<String, dynamic> template;
+  final EditorConfiguration configuration;
   final Future<String> Function(BuildContext) onSelectImage;
   final Function(Map<String, dynamic>) onSave;
 
@@ -26,6 +28,7 @@ class CoreImageEditor extends StatefulWidget {
     super.key,
     required this.onSave,
     required this.template,
+    required this.configuration,
     required this.onSelectImage,
   });
 
@@ -155,14 +158,16 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
       appBar: AppBar(
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.undo),
-            onPressed: _historyManager.canUndo ? _handleUndo : null,
-          ),
-          IconButton(
-            icon: const Icon(Icons.redo),
-            onPressed: _historyManager.canRedo ? _handleRedo : null,
-          ),
+          if (widget.configuration.can(EditorCapability.undoRedo)) ...[
+            IconButton(
+              icon: const Icon(Icons.undo),
+              onPressed: _historyManager.canUndo ? _handleUndo : null,
+            ),
+            IconButton(
+              icon: const Icon(Icons.redo),
+              onPressed: _historyManager.canRedo ? _handleRedo : null,
+            ),
+          ],
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: _saveChanges,
@@ -175,7 +180,11 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
       ),
       floatingActionButton: ResponsiveLayoutBuilder(
         builder: (context, isMobile) {
-          if (!isMobile || selectedElement != null) return const SizedBox();
+          if (!isMobile ||
+              selectedElement != null ||
+              !widget.configuration.can(EditorCapability.addElements)) {
+            return const SizedBox();
+          }
           return FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () {
@@ -236,11 +245,15 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                   if (selectedElement != null)
                     Positioned.fill(
                       child: MobilePropertySheet(
+                        configuration: widget.configuration,
                         element: selectedElement!,
                         viewportSize: _viewportSize,
                         onClose: () => setState(() => selectedElement = null),
                         onUpdate: () => setState(() => _pushHistory()),
-                        onDelete: _handleDeleteElement,
+                        onDelete: widget.configuration
+                                .can(EditorCapability.deleteElements)
+                            ? _handleDeleteElement
+                            : (_) {},
                       ),
                     ),
                 ],
@@ -288,6 +301,7 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                 ),
                 if (selectedElement != null)
                   PropertySidebar(
+                    configuration: widget.configuration,
                     element: selectedElement!,
                     viewportSize: _viewportSize,
                     onClose: () {
@@ -300,7 +314,10 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                         _pushHistory();
                       });
                     },
-                    onDelete: _handleDeleteElement,
+                    onDelete: widget.configuration
+                            .can(EditorCapability.deleteElements)
+                        ? _handleDeleteElement
+                        : (_) {},
                   ),
               ],
             );
@@ -428,31 +445,34 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
         onPanStart: (details) {
           setState(() => selectedElement = element);
         },
-        onPanUpdate: (details) {
-          setState(() {
-            // Convert pixel delta to percentage delta
-            double deltaXPercent = ResponsiveUtils.pixelToPercentX(
-              details.delta.dx,
-              _viewportSize.width,
-            );
-            double deltaYPercent = ResponsiveUtils.pixelToPercentY(
-              details.delta.dy,
-              _viewportSize.height,
-            );
+        onPanUpdate:
+            widget.configuration.can(EditorCapability.repositionElements)
+                ? (details) {
+                    setState(() {
+                      // Convert pixel delta to percentage delta
+                      double deltaXPercent = ResponsiveUtils.pixelToPercentX(
+                        details.delta.dx,
+                        _viewportSize.width,
+                      );
+                      double deltaYPercent = ResponsiveUtils.pixelToPercentY(
+                        details.delta.dy,
+                        _viewportSize.height,
+                      );
 
-            // Calculate new positions
-            double newX = element.box.xPercent + deltaXPercent;
-            double newY = element.box.yPercent + deltaYPercent;
+                      // Calculate new positions
+                      double newX = element.box.xPercent + deltaXPercent;
+                      double newY = element.box.yPercent + deltaYPercent;
 
-            // Apply bounds checking
-            newX = newX.clamp(0.0, 100.0 - element.box.widthPercent);
-            newY = newY.clamp(0.0, 100.0 - element.box.heightPercent);
+                      // Apply bounds checking
+                      newX = newX.clamp(0.0, 100.0 - element.box.widthPercent);
+                      newY = newY.clamp(0.0, 100.0 - element.box.heightPercent);
 
-            // Update element position
-            element.box.xPercent = newX;
-            element.box.yPercent = newY;
-          });
-        },
+                      // Update element position
+                      element.box.xPercent = newX;
+                      element.box.yPercent = newY;
+                    });
+                  }
+                : null,
         onPanEnd: (details) {
           _pushHistory(); // Save state after drag
         },
@@ -460,7 +480,8 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
           clipBehavior: Clip.none,
           children: [
             elementContent,
-            if (isSelected) ...[
+            if (isSelected &&
+                widget.configuration.can(EditorCapability.resizeElements)) ...[
               ResizeHandle(
                 position: HandlePosition.topLeft,
                 element: element,
@@ -571,7 +592,8 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
       context: context,
       position: positionRect,
       items: [
-        if (element.type == 'text') ...[
+        if (element.type == 'text' &&
+            widget.configuration.can(EditorCapability.changeFonts)) ...[
           PopupMenuItem(
             child: StatefulBuilder(
               builder: (context, setState) => CheckboxListTile(
@@ -641,61 +663,65 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
           ),
           const PopupMenuDivider(),
         ],
-        PopupMenuItem(
-          child: ListTile(
-            title: const Text('Add Border'),
-            trailing: const Icon(Icons.border_style),
-            dense: true,
-            onTap: () {
-              Navigator.pop(context);
-              _showBorderDialog(context, element);
-            },
+        if (widget.configuration.can(EditorCapability.changeBorders))
+          PopupMenuItem(
+            child: ListTile(
+              title: const Text('Add Border'),
+              trailing: const Icon(Icons.border_style),
+              dense: true,
+              onTap: () {
+                Navigator.pop(context);
+                _showBorderDialog(context, element);
+              },
+            ),
           ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            title: const Text('Bring to Front'),
-            trailing: const Icon(Icons.flip_to_front),
-            dense: true,
-            onTap: () {
-              setState(() {
-                int maxZ = elements.fold(
-                    0, (max, e) => e.zIndex > max ? e.zIndex : max);
-                element.zIndex = maxZ + 1;
-                _pushHistory();
-              });
-              Navigator.pop(context);
-            },
+        if (widget.configuration.can(EditorCapability.changeZIndex))
+          PopupMenuItem(
+            child: ListTile(
+              title: const Text('Bring to Front'),
+              trailing: const Icon(Icons.flip_to_front),
+              dense: true,
+              onTap: () {
+                setState(() {
+                  int maxZ = elements.fold(
+                      0, (max, e) => e.zIndex > max ? e.zIndex : max);
+                  element.zIndex = maxZ + 1;
+                  _pushHistory();
+                });
+                Navigator.pop(context);
+              },
+            ),
           ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            title: const Text('Send to Back'),
-            trailing: const Icon(Icons.flip_to_back),
-            dense: true,
-            onTap: () {
-              setState(() {
-                int minZ = elements.fold(
-                    0, (min, e) => e.zIndex < min ? e.zIndex : min);
-                element.zIndex = minZ - 1;
-                _pushHistory();
-              });
-              Navigator.pop(context);
-            },
+        if (widget.configuration.can(EditorCapability.changeZIndex))
+          PopupMenuItem(
+            child: ListTile(
+              title: const Text('Send to Back'),
+              trailing: const Icon(Icons.flip_to_back),
+              dense: true,
+              onTap: () {
+                setState(() {
+                  int minZ = elements.fold(
+                      0, (min, e) => e.zIndex < min ? e.zIndex : min);
+                  element.zIndex = minZ - 1;
+                  _pushHistory();
+                });
+                Navigator.pop(context);
+              },
+            ),
           ),
-        ),
         const PopupMenuDivider(),
-        PopupMenuItem(
-          child: ListTile(
-            title: const Text('Delete'),
-            trailing: const Icon(Icons.delete, color: Colors.red),
-            dense: true,
-            onTap: () {
-              Navigator.pop(context);
-              _handleDeleteElement(element);
-            },
+        if (widget.configuration.can(EditorCapability.deleteElements))
+          PopupMenuItem(
+            child: ListTile(
+              title: const Text('Delete'),
+              trailing: const Icon(Icons.delete, color: Colors.red),
+              dense: true,
+              onTap: () {
+                Navigator.pop(context);
+                _handleDeleteElement(element);
+              },
+            ),
           ),
-        ),
       ],
     ).whenComplete(() {
       setState(() {});
