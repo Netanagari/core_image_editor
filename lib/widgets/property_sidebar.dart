@@ -602,6 +602,16 @@ class PropertySidebar extends StatelessWidget {
                   ),
                 ],
                 //
+                if (configuration.can(EditorCapability.rotateElements))
+                  _buildNumberInput(
+                    label: 'Rotation',
+                    value: element.box.rotation,
+                    onChanged: (value) => element.box.rotation = value % 360,
+                    min: 0,
+                    max: 360,
+                    suffix: '°',
+                  ),
+                //
 
                 if (configuration.can(EditorCapability.changeAlignment)) ...[
                   _buildSectionTitle(context, 'Alignment'),

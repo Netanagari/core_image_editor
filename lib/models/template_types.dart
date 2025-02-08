@@ -6,6 +6,7 @@ class TemplateBox {
   double widthPercent;
   double heightPercent;
   String alignment;
+  double rotation;
 
   TemplateBox({
     required this.xPercent,
@@ -13,6 +14,7 @@ class TemplateBox {
     required this.widthPercent,
     required this.heightPercent,
     this.alignment = 'left',
+    this.rotation = 0,
   });
 
   factory TemplateBox.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,7 @@ class TemplateBox {
       widthPercent: json['width_percent']?.toDouble() ?? 0.0,
       heightPercent: json['height_percent']?.toDouble() ?? 0.0,
       alignment: json['alignment'] ?? 'left',
+      rotation: json['rotation']?.toDouble() ?? 0.0,
     );
   }
 
@@ -32,6 +35,7 @@ class TemplateBox {
       'width_percent': widthPercent,
       'height_percent': heightPercent,
       'alignment': alignment,
+      'rotation': rotation,
     };
   }
 }

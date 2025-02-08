@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:core_image_editor/models/editor_config.dart';
+import 'package:core_image_editor/widgets/rotation_handle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -377,42 +380,45 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
       );
     }
 
-    Widget elementContent = Container(
-      width: width,
-      height: height,
-      decoration: borderDecoration?.copyWith(
-        border: isSelected
-            ? Border.all(color: Colors.blue, width: 2)
-            : borderDecoration.border,
-      ),
-      child: Stack(
-        children: [
-          if (isSelected)
-            Positioned.fill(
-              child: IgnorePointer(
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.blue.withOpacity(0.5),
-                      width: 1.5,
-                      style: BorderStyle.solid,
+    Widget elementContent = Transform.rotate(
+      angle: element.box.rotation * pi / 180,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: borderDecoration?.copyWith(
+          border: isSelected
+              ? Border.all(color: Colors.blue, width: 2)
+              : borderDecoration.border,
+        ),
+        child: Stack(
+          children: [
+            if (isSelected)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.blue.withOpacity(0.5),
+                        width: 1.5,
+                        style: BorderStyle.solid,
+                      ),
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
+            Positioned.fill(
+              child: Align(
+                alignment: element.box.alignment == 'center'
+                    ? Alignment.center
+                    : element.box.alignment == 'right'
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                child: _buildElementContent(element, Size(width, height)),
+              ),
             ),
-          Positioned.fill(
-            child: Align(
-              alignment: element.box.alignment == 'center'
-                  ? Alignment.center
-                  : element.box.alignment == 'right'
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-              child: _buildElementContent(element, Size(width, height)),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
 
@@ -507,6 +513,15 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                 onUpdate: () => setState(() => _pushHistory()),
               ),
             ],
+
+            // Rotation handle
+            if (isSelected &&
+                widget.configuration.can(EditorCapability.rotateElements))
+              RotationHandle(
+                element: element,
+                viewportSize: _viewportSize,
+                onUpdate: () => setState(() => _pushHistory()),
+              ),
           ],
         ),
       ),

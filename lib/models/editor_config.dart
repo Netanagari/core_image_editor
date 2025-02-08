@@ -4,6 +4,7 @@ enum EditorCapability {
   deleteElements,
   repositionElements,
   resizeElements,
+  rotateElements,
 
   // Style modifications
   changeColors,
@@ -64,6 +65,7 @@ class EditorConfiguration {
       EditorCapability.changeImageFit,
       EditorCapability.uploadNewImage,
       EditorCapability.undoRedo,
+      EditorCapability.rotateElements,
     },
   );
 
