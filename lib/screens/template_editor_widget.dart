@@ -20,7 +20,7 @@ import '../widgets/property_sidebar.dart';
 class CoreImageEditor extends StatefulWidget {
   final Map<String, dynamic> template;
   final Future<String> Function(BuildContext) onSelectImage;
-  final Future<String> Function(Map<String, dynamic>) onSave;
+  final Function(Map<String, dynamic>) onSave;
 
   const CoreImageEditor({
     super.key,
