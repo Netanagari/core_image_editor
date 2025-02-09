@@ -9,6 +9,7 @@ class MobilePropertySheet extends StatelessWidget {
   final VoidCallback onUpdate;
   final VoidCallback onClose;
   final EditorConfiguration configuration;
+  final Future<String> Function(BuildContext) onSelectImage;
   final Function(TemplateElement) onDelete;
 
   const MobilePropertySheet({
@@ -19,6 +20,7 @@ class MobilePropertySheet extends StatelessWidget {
     required this.onClose,
     required this.onDelete,
     required this.configuration,
+    required this.onSelectImage,
   });
 
   @override
@@ -45,6 +47,7 @@ class MobilePropertySheet extends StatelessWidget {
             configuration: configuration,
             viewportSize: viewportSize,
             onUpdate: onUpdate,
+            onSelectImage: onSelectImage,
             onDelete: onDelete,
             onClose: onClose,
           ),

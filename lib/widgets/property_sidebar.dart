@@ -12,6 +12,7 @@ class PropertySidebar extends StatelessWidget {
   final VoidCallback onUpdate;
   final VoidCallback onClose;
   final Function(TemplateElement) onDelete;
+  final Future<String> Function(BuildContext) onSelectImage;
   final EditorConfiguration configuration;
 
   const PropertySidebar({
@@ -22,6 +23,7 @@ class PropertySidebar extends StatelessWidget {
     required this.onDelete,
     required this.onClose,
     required this.configuration,
+    required this.onSelectImage,
   });
 
   Widget _buildImageFitSelector() {
@@ -636,6 +638,18 @@ class PropertySidebar extends StatelessWidget {
                       onUpdate();
                     },
                   ),
+                  if (configuration.can(EditorCapability.uploadNewImage))
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final newImageUrl = await onSelectImage(context);
+                          element.content['url'] = newImageUrl;
+                          onUpdate();
+                        },
+                        child: const Text('Change Image'),
+                      ),
+                    ),
                   _buildImageFitSelector(),
                 ] else if (element.type == 'shape') ...[
                   _buildShapeStyleControls(context),

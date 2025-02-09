@@ -248,6 +248,7 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                     Positioned.fill(
                       child: MobilePropertySheet(
                         configuration: widget.configuration,
+                        onSelectImage: widget.onSelectImage,
                         element: selectedElement!,
                         viewportSize: _viewportSize,
                         onClose: () => setState(() => selectedElement = null),
@@ -303,6 +304,7 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                 if (selectedElement != null)
                   PropertySidebar(
                     configuration: widget.configuration,
+                    onSelectImage: widget.onSelectImage,
                     element: selectedElement!,
                     viewportSize: _viewportSize,
                     onClose: () {
