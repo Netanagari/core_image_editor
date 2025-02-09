@@ -66,30 +66,137 @@ The template should follow this structure:
 
 ```dart
 final templateData = {
-  'original_width': 800,
-  'original_height': 600,
-  'base_image': '/path/to/background.jpg',
-  'content_json': [
+  "id": 4,
+  "base_image": "https://picsum.photos/512/512",
+  "original_width": 512,
+  "original_height": 512,
+  "aspect_ratio": 1.0,
+  "content_json": [
     {
-      'type': 'text',
-      'box': {
-        'x_percent': 10,
-        'y_percent': 10,
-        'width_percent': 80,
-        'height_percent': 10,
-        'alignment': 'center'
+      "type": "text",
+      "box": {
+        "x_percent": 10.139908398428515,
+        "y_percent": 5.2751196426138485,
+        "width_percent": 80,
+        "height_percent": 12.504201680672269,
+        "alignment": "center",
+        "rotation": 0
       },
-      'content': {
-        'text': 'Sample Text'
+      "content": {"text": "Sample image"},
+      "style": {
+        "font_size": 7,
+        "color": "#000000",
+        "font_family": "Poppins",
+        "font_weight": "FontWeight.w700",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
       },
-      'style': {
-        'font_size': 4.0,
-        'color': '#000000',
-        'font_family': 'Roboto'
-      }
+      "z_index": 0
+    },
+    {
+      "type": "shape",
+      "box": {
+        "x_percent": 0,
+        "y_percent": 80,
+        "width_percent": 20,
+        "height_percent": 20,
+        "alignment": "center",
+        "rotation": 0
+      },
+      "content": {
+        "shapeType": "ShapeType.diamond",
+        "fillColor": "#FFFFFF",
+        "strokeColor": "#000000",
+        "strokeWidth": 2,
+        "isStrokeDashed": false
+      },
+      "style": {
+        "font_size": 0,
+        "color": "#000000",
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
+      },
+      "z_index": 0
+    },
+    {
+      "type": "shape",
+      "box": {
+        "x_percent": 80,
+        "y_percent": 80,
+        "width_percent": 20,
+        "height_percent": 20,
+        "alignment": "center",
+        "rotation": 0
+      },
+      "content": {
+        "shapeType": "ShapeType.hexagon",
+        "fillColor": "#FFFFFF",
+        "strokeColor": "#000000",
+        "strokeWidth": 2,
+        "isStrokeDashed": false
+      },
+      "style": {
+        "font_size": 0,
+        "color": "#000000",
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
+      },
+      "z_index": 0
+    },
+    {
+      "type": "shape",
+      "box": {
+        "x_percent": 35.05549096039877,
+        "y_percent": 26.6280674315289,
+        "width_percent": 23.509597602409134,
+        "height_percent": 22.59333475779894,
+        "alignment": "center",
+        "rotation": 0
+      },
+      "content": {
+        "shapeType": "ShapeType.star",
+        "fillColor": "#FFFFFF",
+        "strokeColor": "#000000",
+        "strokeWidth": 2,
+        "isStrokeDashed": false
+      },
+      "style": {
+        "font_size": 0,
+        "color": "#000000",
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
+      },
+      "z_index": 0
     }
-    // ... more elements
-  ]
+  ],
+  "user_id": 1,
+  "poster": 1
 };
 ```
 
