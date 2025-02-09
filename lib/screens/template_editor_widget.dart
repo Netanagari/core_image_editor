@@ -14,7 +14,8 @@ import 'package:core_image_editor/widgets/mobile_property_sheet.dart';
 import 'package:core_image_editor/widgets/resize_handle.dart';
 import 'package:core_image_editor/widgets/responsive_builder.dart';
 import 'package:core_image_editor/widgets/shape_painter.dart';
-import 'package:universal_html/html.dart' as universal_html;
+import 'package:universal_html/html.dart';
+import 'package:widgets_to_image/widgets_to_image.dart';
 import '../models/template_types.dart';
 import '../utils/responsive_utils.dart';
 import '../utils/history_manager.dart';
@@ -25,7 +26,7 @@ class CoreImageEditor extends StatefulWidget {
   final Map<String, dynamic> template;
   final EditorConfiguration configuration;
   final Future<String> Function(BuildContext) onSelectImage;
-  final Function(Map<String, dynamic>) onSave;
+  final Function(Map<String, dynamic>, Uint8List? canvasCapture) onSave;
 
   const CoreImageEditor({
     super.key,
@@ -44,6 +45,7 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
   bool isCreationSidebarExpanded = true;
   TemplateElement? selectedElement;
   late final TransformationController transformationController;
+  late final WidgetsToImageController controller;
   final GlobalKey _stackKey = GlobalKey();
   late double _canvasAspectRatio;
   late Size _viewportSize;
@@ -52,8 +54,8 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
   @override
   void initState() {
     super.initState();
-    universal_html.document.onContextMenu
-        .listen((event) => event.preventDefault());
+    document.onContextMenu.listen((event) => event.preventDefault());
+    controller = WidgetsToImageController();
     transformationController = TransformationController();
     _canvasAspectRatio =
         widget.template['original_width'] / widget.template['original_height'];
@@ -226,20 +228,23 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                       minScale: 0.1,
                       maxScale: 4.0,
                       constrained: false,
-                      child: SizedBox(
-                        width: _viewportSize.width,
-                        height: _viewportSize.height,
-                        child: Stack(
-                          key: _stackKey,
-                          children: [
-                            Image.network(
-                              widget.template['base_image'],
-                              width: _viewportSize.width,
-                              height: _viewportSize.height,
-                              fit: BoxFit.contain,
-                            ),
-                            ...elements.map(_buildBoxedElement),
-                          ],
+                      child: WidgetsToImage(
+                        controller: controller,
+                        child: SizedBox(
+                          width: _viewportSize.width,
+                          height: _viewportSize.height,
+                          child: Stack(
+                            key: _stackKey,
+                            children: [
+                              Image.network(
+                                widget.template['base_image'],
+                                width: _viewportSize.width,
+                                height: _viewportSize.height,
+                                fit: BoxFit.contain,
+                              ),
+                              ...elements.map(_buildBoxedElement),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -282,20 +287,23 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                       minScale: 0.1,
                       maxScale: 4.0,
                       constrained: false,
-                      child: SizedBox(
-                        width: _viewportSize.width,
-                        height: _viewportSize.height,
-                        child: Stack(
-                          key: _stackKey,
-                          children: [
-                            Image.network(
-                              widget.template['base_image'],
-                              width: _viewportSize.width,
-                              height: _viewportSize.height,
-                              fit: BoxFit.contain,
-                            ),
-                            ...elements.map(_buildBoxedElement),
-                          ],
+                      child: WidgetsToImage(
+                        controller: controller,
+                        child: SizedBox(
+                          width: _viewportSize.width,
+                          height: _viewportSize.height,
+                          child: Stack(
+                            key: _stackKey,
+                            children: [
+                              Image.network(
+                                widget.template['base_image'],
+                                width: _viewportSize.width,
+                                height: _viewportSize.height,
+                                fit: BoxFit.contain,
+                              ),
+                              ...elements.map(_buildBoxedElement),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -859,6 +867,12 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
   }
 
   Future<void> _saveChanges() async {
+    await Future.microtask(() {
+      setState(() {
+        selectedElement = null;
+      });
+    });
+
     final original = widget.template;
     original['edited_content'] = elements.map((e) => e.toJson()).toList();
     original['viewport'] = {
@@ -866,7 +880,11 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
       'height': _viewportSize.height,
     };
 
-    await widget.onSave(original);
+    final imgBytes = await controller.capture(
+      pixelRatio: widget.configuration.pixelRatio,
+    );
+
+    await widget.onSave(original, imgBytes);
   }
 
   @override

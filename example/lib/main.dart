@@ -1,12 +1,16 @@
+import 'dart:convert';
+
 import 'package:core_image_editor/models/editor_config.dart';
 import 'package:core_image_editor/screens/template_editor_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:universal_html/html.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-const exampleJson = {
+final exampleJson = {
   "id": 4,
   "base_image": "https://picsum.photos/512/512",
   "original_width": 512,
@@ -175,8 +179,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: CoreImageEditor(
-          onSave: (json) {
-            print(json);
+          onSave: (json, imageBytes) async {
+            final base64Data =
+                base64Encode(imageBytes ?? Uint8List.fromList([]));
+            final anchor =
+                AnchorElement(href: 'data:image/png;base64,$base64Data');
+            anchor.download = 'image.png';
+            anchor.click();
           },
           template: exampleJson,
           configuration: EditorConfiguration.admin,
@@ -196,7 +205,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop('https://picsum.photos/200/300');
+                        Navigator.of(context)
+                            .pop('https://picsum.photos/200/300');
                       },
                       child: const Text('Random image 2'),
                     ),

@@ -30,10 +30,12 @@ enum EditorCapability {
 class EditorConfiguration {
   final Set<EditorCapability> capabilities;
   final List<String> availableFonts;
+  final double pixelRatio; // the more the better image export quality
 
   const EditorConfiguration({
     required this.capabilities,
     this.availableFonts = supportedFallbackFonts,
+    this.pixelRatio = 6,
   });
 
   static const supportedFallbackFonts = [
