@@ -4,7 +4,7 @@ import 'package:core_image_editor/models/editor_config.dart';
 import 'package:core_image_editor/screens/template_editor_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:universal_html/html.dart';
+import 'package:universal_html/html.dart' as html;
 
 void main() {
   runApp(const MyApp());
@@ -183,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
             final base64Data =
                 base64Encode(imageBytes ?? Uint8List.fromList([]));
             final anchor =
-                AnchorElement(href: 'data:image/png;base64,$base64Data');
+                html.AnchorElement(href: 'data:image/png;base64,$base64Data');
             anchor.download = 'image.png';
             anchor.click();
           },

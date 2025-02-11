@@ -14,7 +14,7 @@ import 'package:core_image_editor/widgets/mobile_property_sheet.dart';
 import 'package:core_image_editor/widgets/resize_handle.dart';
 import 'package:core_image_editor/widgets/responsive_builder.dart';
 import 'package:core_image_editor/widgets/shape_painter.dart';
-import 'package:universal_html/html.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:widgets_to_image/widgets_to_image.dart';
 import '../models/template_types.dart';
 import '../utils/responsive_utils.dart';
@@ -54,7 +54,7 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
   @override
   void initState() {
     super.initState();
-    document.onContextMenu.listen((event) => event.preventDefault());
+    html.document.onContextMenu.listen((event) => event.preventDefault());
     controller = WidgetsToImageController();
     transformationController = TransformationController();
     _canvasAspectRatio =
