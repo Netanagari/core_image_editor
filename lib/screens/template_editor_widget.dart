@@ -942,11 +942,11 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
   }
 
   Future<void> _saveChanges() async {
-    await Future.microtask(() {
-      setState(() {
-        selectedElement = null;
-      });
+    setState(() {
+      selectedElement = null;
     });
+
+    await Future.delayed(Duration(milliseconds: 300));
 
     final original = widget.template;
     original['edited_content'] = elements.map((e) => e.toJson()).toList();
