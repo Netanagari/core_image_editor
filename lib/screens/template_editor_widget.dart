@@ -49,6 +49,7 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
   final GlobalKey _stackKey = GlobalKey();
   late double _canvasAspectRatio;
   late Size _viewportSize;
+  bool _isRotating = false;
   final HistoryManager _historyManager = HistoryManager();
 
   @override
@@ -494,7 +495,8 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
           clipBehavior: Clip.none,
           children: [
             elementContent,
-            if (isSelected &&
+            if (!_isRotating &&
+                isSelected &&
                 widget.configuration.can(EditorCapability.resizeElements)) ...[
               ResizeHandle(
                 position: HandlePosition.topLeft,
@@ -528,6 +530,11 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
               RotationHandle(
                 element: element,
                 viewportSize: _viewportSize,
+                onRotationStart: () => setState(() => _isRotating = true),
+                onRotationEnd: () => setState(() {
+                  _isRotating = false;
+                  _pushHistory();
+                }),
                 onUpdate: () => setState(() => _pushHistory()),
               ),
           ],

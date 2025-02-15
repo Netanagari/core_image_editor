@@ -6,12 +6,16 @@ class RotationHandle extends StatefulWidget {
   final TemplateElement element;
   final VoidCallback onUpdate;
   final double handleSize;
+  final VoidCallback onRotationStart;
+  final VoidCallback onRotationEnd;
   final Size viewportSize;
 
   const RotationHandle({
     super.key,
     required this.element,
     required this.onUpdate,
+    required this.onRotationStart,
+    required this.onRotationEnd,
     required this.viewportSize,
     this.handleSize = 24,
   });
@@ -26,7 +30,6 @@ class _RotationHandleState extends State<RotationHandle>
   late Animation<double> _scaleAnimation;
   bool _isHovered = false;
   Offset? _startPosition;
-  Offset? _elementCenter;
   double? _startRotation;
 
   @override
@@ -48,49 +51,55 @@ class _RotationHandleState extends State<RotationHandle>
   }
 
   void _handleDragStart(DragStartDetails details) {
-    _elementCenter = Offset(
-      widget.element.box.xPercent * widget.viewportSize.width / 100 +
-          (widget.element.box.widthPercent * widget.viewportSize.width / 100) /
-              2,
-      widget.element.box.yPercent * widget.viewportSize.height / 100 +
-          (widget.element.box.heightPercent *
-                  widget.viewportSize.height /
-                  100) /
-              2,
-    );
-
+    widget.onRotationStart();
     _startPosition = details.globalPosition;
     _startRotation = widget.element.box.rotation;
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    if (_startPosition == null ||
-        _startRotation == null ||
-        _elementCenter == null) return;
+    if (_startPosition == null || _startRotation == null) return;
 
+    final RenderBox box = context.findRenderObject() as RenderBox;
+    final elementCenter = box.localToGlobal(
+      Offset(
+        widget.element.box.widthPercent * widget.viewportSize.width / 200,
+        widget.element.box.heightPercent * widget.viewportSize.height / 200,
+      ),
+    );
+
+    // Calculate angles
     final startAngle = (math.atan2(
-          _startPosition!.dy - _elementCenter!.dy,
-          _startPosition!.dx - _elementCenter!.dx,
-        )) *
+          _startPosition!.dy - elementCenter.dy,
+          _startPosition!.dx - elementCenter.dx,
+        ) *
         180 /
-        math.pi;
+        math.pi);
 
     final currentAngle = (math.atan2(
-          details.globalPosition.dy - _elementCenter!.dy,
-          details.globalPosition.dx - _elementCenter!.dx,
-        )) *
+          details.globalPosition.dy - elementCenter.dy,
+          details.globalPosition.dx - elementCenter.dx,
+        ) *
         180 /
-        math.pi;
+        math.pi);
 
-    final newRotation = _startRotation! + (currentAngle - startAngle);
-    widget.element.box.rotation = (newRotation % 360 + 360) % 360;
+    var angleDelta = currentAngle - startAngle;
+    var newRotation = _startRotation! + angleDelta;
+
+    // Normalize to 0-360 range
+    newRotation = ((newRotation % 360) + 360) % 360;
+
+    widget.element.box.rotation = newRotation;
     widget.onUpdate();
+  }
+
+   void _handleDragEnd(DragEndDetails details) {
+    widget.onRotationEnd();
   }
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: -40,
+      top: -(widget.handleSize / 2),
       left: 0,
       right: 0,
       child: Center(
@@ -109,8 +118,11 @@ class _RotationHandleState extends State<RotationHandle>
             });
           },
           child: GestureDetector(
+            behavior:
+                HitTestBehavior.opaque, // Important for proper hit testing
             onPanStart: _handleDragStart,
             onPanUpdate: _handleDragUpdate,
+            onPanEnd: _handleDragEnd,
             child: ScaleTransition(
               scale: _scaleAnimation,
               child: Container(
