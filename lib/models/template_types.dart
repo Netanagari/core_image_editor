@@ -105,6 +105,7 @@ class TemplateStyle {
   String? borderStyle;
   String? borderColor;
   double? borderWidth;
+  double? borderRadius;
   // New fields
   double opacity;
   String? imageShape; // 'rectangle' or 'circle'
@@ -124,6 +125,7 @@ class TemplateStyle {
     this.borderStyle,
     this.borderColor,
     this.borderWidth,
+    this.borderRadius,
     this.opacity = 1.0,
     this.imageShape,
     this.isReadOnly = false,
@@ -143,6 +145,7 @@ class TemplateStyle {
       borderStyle: json['border_style'],
       borderColor: json['border_color'],
       borderWidth: json['border_width']?.toDouble(),
+      borderRadius: json['border_radius']?.toDouble(),
       opacity: json['opacity']?.toDouble() ?? 1.0,
       imageShape: json['image_shape'],
       isReadOnly: json['is_read_only'] ?? false,
@@ -205,6 +208,7 @@ class TemplateStyle {
       'border_style': borderStyle,
       'border_color': borderColor,
       'border_width': borderWidth,
+      'border_radius': borderRadius,
       'opacity': opacity,
       'image_shape': imageShape,
       'is_read_only': isReadOnly,

@@ -397,7 +397,7 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
           width: element.style.borderWidth ?? 1,
           style: borderStyle,
         ),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(element.style.borderRadius ?? 1),
       );
     }
 

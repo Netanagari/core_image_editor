@@ -1158,6 +1158,18 @@ class PropertySidebar extends StatelessWidget {
             max: 20,
           ),
 
+          // Border Radius Control
+          _buildNumberInput(
+            label: 'Border Radius',
+            value: element.style.borderRadius ?? 1,
+            onChanged: (value) {
+              element.style.borderRadius = value;
+              onUpdate();
+            },
+            min: 1,
+            max: 100,
+          ),
+
           // Border Color Control
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
