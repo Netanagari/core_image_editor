@@ -1131,166 +1131,188 @@ class PropertySidebar extends StatelessWidget {
     if (element.type != 'leader_strip') return const SizedBox.shrink();
 
     List<TemplateElement> leaders = element.getLeaders();
-    String stripSize = element.content['stripSize'] ?? 'medium';
+    double spacing = element.content['spacing']?.toDouble() ?? 8.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle(context, 'Leader Strip Properties'),
+        // Leaders Section
+        _buildSectionTitle(context, 'Leader Photos'),
 
-        // Size selector
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+        // Grid of leaders with add button
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey[300]!),
+          ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Strip Size'),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(value: 'small', label: Text('Small')),
-                  ButtonSegment(value: 'medium', label: Text('Medium')),
-                  ButtonSegment(value: 'large', label: Text('Large')),
-                ],
-                selected: {stripSize},
-                onSelectionChanged: (Set<String> selected) {
-                  element.content['stripSize'] = selected.first;
-                  element.box.heightPercent = LeaderStripSize.values
-                      .firstWhere((s) => s.name == selected.first)
-                      .heightPercent;
-                  onUpdate();
-                },
+              // Leaders Grid
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    // Add button
+                    InkWell(
+                      onTap: () async {
+                        final url = await onSelectImage(context);
+                        leaders.add(TemplateElement.createLeader(url));
+                        element.setLeaders(leaders);
+                        onUpdate();
+                      },
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey[300]!),
+                        ),
+                        child: const Center(
+                          child: Icon(Icons.add_photo_alternate, size: 32),
+                        ),
+                      ),
+                    ),
+                    // Leader thumbnails
+                    ...leaders.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final leader = entry.value;
+                      return Stack(
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey[300]!),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                leader.style.imageShape == 'circle' ? 40 : 8,
+                              ),
+                              child: Image.network(
+                                leader.content['url'],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (index > 0)
+                                    IconButton(
+                                      icon: const Icon(Icons.arrow_left,
+                                          size: 16),
+                                      constraints: const BoxConstraints(
+                                        minWidth: 24,
+                                        minHeight: 24,
+                                      ),
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () {
+                                        final temp = leaders[index];
+                                        leaders[index] = leaders[index - 1];
+                                        leaders[index - 1] = temp;
+                                        element.setLeaders(leaders);
+                                        onUpdate();
+                                      },
+                                    ),
+                                  if (index < leaders.length - 1)
+                                    IconButton(
+                                      icon: const Icon(Icons.arrow_right,
+                                          size: 16),
+                                      constraints: const BoxConstraints(
+                                        minWidth: 24,
+                                        minHeight: 24,
+                                      ),
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () {
+                                        final temp = leaders[index];
+                                        leaders[index] = leaders[index + 1];
+                                        leaders[index + 1] = temp;
+                                        element.setLeaders(leaders);
+                                        onUpdate();
+                                      },
+                                    ),
+                                  IconButton(
+                                    icon: const Icon(Icons.close, size: 16),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 24,
+                                      minHeight: 24,
+                                    ),
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {
+                                      leaders.removeAt(index);
+                                      element.setLeaders(leaders);
+                                      onUpdate();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+                  ],
+                ),
               ),
             ],
           ),
         ),
 
-        // Leader list
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Leaders'),
-                  IconButton(
-                    icon: const Icon(Icons.add_photo_alternate),
-                    onPressed: () async {
-                      final url = await onSelectImage(context);
-                      leaders.add(TemplateElement.createLeader(url));
-                      element.setLeaders(leaders);
-                      onUpdate();
-                    },
-                  ),
-                ],
-              ),
-              ReorderableListView.builder(
-                shrinkWrap: true,
-                itemCount: leaders.length,
-                itemBuilder: (context, index) {
-                  final leader = leaders[index];
-                  return ListTile(
-                    key: ValueKey(leader.content['url']),
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        leader.style.imageShape == 'circle' ? 999 : 4,
-                      ),
-                      child: Image.network(
-                        leader.content['url'],
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    title: Text('Leader ${index + 1}'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.settings),
-                          onPressed: () {
-                            // Show dialog to edit leader properties
-                            _showLeaderEditDialog(context, leader, () {
-                              element.setLeaders(leaders);
-                              onUpdate();
-                            });
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            leaders.removeAt(index);
-                            element.setLeaders(leaders);
-                            onUpdate();
-                          },
-                        ),
-                        ReorderableDragStartListener(
-                          index: index,
-                          child: const Icon(Icons.drag_handle),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                onReorder: (oldIndex, newIndex) {
-                  if (oldIndex < newIndex) newIndex -= 1;
-                  final item = leaders.removeAt(oldIndex);
-                  leaders.insert(newIndex, item);
-                  element.setLeaders(leaders);
-                  onUpdate();
-                },
-              ),
-            ],
-          ),
+        // Spacing Control
+        _buildSectionTitle(context, 'Spacing'),
+        Slider(
+          value: spacing,
+          min: 0,
+          max: 40,
+          divisions: 8,
+          label: '${spacing.round()}px',
+          onChanged: (value) {
+            element.content['spacing'] = value;
+            onUpdate();
+          },
+        ),
+
+        // Shape Control
+        _buildSectionTitle(context, 'Photo Shape'),
+        SegmentedButton<String>(
+          segments: const [
+            ButtonSegment(
+              value: 'circle',
+              icon: Icon(Icons.circle_outlined),
+              label: Text('Circle'),
+            ),
+            ButtonSegment(
+              value: 'rectangle',
+              icon: Icon(Icons.rectangle_outlined),
+              label: Text('Rectangle'),
+            ),
+          ],
+          selected: {element.content['imageShape'] ?? 'circle'},
+          onSelectionChanged: (Set<String> selected) {
+            for (var leader in leaders) {
+              leader.style.imageShape = selected.first;
+            }
+            element.setLeaders(leaders);
+            element.content['imageShape'] = selected.first;
+            onUpdate();
+          },
         ),
       ],
-    );
-  }
-
-  void _showLeaderEditDialog(
-    BuildContext context,
-    TemplateElement leader,
-    VoidCallback onUpdate,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Leader Properties'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Shape selector
-            ListTile(
-              title: const Text('Image Shape'),
-              trailing: SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(
-                    value: 'circle',
-                    icon: Icon(Icons.circle_outlined),
-                  ),
-                  ButtonSegment(
-                    value: 'rectangle',
-                    icon: Icon(Icons.rectangle_outlined),
-                  ),
-                ],
-                selected: {leader.style.imageShape ?? 'circle'},
-                onSelectionChanged: (Set<String> selected) {
-                  leader.style.imageShape = selected.first;
-                  onUpdate();
-                },
-              ),
-            ),
-            // Add other leader-specific properties here
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
     );
   }
 

@@ -557,41 +557,45 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
 
   Widget _buildElementContent(TemplateElement element, Size elementSize) {
     if (element.type == 'leader_strip') {
-    final leaders = element.getLeaders();
-    
-    if (leaders.isEmpty) {
-      return const Center(
-        child: Text('Add leaders to the strip'),
+      final leaders = element.getLeaders();
+      final spacing = element.content['spacing']?.toDouble() ?? 8.0;
+
+      if (leaders.isEmpty) {
+        return const Center(
+          child: Text(
+            'Add leader photos',
+            style: TextStyle(color: Colors.grey),
+          ),
+        );
+      }
+
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final imageSize = elementSize.height;
+          return Wrap(
+            children: [
+              for (int i = 0; i < leaders.length; i++) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                    leaders[i].style.imageShape == 'circle' ? imageSize / 2 : 8,
+                  ),
+                  child: SizedBox(
+                    width: imageSize,
+                    height: imageSize,
+                    child: Image.network(
+                      leaders[i].content['url'],
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                if (i < leaders.length - 1) SizedBox(width: spacing),
+              ],
+            ],
+          );
+        },
       );
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final imageSize = constraints.maxHeight;
-        final spacing = 8.0;
-        
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: leaders.map((leader) {
-              return Padding(
-                padding: EdgeInsets.only(
-                  right: leader != leaders.last ? spacing : 0,
-                ),
-                child: SizedBox(
-                  width: imageSize,
-                  height: imageSize,
-                  child: _buildElementContent(leader, Size(imageSize, imageSize)),
-                ),
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
-  
     // Create the base content widget
     Widget content;
 

@@ -293,6 +293,7 @@ factory TemplateElement.createLeader(String imageUrl) {
       content: {
         'leaders': <Map<String, dynamic>>[],  // List of serialized leader elements
         'stripSize': 'medium',
+        'spacing': 8.0,
       },
       style: TemplateStyle(
         fontSizeVw: 0,
