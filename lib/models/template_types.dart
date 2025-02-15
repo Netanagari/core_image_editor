@@ -1,5 +1,58 @@
 import 'package:flutter/widgets.dart';
 
+enum TemplateElementTag {
+  bgImage,
+  image,
+  title,
+  subtitle,
+  userPicture,
+  partySymbol,
+  leaderPhotoStrip,
+  defaulty;
+
+  String get displayName {
+    switch (this) {
+      case TemplateElementTag.bgImage:
+        return 'Background Image';
+      case TemplateElementTag.image:
+        return 'Image';
+      case TemplateElementTag.title:
+        return 'Title';
+      case TemplateElementTag.subtitle:
+        return 'Subtitle';
+      case TemplateElementTag.userPicture:
+        return 'User Picture';
+      case TemplateElementTag.partySymbol:
+        return 'Party Symbol';
+      case TemplateElementTag.leaderPhotoStrip:
+        return 'Leader Photo Strip';
+      case TemplateElementTag.defaulty:
+        return 'Default';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case TemplateElementTag.bgImage:
+        return 'Main background image of the poster';
+      case TemplateElementTag.image:
+        return 'Relevant image related to event or content';
+      case TemplateElementTag.title:
+        return 'Main title or heading text';
+      case TemplateElementTag.subtitle:
+        return 'Secondary or descriptive text';
+      case TemplateElementTag.userPicture:
+        return 'Picture of the user/candidate';
+      case TemplateElementTag.partySymbol:
+        return 'Political party symbol or logo';
+      case TemplateElementTag.leaderPhotoStrip:
+        return 'Strip of leader photos';
+      case TemplateElementTag.defaulty:
+        return 'Standard element with no special handling';
+    }
+  }
+}
+
 class TemplateBox {
   double xPercent;
   double yPercent;
@@ -166,6 +219,7 @@ class TemplateElement {
   Map<String, dynamic> content;
   TemplateStyle style;
   int zIndex;
+  TemplateElementTag tag;
 
   TemplateElement({
     required this.type,
@@ -173,6 +227,7 @@ class TemplateElement {
     required this.content,
     required this.style,
     this.zIndex = 0,
+    this.tag = TemplateElementTag.defaulty,
   });
 
   factory TemplateElement.fromJson(Map<String, dynamic> json) {
@@ -182,8 +237,22 @@ class TemplateElement {
       content: json['content'] ?? {},
       style: TemplateStyle.fromJson(json['style'] ?? {}),
       zIndex: json['z_index'] ?? 0,
+      tag: _parseTag(json['tag']),
     );
   }
+
+  static TemplateElementTag _parseTag(String? tagStr) {
+    if (tagStr == null) return TemplateElementTag.defaulty;
+    try {
+      return TemplateElementTag.values.firstWhere(
+        (tag) => tag.toString() == tagStr,
+        orElse: () => TemplateElementTag.defaulty,
+      );
+    } catch (e) {
+    return TemplateElementTag.defaulty;
+    }
+  }
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -192,6 +261,7 @@ class TemplateElement {
       'content': content,
       'style': style.toJson(),
       'z_index': zIndex,
+      'tag': tag.toString(),
     };
   }
 

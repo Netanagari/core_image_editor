@@ -721,6 +721,44 @@ class PropertySidebar extends StatelessWidget {
     );
   }
 
+  Widget _buildTagSelector(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Element Tag',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 4),
+          DropdownButtonFormField<TemplateElementTag>(
+            value: element.tag,
+            decoration: const InputDecoration(
+              isDense: true,
+              border: OutlineInputBorder(),
+            ),
+            items: TemplateElementTag.values.map((tag) {
+              return DropdownMenuItem(
+                value: tag,
+                child: Tooltip(
+                  message: tag.description,
+                  child: Text(tag.displayName),
+                ),
+              );
+            }).toList(),
+            onChanged: (TemplateElementTag? newTag) {
+              if (newTag != null) {
+                element.tag = newTag;
+                onUpdate();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -770,6 +808,9 @@ class PropertySidebar extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                _buildSectionTitle(context, 'Tag'),
+                _buildTagSelector(context),
+
                 _buildSectionTitle(context, 'Position & Size'),
                 // repositionElements capability is required to show position controls
                 if (configuration.can(EditorCapability.repositionElements)) ...[
