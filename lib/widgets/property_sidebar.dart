@@ -831,6 +831,9 @@ class PropertySidebar extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                if (element.type == 'leader_strip')
+                  _buildLeaderStripControls(context),
+
                 _buildSectionTitle(context, 'Tag'),
                 _buildTagSelector(context),
 
@@ -1118,6 +1121,173 @@ class PropertySidebar extends StatelessWidget {
                 },
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLeaderStripControls(BuildContext context) {
+    if (element.type != 'leader_strip') return const SizedBox.shrink();
+
+    List<TemplateElement> leaders = element.getLeaders();
+    String stripSize = element.content['stripSize'] ?? 'medium';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle(context, 'Leader Strip Properties'),
+
+        // Size selector
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Strip Size'),
+              SegmentedButton<String>(
+                segments: const [
+                  ButtonSegment(value: 'small', label: Text('Small')),
+                  ButtonSegment(value: 'medium', label: Text('Medium')),
+                  ButtonSegment(value: 'large', label: Text('Large')),
+                ],
+                selected: {stripSize},
+                onSelectionChanged: (Set<String> selected) {
+                  element.content['stripSize'] = selected.first;
+                  element.box.heightPercent = LeaderStripSize.values
+                      .firstWhere((s) => s.name == selected.first)
+                      .heightPercent;
+                  onUpdate();
+                },
+              ),
+            ],
+          ),
+        ),
+
+        // Leader list
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Leaders'),
+                  IconButton(
+                    icon: const Icon(Icons.add_photo_alternate),
+                    onPressed: () async {
+                      final url = await onSelectImage(context);
+                      leaders.add(TemplateElement.createLeader(url));
+                      element.setLeaders(leaders);
+                      onUpdate();
+                    },
+                  ),
+                ],
+              ),
+              ReorderableListView.builder(
+                shrinkWrap: true,
+                itemCount: leaders.length,
+                itemBuilder: (context, index) {
+                  final leader = leaders[index];
+                  return ListTile(
+                    key: ValueKey(leader.content['url']),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(
+                        leader.style.imageShape == 'circle' ? 999 : 4,
+                      ),
+                      child: Image.network(
+                        leader.content['url'],
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    title: Text('Leader ${index + 1}'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.settings),
+                          onPressed: () {
+                            // Show dialog to edit leader properties
+                            _showLeaderEditDialog(context, leader, () {
+                              element.setLeaders(leaders);
+                              onUpdate();
+                            });
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            leaders.removeAt(index);
+                            element.setLeaders(leaders);
+                            onUpdate();
+                          },
+                        ),
+                        ReorderableDragStartListener(
+                          index: index,
+                          child: const Icon(Icons.drag_handle),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                onReorder: (oldIndex, newIndex) {
+                  if (oldIndex < newIndex) newIndex -= 1;
+                  final item = leaders.removeAt(oldIndex);
+                  leaders.insert(newIndex, item);
+                  element.setLeaders(leaders);
+                  onUpdate();
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showLeaderEditDialog(
+    BuildContext context,
+    TemplateElement leader,
+    VoidCallback onUpdate,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Leader Properties'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Shape selector
+            ListTile(
+              title: const Text('Image Shape'),
+              trailing: SegmentedButton<String>(
+                segments: const [
+                  ButtonSegment(
+                    value: 'circle',
+                    icon: Icon(Icons.circle_outlined),
+                  ),
+                  ButtonSegment(
+                    value: 'rectangle',
+                    icon: Icon(Icons.rectangle_outlined),
+                  ),
+                ],
+                selected: {leader.style.imageShape ?? 'circle'},
+                onSelectionChanged: (Set<String> selected) {
+                  leader.style.imageShape = selected.first;
+                  onUpdate();
+                },
+              ),
+            ),
+            // Add other leader-specific properties here
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
           ),
         ],
       ),

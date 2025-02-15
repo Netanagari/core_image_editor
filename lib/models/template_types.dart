@@ -1,5 +1,22 @@
 import 'package:flutter/widgets.dart';
 
+enum LeaderStripSize {
+  small,
+  medium,
+  large;
+
+  double get heightPercent {
+    switch (this) {
+      case LeaderStripSize.small:
+        return 15.0;
+      case LeaderStripSize.medium:
+        return 20.0;
+      case LeaderStripSize.large:
+        return 25.0;
+    }
+  }
+}
+
 enum TemplateElementTag {
   bgImage,
   image,
@@ -8,6 +25,7 @@ enum TemplateElementTag {
   userPicture,
   partySymbol,
   leaderPhotoStrip,
+  leader,
   defaulty;
 
   String get displayName {
@@ -26,6 +44,8 @@ enum TemplateElementTag {
         return 'Party Symbol';
       case TemplateElementTag.leaderPhotoStrip:
         return 'Leader Photo Strip';
+      case TemplateElementTag.leader:
+        return 'Leader';
       case TemplateElementTag.defaulty:
         return 'Default';
     }
@@ -47,6 +67,8 @@ enum TemplateElementTag {
         return 'Political party symbol or logo';
       case TemplateElementTag.leaderPhotoStrip:
         return 'Strip of leader photos';
+      case TemplateElementTag.leader:
+        return 'Leader photo';
       case TemplateElementTag.defaulty:
         return 'Standard element with no special handling';
     }
@@ -233,6 +255,64 @@ class TemplateElement {
     this.zIndex = 0,
     this.tag = TemplateElementTag.defaulty,
   });
+
+factory TemplateElement.createLeader(String imageUrl) {
+    return TemplateElement(
+      type: 'image',
+      tag: TemplateElementTag.leader,
+      box: TemplateBox(
+        xPercent: 0,  // Position will be handled by leader strip
+        yPercent: 0,
+        widthPercent: 100,  // Will be adjusted by strip
+        heightPercent: 100,
+        alignment: 'center',
+      ),
+      content: {
+        'url': imageUrl,
+      },
+      style: TemplateStyle(
+        fontSizeVw: 0,
+        color: '#000000',
+        imageShape: 'circle',  // Default shape
+        imageFit: BoxFit.cover,
+      ),
+    );
+  }
+
+  factory TemplateElement.createLeaderStrip() {
+    return TemplateElement(
+      type: 'leader_strip',
+      tag: TemplateElementTag.leaderPhotoStrip,
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 10,
+        widthPercent: 80,
+        heightPercent: LeaderStripSize.medium.heightPercent,
+        alignment: 'center',
+      ),
+      content: {
+        'leaders': <Map<String, dynamic>>[],  // List of serialized leader elements
+        'stripSize': 'medium',
+      },
+      style: TemplateStyle(
+        fontSizeVw: 0,
+        color: '#000000',
+      ),
+    );
+  }
+
+  List<TemplateElement> getLeaders() {
+    if (type != 'leader_strip') return [];
+    
+    return (content['leaders'] as List? ?? [])
+        .map((leaderJson) => TemplateElement.fromJson(leaderJson))
+        .toList();
+  }
+
+  void setLeaders(List<TemplateElement> leaders) {
+    if (type != 'leader_strip') return;
+    content['leaders'] = leaders.map((e) => e.toJson()).toList();
+  }
 
   factory TemplateElement.fromJson(Map<String, dynamic> json) {
     return TemplateElement(

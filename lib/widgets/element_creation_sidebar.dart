@@ -23,9 +23,9 @@ class ElementCreationSidebar extends StatelessWidget {
     required double fontSizeVw,
     required String type,
   }) {
-    TemplateElementTag tag = type == 'heading' 
-      ? TemplateElementTag.title 
-      : TemplateElementTag.subtitle;
+    TemplateElementTag tag = type == 'heading'
+        ? TemplateElementTag.title
+        : TemplateElementTag.subtitle;
 
     return TemplateElement(
       type: 'text',
@@ -191,6 +191,14 @@ class ElementCreationSidebar extends StatelessWidget {
                       onCreateElement(element);
                     }
                   },
+                ),
+                const SizedBox(height: 8),
+                _buildElementButton(
+                  context: context,
+                  icon: Icons.people,
+                  label: 'Leader Strip',
+                  onTap: () =>
+                      onCreateElement(TemplateElement.createLeaderStrip()),
                 ),
               ],
             ),
