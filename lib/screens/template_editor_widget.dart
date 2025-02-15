@@ -537,8 +537,11 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
   }
 
   Widget _buildElementContent(TemplateElement element, Size elementSize) {
+    // Create the base content widget
+    Widget content;
+
     if (element.type == 'shape') {
-      return CustomPaint(
+      content = CustomPaint(
         painter: ShapePainter(
           shapeType: ShapeType.values.firstWhere(
             (type) => type.toString() == element.content['shapeType'],
@@ -560,42 +563,89 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
         ),
         size: elementSize,
       );
-    }
-
-    if (element.type == 'image') {
-      return Image.network(
+    } else if (element.type == 'image') {
+      Widget imageWidget = Image.network(
         element.content['url'] ?? '',
         width: elementSize.width,
         height: elementSize.height,
         fit: element.style.imageFit,
       );
+
+      // Apply image shape clipping if specified
+      if (element.style.imageShape == 'circle') {
+        content = ClipOval(child: imageWidget);
+      } else {
+        content = ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: imageWidget,
+        );
+      }
+    } else {
+      // Text elements
+      // Convert font size from vw to pixels
+      double fontSizePixels = ResponsiveUtils.vwToPixels(
+        element.style.fontSizeVw,
+        _viewportSize.width,
+      );
+
+      // Apply text decorations
+      List<TextDecoration> decorations = [];
+      if (element.style.isUnderlined) {
+        decorations.add(TextDecoration.underline);
+      }
+
+      content = Text(
+        element.content['text'] ?? 'Default Text',
+        style: GoogleFonts.getFont(
+          element.style.fontFamily,
+          fontSize: fontSizePixels,
+          color:
+              Color(int.parse(element.style.color.replaceFirst('#', '0xff'))),
+          fontWeight: element.style.fontWeight,
+          fontStyle:
+              element.style.isItalic ? FontStyle.italic : FontStyle.normal,
+          decoration:
+              decorations.isEmpty ? null : TextDecoration.combine(decorations),
+        ),
+      );
     }
 
-    // Convert font size from vw to pixels
-    double fontSizePixels = ResponsiveUtils.vwToPixels(
-      element.style.fontSizeVw,
-      _viewportSize.width,
-    );
-
-    // Apply text decorations
-    List<TextDecoration> decorations = [];
-    if (element.style.isUnderlined) {
-      decorations.add(TextDecoration.underline);
+    // Apply opacity
+    if (element.style.opacity != 1.0) {
+      content = Opacity(
+        opacity: element.style.opacity,
+        child: content,
+      );
     }
 
-    // Use Google Fonts for text elements with enhanced styling
-    return Text(
-      element.content['text'] ?? 'Default Text',
-      style: GoogleFonts.getFont(
-        element.style.fontFamily,
-        fontSize: fontSizePixels,
-        color: Color(int.parse(element.style.color.replaceFirst('#', '0xff'))),
-        fontWeight: element.style.fontWeight,
-        fontStyle: element.style.isItalic ? FontStyle.italic : FontStyle.normal,
-        decoration:
-            decorations.isEmpty ? null : TextDecoration.combine(decorations),
-      ),
-    );
+    // Apply box shadow if specified
+    if (element.style.boxShadow != null) {
+      content = Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Color(
+                int.parse(
+                  (element.style.boxShadow!['color'] ?? '#000000')
+                      .replaceFirst('#', '0xff'),
+                ),
+              ),
+              offset: Offset(
+                element.style.boxShadow!['offsetX']?.toDouble() ?? 0.0,
+                element.style.boxShadow!['offsetY']?.toDouble() ?? 2.0,
+              ),
+              blurRadius:
+                  element.style.boxShadow!['blurRadius']?.toDouble() ?? 4.0,
+              spreadRadius:
+                  element.style.boxShadow!['spreadRadius']?.toDouble() ?? 0.0,
+            ),
+          ],
+        ),
+        child: content,
+      );
+    }
+
+    return content;
   }
 
   void _showContextMenu(

@@ -1,3 +1,4 @@
+import 'package:core_image_editor/extensions/color_extensions.dart';
 import 'package:core_image_editor/models/editor_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -25,6 +26,183 @@ class PropertySidebar extends StatelessWidget {
     required this.configuration,
     required this.onSelectImage,
   });
+
+  Widget _buildOpacityControl() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Opacity: ${(element.style.opacity * 100).toInt()}%'),
+          Slider(
+            value: element.style.opacity,
+            min: 0.0,
+            max: 1.0,
+            divisions: 100,
+            onChanged: (value) {
+              element.style.opacity = value;
+              onUpdate();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImageShapeControl() {
+    if (element.type != 'image') return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Image Shape'),
+          const SizedBox(height: 4),
+          SegmentedButton<String>(
+            segments: const [
+              ButtonSegment(
+                value: 'rectangle',
+                icon: Icon(Icons.rectangle_outlined),
+                label: Text('Rectangle'),
+              ),
+              ButtonSegment(
+                value: 'circle',
+                icon: Icon(Icons.circle_outlined),
+                label: Text('Circle'),
+              ),
+            ],
+            selected: {element.style.imageShape ?? 'rectangle'},
+            onSelectionChanged: (Set<String> newSelection) {
+              element.style.imageShape = newSelection.first;
+              onUpdate();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBoxShadowControl(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Box Shadow'),
+          const SizedBox(height: 4),
+          CheckboxListTile(
+            title: const Text('Enable Shadow'),
+            value: element.style.boxShadow != null,
+            onChanged: (value) {
+              if (value == true) {
+                element.style.boxShadow = {
+                  'color': '#000000',
+                  'offsetX': 0.0,
+                  'offsetY': 2.0,
+                  'blurRadius': 4.0,
+                  'spreadRadius': 0.0,
+                };
+              } else {
+                element.style.boxShadow = null;
+              }
+              onUpdate();
+            },
+          ),
+          if (element.style.boxShadow != null) ...[
+            // Shadow Color
+            InkWell(
+              onTap: () async {
+                await _showColorPicker(
+                    context,
+                    Color(
+                      int.parse(
+                        (element.style.boxShadow!['color'] ?? '#000000')
+                            .replaceFirst('#', '0xff'),
+                      ),
+                    ), (color) {
+                  element.style.boxShadow!['color'] = color;
+                });
+              },
+              child: Container(
+                height: 40,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Color(
+                    int.parse(
+                      (element.style.boxShadow!['color'] ?? '#000000')
+                          .replaceFirst('#', '0xff'),
+                    ),
+                  ),
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            // Shadow Offset X
+            _buildNumberInput(
+              label: 'Offset X',
+              value: element.style.boxShadow!['offsetX'],
+              onChanged: (value) {
+                element.style.boxShadow!['offsetX'] = value;
+                onUpdate();
+              },
+              min: -50,
+              max: 50,
+            ),
+            // Shadow Offset Y
+            _buildNumberInput(
+              label: 'Offset Y',
+              value: element.style.boxShadow!['offsetY'],
+              onChanged: (value) {
+                element.style.boxShadow!['offsetY'] = value;
+                onUpdate();
+              },
+              min: -50,
+              max: 50,
+            ),
+            // Blur Radius
+            _buildNumberInput(
+              label: 'Blur Radius',
+              value: element.style.boxShadow!['blurRadius'],
+              onChanged: (value) {
+                element.style.boxShadow!['blurRadius'] = value;
+                onUpdate();
+              },
+              min: 0,
+              max: 50,
+            ),
+            // Spread Radius
+            _buildNumberInput(
+              label: 'Spread Radius',
+              value: element.style.boxShadow!['spreadRadius'],
+              onChanged: (value) {
+                element.style.boxShadow!['spreadRadius'] = value;
+                onUpdate();
+              },
+              min: -50,
+              max: 50,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReadOnlyControl() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: CheckboxListTile(
+        title: const Text('Read Only'),
+        subtitle: const Text('Prevent editing by end users'),
+        value: element.style.isReadOnly,
+        onChanged: (value) {
+          element.style.isReadOnly = value ?? false;
+          onUpdate();
+        },
+      ),
+    );
+  }
 
   Widget _buildImageFitSelector() {
     return Padding(
@@ -189,27 +367,17 @@ class PropertySidebar extends StatelessWidget {
               const Text('Fill Color'),
               const SizedBox(height: 4),
               InkWell(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Pick Fill Color'),
-                      content: BlockPicker(
-                        pickerColor: Color(
-                          int.parse(
-                            (element.content['fillColor'] ?? '#FFFFFF')
-                                .replaceFirst('#', '0xff'),
-                          ),
+                onTap: () async {
+                  await _showColorPicker(
+                      context,
+                      Color(
+                        int.parse(
+                          (element.content['fillColor'] ?? '#FFFFFF')
+                              .replaceFirst('#', '0xff'),
                         ),
-                        onColorChanged: (color) {
-                          element.content['fillColor'] =
-                              '#${color.value.toRadixString(16).substring(2)}';
-                          onUpdate();
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                  );
+                      ), (color) {
+                    element.content['fillColor'] = color;
+                  });
                 },
                 child: Container(
                   height: 40,
@@ -238,27 +406,17 @@ class PropertySidebar extends StatelessWidget {
               const Text('Stroke Color'),
               const SizedBox(height: 4),
               InkWell(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Pick Stroke Color'),
-                      content: BlockPicker(
-                        pickerColor: Color(
-                          int.parse(
-                            (element.content['strokeColor'] ?? '#000000')
-                                .replaceFirst('#', '0xff'),
-                          ),
+                onTap: () async {
+                  await _showColorPicker(
+                      context,
+                      Color(
+                        int.parse(
+                          (element.content['strokeColor'] ?? '#000000')
+                              .replaceFirst('#', '0xff'),
                         ),
-                        onColorChanged: (color) {
-                          element.content['strokeColor'] =
-                              '#${color.value.toRadixString(16).substring(2)}';
-                          onUpdate();
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                  );
+                      ), (color) {
+                    element.content['strokeColor'] = color;
+                  });
                 },
                 child: Container(
                   height: 40,
@@ -467,7 +625,62 @@ class PropertySidebar extends StatelessWidget {
     );
   }
 
-  Widget _buildColorPicker(BuildContext context) {
+  Future<void> _showColorPicker(
+    BuildContext context,
+    Color pickerColor,
+    Function(String) onColorChosen,
+  ) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Pick a color'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Add transparent color option
+            InkWell(
+              onTap: () {
+                onColorChosen('#00000000');
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: Colors.grey),
+                  image: const DecorationImage(
+                    image: NetworkImage(
+                        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGElEQVQYlWNgYGCQwoKxgqGgcJA5h3yFAAs8BRWVSwooAAAAAElFTkSuQmCC'),
+                    repeat: ImageRepeat.repeat,
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Transparent',
+                    style: TextStyle(fontSize: 10),
+                  ),
+                ),
+              ),
+            ),
+            BlockPicker(
+              pickerColor: pickerColor,
+              onColorChanged: (color) {
+                onColorChosen(color.hexString);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColorPicker(
+    BuildContext context,
+    Function(String) onColorChosen,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -476,27 +689,13 @@ class PropertySidebar extends StatelessWidget {
           const Text('Color'),
           const SizedBox(height: 4),
           InkWell(
-            onTap: () {
-              // Show color picker dialog
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Pick a color'),
-                    content: BlockPicker(
-                      pickerColor: Color(
-                        int.parse(
-                            element.style.color.replaceFirst('#', '0xff')),
-                      ),
-                      onColorChanged: (color) {
-                        element.style.color =
-                            '#${color.value.toRadixString(16).substring(2)}';
-                        onUpdate();
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  );
-                },
+            onTap: () async {
+              await _showColorPicker(
+                context,
+                Color(
+                  int.parse(element.style.color.replaceFirst('#', '0xff')),
+                ),
+                onColorChosen,
               );
             },
             child: Container(
@@ -507,6 +706,13 @@ class PropertySidebar extends StatelessWidget {
                 ),
                 border: Border.all(color: Colors.grey),
                 borderRadius: BorderRadius.circular(4),
+                image: element.style.color == '#00000000'
+                    ? const DecorationImage(
+                        image: NetworkImage(
+                            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGElEQVQYlWNgYGCQwoKxgqGgcJA5h3yFAAs8BRWVSwooAAAAAElFTkSuQmCC'),
+                        repeat: ImageRepeat.repeat,
+                      )
+                    : null,
               ),
             ),
           ),
@@ -625,10 +831,15 @@ class PropertySidebar extends StatelessWidget {
                   _buildBorderControls(context),
                 ],
 
+                _buildOpacityControl(),
+                _buildBoxShadowControl(context),
+                _buildReadOnlyControl(),
+
                 if (element.type == 'text') ...[
                   _buildTextStyleControls(context),
                 ] else if (element.type == 'image') ...[
                   _buildSectionTitle(context, 'Image Properties'),
+                  _buildImageShapeControl(),
                   _buildTextInput(
                     context,
                     'Image URL',
@@ -915,27 +1126,17 @@ class PropertySidebar extends StatelessWidget {
                 const Text('Border Color'),
                 const SizedBox(height: 4),
                 InkWell(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Pick Border Color'),
-                        content: BlockPicker(
-                          pickerColor: Color(
-                            int.parse(
-                              (element.style.borderColor ?? '#000000')
-                                  .replaceFirst('#', '0xff'),
-                            ),
+                  onTap: () async {
+                    await _showColorPicker(
+                        context,
+                        Color(
+                          int.parse(
+                            (element.style.borderColor ?? '#000000')
+                                .replaceFirst('#', '0xff'),
                           ),
-                          onColorChanged: (color) {
-                            element.style.borderColor =
-                                '#${color.value.toRadixString(16).substring(2)}';
-                            onUpdate();
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ),
-                    );
+                        ), (color) {
+                      element.style.borderColor = color;
+                    });
                   },
                   child: Container(
                     height: 40,
@@ -979,7 +1180,10 @@ class PropertySidebar extends StatelessWidget {
         if (configuration.can(EditorCapability.changeFonts))
           _buildTextDecorations(),
         if (configuration.can(EditorCapability.changeColors))
-          _buildColorPicker(context),
+          _buildColorPicker(context, (color) {
+            element.style.color = color;
+            onUpdate();
+          }),
         if (configuration.can(EditorCapability.changeTextContent))
           _buildTextInput(
             context,

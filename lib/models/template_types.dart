@@ -48,11 +48,16 @@ class TemplateStyle {
   BoxFit imageFit;
   bool isItalic;
   bool isUnderlined;
-  List<String>?
-      decorations; // For multiple text decorations (underline, linethrough, etc)
+  List<String>? decorations;
   String? borderStyle;
   String? borderColor;
   double? borderWidth;
+  // New fields
+  double opacity;
+  String? imageShape; // 'rectangle' or 'circle'
+  bool isReadOnly;
+  Map<String, dynamic>?
+      boxShadow; // Contains color, offsetX, offsetY, blurRadius, spreadRadius
 
   TemplateStyle({
     required this.fontSizeVw,
@@ -66,6 +71,10 @@ class TemplateStyle {
     this.borderStyle,
     this.borderColor,
     this.borderWidth,
+    this.opacity = 1.0,
+    this.imageShape,
+    this.isReadOnly = false,
+    this.boxShadow,
   });
 
   factory TemplateStyle.fromJson(Map<String, dynamic> json) {
@@ -81,23 +90,11 @@ class TemplateStyle {
       borderStyle: json['border_style'],
       borderColor: json['border_color'],
       borderWidth: json['border_width']?.toDouble(),
+      opacity: json['opacity']?.toDouble() ?? 1.0,
+      imageShape: json['image_shape'],
+      isReadOnly: json['is_read_only'] ?? false,
+      boxShadow: json['box_shadow'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'font_size': fontSizeVw,
-      'color': color,
-      'font_family': fontFamily,
-      'font_weight': fontWeight.toString(),
-      'is_italic': isItalic,
-      'imageFit': imageFit.toString(),
-      'is_underlined': isUnderlined,
-      'decorations': decorations,
-      'border_style': borderStyle,
-      'border_color': borderColor,
-      'border_width': borderWidth,
-    };
   }
 
   static BoxFit _parseBoxFit(String value) {
@@ -142,9 +139,24 @@ class TemplateStyle {
     }
   }
 
-  @override
-  String toString() {
-    return 'TemplateStyle(fontSizeVw: $fontSizeVw, color: $color, fontFamily: $fontFamily, fontWeight: $fontWeight, isItalic: $isItalic, isUnderlined: $isUnderlined, decorations: $decorations, borderStyle: $borderStyle, borderColor: $borderColor, borderWidth: $borderWidth)';
+  Map<String, dynamic> toJson() {
+    return {
+      'font_size': fontSizeVw,
+      'color': color,
+      'font_family': fontFamily,
+      'font_weight': fontWeight.toString(),
+      'is_italic': isItalic,
+      'imageFit': imageFit.toString(),
+      'is_underlined': isUnderlined,
+      'decorations': decorations,
+      'border_style': borderStyle,
+      'border_color': borderColor,
+      'border_width': borderWidth,
+      'opacity': opacity,
+      'image_shape': imageShape,
+      'is_read_only': isReadOnly,
+      'box_shadow': boxShadow,
+    };
   }
 }
 
