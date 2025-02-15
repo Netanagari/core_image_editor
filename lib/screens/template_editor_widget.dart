@@ -243,7 +243,13 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                                 height: _viewportSize.height,
                                 fit: BoxFit.contain,
                               ),
-                              ...elements.map(_buildBoxedElement),
+                              ...(() {
+                                final sortedElements =
+                                    List<TemplateElement>.from(elements);
+                                sortedElements.sort(
+                                    (a, b) => a.zIndex.compareTo(b.zIndex));
+                                return sortedElements.map(_buildBoxedElement);
+                              })(),
                             ],
                           ),
                         ),
@@ -302,7 +308,13 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
                                 height: _viewportSize.height,
                                 fit: BoxFit.contain,
                               ),
-                              ...elements.map(_buildBoxedElement),
+                              ...(() {
+                                final sortedElements =
+                                    List<TemplateElement>.from(elements);
+                                sortedElements.sort(
+                                    (a, b) => a.zIndex.compareTo(b.zIndex));
+                                return sortedElements.map(_buildBoxedElement);
+                              })()
                             ],
                           ),
                         ),
@@ -763,8 +775,11 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
               dense: true,
               onTap: () {
                 setState(() {
+                  // Find the highest z-index
                   int maxZ = elements.fold(
-                      0, (max, e) => e.zIndex > max ? e.zIndex : max);
+                    0,
+                    (max, e) => e.zIndex > max ? e.zIndex : max,
+                  );
                   element.zIndex = maxZ + 1;
                   _pushHistory();
                 });
@@ -780,8 +795,11 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
               dense: true,
               onTap: () {
                 setState(() {
+                  // Find the lowest z-index
                   int minZ = elements.fold(
-                      0, (min, e) => e.zIndex < min ? e.zIndex : min);
+                    0,
+                    (min, e) => e.zIndex < min ? e.zIndex : min,
+                  );
                   element.zIndex = minZ - 1;
                   _pushHistory();
                 });
