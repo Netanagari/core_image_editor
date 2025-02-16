@@ -300,43 +300,112 @@ class EditorElement extends StatelessWidget {
     return content;
   }
 
+  // Widget _buildLeaderStrip(TemplateElement element, Size elementSize) {
+  //   final leaders = element.getLeaders();
+  //   final spacing = element.content['spacing']?.toDouble() ?? 8.0;
+
+  //   if (leaders.isEmpty) {
+  //     return const Center(
+  //       child: Text(
+  //         'Add leader photos',
+  //         style: TextStyle(color: Colors.grey),
+  //       ),
+  //     );
+  //   }
+
+  //   return LayoutBuilder(
+  //     builder: (context, constraints) {
+  //       final imageSize = elementSize.height;
+  //       return Wrap(
+  //         children: [
+  //           for (int i = 0; i < leaders.length; i++) ...[
+  //             ClipRRect(
+  //               borderRadius: BorderRadius.circular(
+  //                 leaders[i].style.imageShape == 'circle' ? imageSize / 2 : 0,
+  //               ),
+  //               child: SizedBox(
+  //                 width: imageSize,
+  //                 height: imageSize,
+  //                 child: Image.network(
+  //                   leaders[i].content['url'],
+  //                   fit: BoxFit.cover,
+  //                 ),
+  //               ),
+  //             ),
+  //             if (i < leaders.length - 1) SizedBox(width: spacing),
+  //           ],
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
   Widget _buildLeaderStrip(TemplateElement element, Size elementSize) {
-    final leaders = element.getLeaders();
-    final spacing = element.content['spacing']?.toDouble() ?? 8.0;
+  final leaders = element.getLeaders();
+  final horizontalSpacing = element.content['spacing']?.toDouble() ?? 8.0;
+  final verticalSpacing = element.content['verticalSpacing']?.toDouble() ?? 8.0;
+  final justifyContent = element.content['justifyContent'] ?? 'start';
 
-    if (leaders.isEmpty) {
-      return const Center(
-        child: Text(
-          'Add leader photos',
-          style: TextStyle(color: Colors.grey),
-        ),
-      );
-    }
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final imageSize = elementSize.height;
-        return Wrap(
-          children: [
-            for (int i = 0; i < leaders.length; i++) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(
-                  leaders[i].style.imageShape == 'circle' ? imageSize / 2 : 0,
-                ),
-                child: SizedBox(
-                  width: imageSize,
-                  height: imageSize,
-                  child: Image.network(
-                    leaders[i].content['url'],
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              if (i < leaders.length - 1) SizedBox(width: spacing),
-            ],
-          ],
-        );
-      },
+  if (leaders.isEmpty) {
+    return const Center(
+      child: Text(
+        'Add leader photos',
+        style: TextStyle(color: Colors.grey),
+      ),
     );
   }
+
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final imageSize = elementSize.height;
+      
+      // Convert justifyContent to WrapAlignment
+      WrapAlignment alignment;
+      switch (justifyContent) {
+        case 'center':
+          alignment = WrapAlignment.center;
+          break;
+        case 'end':
+          alignment = WrapAlignment.end;
+          break;
+        case 'space-between':
+          alignment = WrapAlignment.spaceBetween;
+          break;
+        case 'space-around':
+          alignment = WrapAlignment.spaceAround;
+          break;
+        case 'space-evenly':
+          alignment = WrapAlignment.spaceEvenly;
+          break;
+        default:
+          alignment = WrapAlignment.start;
+      }
+
+      return Container(
+        // decoration: borderDecoration,
+        padding: EdgeInsets.all((element.style.borderWidth ?? 0) + 4),
+        child: Wrap(
+          alignment: alignment,
+          spacing: horizontalSpacing,
+          runSpacing: verticalSpacing,
+          children: leaders.map((leader) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(
+                leader.style.imageShape == 'circle' ? imageSize / 2 : 0,
+              ),
+              child: SizedBox(
+                width: imageSize,
+                height: imageSize,
+                child: Image.network(
+                  leader.content['url'],
+                  fit: BoxFit.cover,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    },
+  );
+}
 }

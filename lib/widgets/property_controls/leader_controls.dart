@@ -20,7 +20,11 @@ class LeaderControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<TemplateElement> leaders = element.getLeaders();
-    double spacing = element.content['spacing']?.toDouble() ?? 8.0;
+    double verticalSpacing =
+        element.content['verticalSpacing']?.toDouble() ?? 8.0;
+    double horizontalSpacing =
+        element.content['horizontalSpacing']?.toDouble() ?? 8.0;
+    String justifyContent = element.content['justifyContent'] ?? 'start';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,17 +204,93 @@ class LeaderControls extends StatelessWidget {
           ),
         ),
         // Spacing Control
-        const Text('Spacing'),
+        const SizedBox(height: 16),
+
+        // Horizontal Spacing Control
+        Text(
+          'Horizontal Spacing',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
         Slider(
-          value: spacing,
+          value: horizontalSpacing,
           min: 0,
           max: 40,
           divisions: 8,
-          label: '${spacing.round()}px',
+          label: '${horizontalSpacing.round()}px',
           onChanged: (value) {
             element.content['spacing'] = value;
             onUpdate();
           },
+        ),
+
+        const SizedBox(height: 16),
+
+        // Vertical Spacing Control
+        Text(
+          'Vertical Spacing',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        Slider(
+          value: verticalSpacing,
+          min: 0,
+          max: 40,
+          divisions: 8,
+          label: '${verticalSpacing.round()}px',
+          onChanged: (value) {
+            element.content['verticalSpacing'] = value;
+            onUpdate();
+          },
+        ),
+
+        const SizedBox(height: 16),
+
+        // Justify Content Control
+        Text(
+          'Alignment',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SegmentedButton<String>(
+            segments: [
+              ButtonSegment(
+                value: 'start',
+                label: const Text('Start'),
+                icon: const Icon(Icons.format_align_left),
+              ),
+              ButtonSegment(
+                value: 'center',
+                label: const Text('Center'),
+                icon: const Icon(Icons.format_align_center),
+              ),
+              ButtonSegment(
+                value: 'end',
+                label: const Text('End'),
+                icon: const Icon(Icons.format_align_right),
+              ),
+              ButtonSegment(
+                value: 'space-between',
+                label: const Text('Space Between'),
+                icon: const Icon(Icons.space_bar),
+              ),
+              ButtonSegment(
+                value: 'space-around',
+                label: const Text('Space Around'),
+                icon: const Icon(Icons.space_dashboard),
+              ),
+              ButtonSegment(
+                value: 'space-evenly',
+                label: const Text('Space Evenly'),
+                icon: const Icon(Icons.space_dashboard_outlined),
+              ),
+            ],
+            selected: {justifyContent},
+            onSelectionChanged: (Set<String> newSelection) {
+              element.content['justifyContent'] = newSelection.first;
+              onUpdate();
+            },
+          ),
         ),
       ],
     );
