@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 enum EditorCapability {
   // Element manipulation
   addElements,
@@ -82,5 +83,17 @@ class EditorConfiguration {
 
   bool can(EditorCapability capability) {
     return capabilities.contains(capability);
+  }
+
+  EditorConfiguration copyWith({
+    Set<EditorCapability>? capabilities,
+    List<String>? availableFonts,
+    double? pixelRatio,
+  }) {
+    return EditorConfiguration(
+      capabilities: capabilities ?? this.capabilities,
+      availableFonts: availableFonts ?? this.availableFonts,
+      pixelRatio: pixelRatio ?? this.pixelRatio,
+    );
   }
 }
