@@ -1,4 +1,5 @@
 import 'package:core_image_editor/models/editor_config.dart';
+import 'package:core_image_editor/widgets/property_controls/nested_content_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/template_types.dart';
@@ -206,6 +207,13 @@ class PropertySidebar extends StatelessWidget {
             element: element,
             onUpdate: pushHistory,
           ),
+          if (element.canContainNestedContent)
+            NestedContentControls(
+              element: element,
+              onSelectImage: onSelectImage,
+              onUpdate: pushHistory,
+              configuration: editorState.configuration,
+            ),
         ],
         const SectionTitle(title: 'Layer'),
         LayerControl(

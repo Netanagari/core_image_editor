@@ -71,6 +71,90 @@ class ShapePainter extends CustomPainter {
     }
   }
 
+  Path getClipPath(Size size) {
+    switch (shapeType) {
+      case ShapeType.rectangle:
+        return Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+
+      case ShapeType.circle:
+        return Path()..addOval(Rect.fromLTWH(0, 0, size.width, size.height));
+
+      case ShapeType.triangle:
+        return Path()
+          ..moveTo(size.width / 2, 0)
+          ..lineTo(size.width, size.height)
+          ..lineTo(0, size.height)
+          ..close();
+
+      case ShapeType.diamond:
+        return Path()
+          ..moveTo(size.width / 2, 0)
+          ..lineTo(size.width, size.height / 2)
+          ..lineTo(size.width / 2, size.height)
+          ..lineTo(0, size.height / 2)
+          ..close();
+
+      case ShapeType.pentagon:
+        return _getPolygonPath(size, 5);
+
+      case ShapeType.hexagon:
+        return _getPolygonPath(size, 6);
+
+      case ShapeType.star:
+        return _getStarPath(size);
+
+      default:
+        return Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+    }
+  }
+
+  Path _getPolygonPath(Size size, int sides) {
+    final path = Path();
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = math.min(size.width, size.height) / 2;
+
+    for (int i = 0; i < sides; i++) {
+      final angle = (i * 2 * math.pi / sides) - math.pi / 2;
+      final point = Offset(
+        center.dx + radius * math.cos(angle),
+        center.dy + radius * math.sin(angle),
+      );
+
+      if (i == 0) {
+        path.moveTo(point.dx, point.dy);
+      } else {
+        path.lineTo(point.dx, point.dy);
+      }
+    }
+
+    return path..close();
+  }
+
+  Path _getStarPath(Size size) {
+    final path = Path();
+    final center = Offset(size.width / 2, size.height / 2);
+    final outerRadius = math.min(size.width, size.height) / 2;
+    final innerRadius = outerRadius * (innerRadiusRatio ?? 0.4);
+    final numPoints = points ?? 5;
+
+    for (int i = 0; i < numPoints * 2; i++) {
+      final radius = i.isEven ? outerRadius : innerRadius;
+      final angle = (i * math.pi / numPoints) - math.pi / 2;
+      final point = Offset(
+        center.dx + radius * math.cos(angle),
+        center.dy + radius * math.sin(angle),
+      );
+
+      if (i == 0) {
+        path.moveTo(point.dx, point.dy);
+      } else {
+        path.lineTo(point.dx, point.dy);
+      }
+    }
+
+    return path..close();
+  }
+
   void _drawRectangle(Canvas canvas, Size size, Paint fill, Paint stroke) {
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
     canvas.drawRect(rect, fill);

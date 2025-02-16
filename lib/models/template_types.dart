@@ -1,3 +1,4 @@
+import 'package:core_image_editor/models/shape_types.dart';
 import 'package:flutter/widgets.dart';
 
 enum LeaderStripSize {
@@ -71,6 +72,70 @@ enum TemplateElementTag {
         return 'Leader photo';
       case TemplateElementTag.defaulty:
         return 'Standard element with no special handling';
+    }
+  }
+}
+
+class NestedContent {
+  TemplateElement? content;
+  BoxFit contentFit;
+  Alignment contentAlignment;
+
+  NestedContent({
+    this.content,
+    this.contentFit = BoxFit.contain,
+    this.contentAlignment = Alignment.center,
+  });
+
+  factory NestedContent.fromJson(Map<String, dynamic> json) {
+    return NestedContent(
+      content: json['content'] != null
+          ? TemplateElement.fromJson(json['content'])
+          : null,
+      contentFit: _parseBoxFit(json['contentFit'] ?? 'BoxFit.contain'),
+      contentAlignment: _parseAlignment(json['contentAlignment'] ?? 'center'),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'content': content?.toJson(),
+      'contentFit': contentFit.toString(),
+      'contentAlignment': contentAlignment.toString(),
+    };
+  }
+
+  static BoxFit _parseBoxFit(String value) {
+    switch (value) {
+      case 'BoxFit.contain':
+        return BoxFit.contain;
+      case 'BoxFit.cover':
+        return BoxFit.cover;
+      case 'BoxFit.fill':
+        return BoxFit.fill;
+      case 'BoxFit.fitWidth':
+        return BoxFit.fitWidth;
+      case 'BoxFit.fitHeight':
+        return BoxFit.fitHeight;
+      default:
+        return BoxFit.contain;
+    }
+  }
+
+  static Alignment _parseAlignment(String value) {
+    switch (value) {
+      case 'center':
+        return Alignment.center;
+      case 'topLeft':
+        return Alignment.topLeft;
+      case 'topRight':
+        return Alignment.topRight;
+      case 'bottomLeft':
+        return Alignment.bottomLeft;
+      case 'bottomRight':
+        return Alignment.bottomRight;
+      default:
+        return Alignment.center;
     }
   }
 }
@@ -246,6 +311,7 @@ class TemplateElement {
   TemplateStyle style;
   int zIndex;
   TemplateElementTag tag;
+  NestedContent? nestedContent;
 
   TemplateElement({
     required this.type,
@@ -253,17 +319,18 @@ class TemplateElement {
     required this.content,
     required this.style,
     this.zIndex = 0,
+    this.nestedContent,
     this.tag = TemplateElementTag.defaulty,
   });
 
-factory TemplateElement.createLeader(String imageUrl) {
+  factory TemplateElement.createLeader(String imageUrl) {
     return TemplateElement(
       type: 'image',
       tag: TemplateElementTag.leader,
       box: TemplateBox(
-        xPercent: 0,  // Position will be handled by leader strip
+        xPercent: 0, // Position will be handled by leader strip
         yPercent: 0,
-        widthPercent: 100,  // Will be adjusted by strip
+        widthPercent: 100, // Will be adjusted by strip
         heightPercent: 100,
         alignment: 'center',
       ),
@@ -273,7 +340,7 @@ factory TemplateElement.createLeader(String imageUrl) {
       style: TemplateStyle(
         fontSizeVw: 0,
         color: '#000000',
-        imageShape: 'circle',  // Default shape
+        imageShape: 'circle', // Default shape
         imageFit: BoxFit.cover,
       ),
     );
@@ -291,7 +358,8 @@ factory TemplateElement.createLeader(String imageUrl) {
         alignment: 'center',
       ),
       content: {
-        'leaders': <Map<String, dynamic>>[],  // List of serialized leader elements
+        'leaders':
+            <Map<String, dynamic>>[], // List of serialized leader elements
         'stripSize': 'medium',
         'spacing': 8.0,
       },
@@ -304,7 +372,7 @@ factory TemplateElement.createLeader(String imageUrl) {
 
   List<TemplateElement> getLeaders() {
     if (type != 'leader_strip') return [];
-    
+
     return (content['leaders'] as List? ?? [])
         .map((leaderJson) => TemplateElement.fromJson(leaderJson))
         .toList();
@@ -322,6 +390,9 @@ factory TemplateElement.createLeader(String imageUrl) {
       content: json['content'] ?? {},
       style: TemplateStyle.fromJson(json['style'] ?? {}),
       zIndex: json['z_index'] ?? 0,
+      nestedContent: json['nested_content'] != null
+          ? NestedContent.fromJson(json['nested_content'])
+          : null,
       tag: _parseTag(json['tag']),
     );
   }
@@ -334,10 +405,9 @@ factory TemplateElement.createLeader(String imageUrl) {
         orElse: () => TemplateElementTag.defaulty,
       );
     } catch (e) {
-    return TemplateElementTag.defaulty;
+      return TemplateElementTag.defaulty;
     }
   }
-
 
   Map<String, dynamic> toJson() {
     return {
@@ -347,7 +417,17 @@ factory TemplateElement.createLeader(String imageUrl) {
       'style': style.toJson(),
       'z_index': zIndex,
       'tag': tag.toString(),
+      'nested_content': nestedContent?.toJson(),
     };
+  }
+
+  bool get canContainNestedContent {
+    if (type != 'shape') return false;
+    final shapeType = ShapeType.values.firstWhere(
+      (type) => type.toString() == content['shapeType'],
+      orElse: () => ShapeType.rectangle,
+    );
+    return shapeType != ShapeType.line && shapeType != ShapeType.arrow;
   }
 
   @override

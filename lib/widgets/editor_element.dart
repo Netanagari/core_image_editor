@@ -1,4 +1,5 @@
 import 'package:core_image_editor/models/editor_config.dart';
+import 'package:core_image_editor/widgets/nested_content_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/template_types.dart';
@@ -198,27 +199,9 @@ class EditorElement extends StatelessWidget {
     Widget content;
     switch (element.type) {
       case 'shape':
-        content = CustomPaint(
-          painter: ShapePainter(
-            shapeType: ShapeType.values.firstWhere(
-              (type) => type.toString() == element.content['shapeType'],
-            ),
-            fillColor: Color(
-              int.parse(
-                (element.content['fillColor'] ?? '#FFFFFF')
-                    .replaceFirst('#', '0xff'),
-              ),
-            ),
-            strokeColor: Color(
-              int.parse(
-                (element.content['strokeColor'] ?? '#000000')
-                    .replaceFirst('#', '0xff'),
-              ),
-            ),
-            strokeWidth: element.content['strokeWidth']?.toDouble() ?? 2.0,
-            isStrokeDashed: element.content['isStrokeDashed'] ?? false,
-          ),
-          size: elementSize,
+        content = NestedContentWidget(
+          element: element,
+          elementSize: elementSize,
         );
         break;
       case 'image':
@@ -341,71 +324,72 @@ class EditorElement extends StatelessWidget {
   // }
 
   Widget _buildLeaderStrip(TemplateElement element, Size elementSize) {
-  final leaders = element.getLeaders();
-  final horizontalSpacing = element.content['spacing']?.toDouble() ?? 8.0;
-  final verticalSpacing = element.content['verticalSpacing']?.toDouble() ?? 8.0;
-  final justifyContent = element.content['justifyContent'] ?? 'start';
+    final leaders = element.getLeaders();
+    final horizontalSpacing = element.content['spacing']?.toDouble() ?? 8.0;
+    final verticalSpacing =
+        element.content['verticalSpacing']?.toDouble() ?? 8.0;
+    final justifyContent = element.content['justifyContent'] ?? 'start';
 
-  if (leaders.isEmpty) {
-    return const Center(
-      child: Text(
-        'Add leader photos',
-        style: TextStyle(color: Colors.grey),
-      ),
-    );
-  }
-
-  return LayoutBuilder(
-    builder: (context, constraints) {
-      final imageSize = elementSize.height;
-      
-      // Convert justifyContent to WrapAlignment
-      WrapAlignment alignment;
-      switch (justifyContent) {
-        case 'center':
-          alignment = WrapAlignment.center;
-          break;
-        case 'end':
-          alignment = WrapAlignment.end;
-          break;
-        case 'space-between':
-          alignment = WrapAlignment.spaceBetween;
-          break;
-        case 'space-around':
-          alignment = WrapAlignment.spaceAround;
-          break;
-        case 'space-evenly':
-          alignment = WrapAlignment.spaceEvenly;
-          break;
-        default:
-          alignment = WrapAlignment.start;
-      }
-
-      return Container(
-        // decoration: borderDecoration,
-        padding: EdgeInsets.all((element.style.borderWidth ?? 0) + 4),
-        child: Wrap(
-          alignment: alignment,
-          spacing: horizontalSpacing,
-          runSpacing: verticalSpacing,
-          children: leaders.map((leader) {
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(
-                leader.style.imageShape == 'circle' ? imageSize / 2 : 0,
-              ),
-              child: SizedBox(
-                width: imageSize,
-                height: imageSize,
-                child: Image.network(
-                  leader.content['url'],
-                  fit: BoxFit.cover,
-                ),
-              ),
-            );
-          }).toList(),
+    if (leaders.isEmpty) {
+      return const Center(
+        child: Text(
+          'Add leader photos',
+          style: TextStyle(color: Colors.grey),
         ),
       );
-    },
-  );
-}
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final imageSize = elementSize.height;
+
+        // Convert justifyContent to WrapAlignment
+        WrapAlignment alignment;
+        switch (justifyContent) {
+          case 'center':
+            alignment = WrapAlignment.center;
+            break;
+          case 'end':
+            alignment = WrapAlignment.end;
+            break;
+          case 'space-between':
+            alignment = WrapAlignment.spaceBetween;
+            break;
+          case 'space-around':
+            alignment = WrapAlignment.spaceAround;
+            break;
+          case 'space-evenly':
+            alignment = WrapAlignment.spaceEvenly;
+            break;
+          default:
+            alignment = WrapAlignment.start;
+        }
+
+        return Container(
+          // decoration: borderDecoration,
+          padding: EdgeInsets.all((element.style.borderWidth ?? 0) + 4),
+          child: Wrap(
+            alignment: alignment,
+            spacing: horizontalSpacing,
+            runSpacing: verticalSpacing,
+            children: leaders.map((leader) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(
+                  leader.style.imageShape == 'circle' ? imageSize / 2 : 0,
+                ),
+                child: SizedBox(
+                  width: imageSize,
+                  height: imageSize,
+                  child: Image.network(
+                    leader.content['url'],
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
 }

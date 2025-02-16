@@ -1,0 +1,5887 @@
+
+--- File: ./example/test/widget_test.dart ---
+
+// This is a basic Flutter widget test.
+//
+// To perform an interaction with a widget in your test, use the WidgetTester
+// utility in the flutter_test package. For example, you can send tap and scroll
+// gestures. You can also use WidgetTester to find child widgets in the widget
+// tree, read text, and verify that the values of widget properties are correct.
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:example/main.dart';
+
+void main() {
+  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(const MyApp());
+
+    // Verify that our counter starts at 0.
+    expect(find.text('0'), findsOneWidget);
+    expect(find.text('1'), findsNothing);
+
+    // Tap the '+' icon and trigger a frame.
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+
+    // Verify that our counter has incremented.
+    expect(find.text('0'), findsNothing);
+    expect(find.text('1'), findsOneWidget);
+  });
+}
+
+
+
+--- File: ./example/lib/main.dart ---
+
+import 'dart:convert';
+
+import 'package:core_image_editor/models/editor_config.dart';
+import 'package:core_image_editor/screens/template_editor_widget.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:universal_html/html.dart' as html;
+
+void main() {
+  runApp(const MyApp());
+}
+
+final exampleJson = {
+  "id": 4,
+  "base_image": "https://picsum.photos/512/512",
+  "original_width": 512,
+  "original_height": 512,
+  "aspect_ratio": 1.0,
+  "content_json": [
+    {
+      "type": "text",
+      "box": {
+        "x_percent": 10.139908398428515,
+        "y_percent": 5.2751196426138485,
+        "width_percent": 80,
+        "height_percent": 12.504201680672269,
+        "alignment": "center",
+        "rotation": 0
+      },
+      "content": {"text": "Sample image"},
+      "style": {
+        "font_size": 7,
+        "color": "#000000",
+        "font_family": "Poppins",
+        "font_weight": "FontWeight.w700",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
+      },
+      "z_index": 0
+    },
+    {
+      "type": "shape",
+      "box": {
+        "x_percent": 0,
+        "y_percent": 80,
+        "width_percent": 20,
+        "height_percent": 20,
+        "alignment": "center",
+        "rotation": 0
+      },
+      "content": {
+        "shapeType": "ShapeType.diamond",
+        "fillColor": "#FFFFFF",
+        "strokeColor": "#000000",
+        "strokeWidth": 2,
+        "isStrokeDashed": false
+      },
+      "style": {
+        "font_size": 0,
+        "color": "#000000",
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
+      },
+      "z_index": 0
+    },
+    {
+      "type": "shape",
+      "box": {
+        "x_percent": 80,
+        "y_percent": 80,
+        "width_percent": 20,
+        "height_percent": 20,
+        "alignment": "center",
+        "rotation": 0
+      },
+      "content": {
+        "shapeType": "ShapeType.hexagon",
+        "fillColor": "#FFFFFF",
+        "strokeColor": "#000000",
+        "strokeWidth": 2,
+        "isStrokeDashed": false
+      },
+      "style": {
+        "font_size": 0,
+        "color": "#000000",
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
+      },
+      "z_index": 0
+    },
+    {
+      "type": "shape",
+      "box": {
+        "x_percent": 35.05549096039877,
+        "y_percent": 26.6280674315289,
+        "width_percent": 23.509597602409134,
+        "height_percent": 22.59333475779894,
+        "alignment": "center",
+        "rotation": 0
+      },
+      "content": {
+        "shapeType": "ShapeType.star",
+        "fillColor": "#FFFFFF",
+        "strokeColor": "#000000",
+        "strokeWidth": 2,
+        "isStrokeDashed": false
+      },
+      "style": {
+        "font_size": 0,
+        "color": "#000000",
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
+      },
+      "z_index": 0
+    }
+  ],
+  "user_id": 1,
+  "poster": 1
+};
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: CoreImageEditor(
+          onSave: (json, imageBytes) async {
+            final base64Data =
+                base64Encode(imageBytes ?? Uint8List.fromList([]));
+            final anchor =
+                html.AnchorElement(href: 'data:image/png;base64,$base64Data');
+            anchor.download = 'image.png';
+            anchor.click();
+          },
+          template: exampleJson,
+          configuration: EditorConfiguration.admin,
+          onSelectImage: (image) async {
+            final img = await showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Select Image'),
+                  content: const Text('Select an image from gallery or camera'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop("https://picsum.photos/200");
+                      },
+                      child: const Text('Random image 1'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pop('https://picsum.photos/200/300');
+                      },
+                      child: const Text('Random image 2'),
+                    ),
+                  ],
+                );
+              },
+            );
+            print(img);
+            return img;
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./example/.dart_tool/dartpad/web_plugin_registrant.dart ---
+
+// Flutter web plugin registrant file.
+//
+// Generated file. Do not edit.
+//
+
+// ignore_for_file: type=lint
+
+void registerPlugins() {}
+
+
+
+--- File: ./lib/utils/text_measurement.dart ---
+
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../models/template_types.dart';
+import 'responsive_utils.dart';
+
+class TextMeasurement {
+  static Size measureText({
+    required String text,
+    required TemplateElement element,
+    required Size viewportSize,
+    required BuildContext context,
+  }) {
+    // Convert font size from vw to pixels
+    double fontSizePixels = ResponsiveUtils.vwToPixels(
+      element.style.fontSizeVw,
+      viewportSize.width,
+    );
+
+    // Calculate the maximum width in pixels
+    double maxWidthPixels = ResponsiveUtils.percentToPixelX(
+      element.box.widthPercent,
+      viewportSize.width,
+    );
+
+    // Create text painter with the same style as the element
+    final textStyle = GoogleFonts.getFont(
+      element.style.fontFamily,
+      fontSize: fontSizePixels,
+      color: Color(int.parse(element.style.color.replaceFirst('#', '0xff'))),
+      fontWeight: element.style.fontWeight,
+      fontStyle: element.style.isItalic ? FontStyle.italic : FontStyle.normal,
+      decoration: element.style.isUnderlined ? TextDecoration.underline : null,
+    );
+
+    final textSpan = TextSpan(
+      text: text,
+      style: textStyle,
+    );
+
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+      maxLines: null, // Allow unlimited lines for height measurement
+    );
+
+    // Layout with constraints
+    textPainter.layout(maxWidth: maxWidthPixels);
+
+    return Size(textPainter.width, textPainter.height);
+  }
+
+  static double calculateRequiredHeightPercent({
+    required String text,
+    required TemplateElement element,
+    required Size viewportSize,
+    required BuildContext context,
+  }) {
+    Size textSize = measureText(
+      text: text,
+      element: element,
+      viewportSize: viewportSize,
+      context: context,
+    );
+
+    // Convert height from pixels back to percentage and add padding
+    double heightPercent = ResponsiveUtils.pixelToPercentY(
+      textSize.height,
+      viewportSize.height,
+    );
+
+    // Add 20% padding to ensure text fits comfortably
+    return heightPercent * 1.2;
+  }
+
+  static void adjustBoxHeight({
+    required TemplateElement element,
+    required String newText,
+    required Size viewportSize,
+    required BuildContext context,
+  }) {
+    if (element.type != 'text') return;
+
+    double requiredHeight = calculateRequiredHeightPercent(
+      text: newText,
+      element: element,
+      viewportSize: viewportSize,
+      context: context,
+    );
+
+    // Update height if required height is greater than current height
+    if (requiredHeight > element.box.heightPercent) {
+      element.box.heightPercent = requiredHeight.clamp(0.0, 100.0);
+    }
+  }
+}
+
+
+
+--- File: ./lib/utils/responsive_utils.dart ---
+
+// lib/utils/responsive_utils.dart
+
+import 'package:flutter/material.dart';
+
+class ResponsiveUtils {
+  static Size calculateViewportSize(BoxConstraints constraints, double aspectRatio) {
+    double maxWidth = constraints.maxWidth;
+    double maxHeight = constraints.maxHeight;
+    
+    if (maxWidth / maxHeight > aspectRatio) {
+      return Size(maxHeight * aspectRatio, maxHeight);
+    } else {
+      return Size(maxWidth, maxWidth / aspectRatio);
+    }
+  }
+
+  static double percentToPixelX(double percent, double viewportWidth) {
+    return (percent / 100) * viewportWidth;
+  }
+
+  static double percentToPixelY(double percent, double viewportHeight) {
+    return (percent / 100) * viewportHeight;
+  }
+
+  static double pixelToPercentX(double pixels, double viewportWidth) {
+    return (pixels / viewportWidth) * 100;
+  }
+
+  static double pixelToPercentY(double pixels, double viewportHeight) {
+    return (pixels / viewportHeight) * 100;
+  }
+
+  static double vwToPixels(double vw, double viewportWidth) {
+    return (vw / 100) * viewportWidth;
+  }
+
+  static double pixelsToVw(double pixels, double viewportWidth) {
+    return (pixels / viewportWidth) * 100;
+  }
+}
+
+
+--- File: ./lib/utils/history_manager.dart ---
+
+import '../models/template_types.dart';
+
+class HistoryState {
+  final List<TemplateElement> elements;
+  final TemplateElement? selectedElement;
+
+  HistoryState({
+    required this.elements,
+    this.selectedElement,
+  });
+
+  HistoryState copyWith({
+    List<TemplateElement>? elements,
+    TemplateElement? selectedElement,
+  }) {
+    return HistoryState(
+      elements: elements ?? List.from(this.elements),
+      selectedElement: selectedElement ?? this.selectedElement,
+    );
+  }
+
+  factory HistoryState.fromElements(List<TemplateElement> elements, [TemplateElement? selectedElement]) {
+    return HistoryState(
+      elements: List.from(elements.map((e) => TemplateElement.fromJson(e.toJson()))),
+      selectedElement: selectedElement != null 
+          ? TemplateElement.fromJson(selectedElement.toJson())
+          : null,
+    );
+  }
+}
+
+class HistoryManager {
+  final List<HistoryState> _undoStack = [];
+  final List<HistoryState> _redoStack = [];
+  static const int maxHistorySize = 50;
+
+  void pushState(HistoryState state) {
+    _undoStack.add(state);
+    if (_undoStack.length > maxHistorySize) {
+      _undoStack.removeAt(0);
+    }
+    _redoStack.clear();
+  }
+
+  HistoryState? undo() {
+    if (_undoStack.isEmpty) return null;
+    
+    final currentState = _undoStack.removeLast();
+    _redoStack.add(currentState);
+    
+    return _undoStack.isNotEmpty ? _undoStack.last : null;
+  }
+
+  HistoryState? redo() {
+    if (_redoStack.isEmpty) return null;
+    
+    final state = _redoStack.removeLast();
+    _undoStack.add(state);
+    
+    return state;
+  }
+
+  bool get canUndo => _undoStack.isNotEmpty;
+  bool get canRedo => _redoStack.isNotEmpty;
+}
+
+
+--- File: ./lib/models/template_types.dart ---
+
+import 'package:flutter/widgets.dart';
+
+enum LeaderStripSize {
+  small,
+  medium,
+  large;
+
+  double get heightPercent {
+    switch (this) {
+      case LeaderStripSize.small:
+        return 15.0;
+      case LeaderStripSize.medium:
+        return 20.0;
+      case LeaderStripSize.large:
+        return 25.0;
+    }
+  }
+}
+
+enum TemplateElementTag {
+  bgImage,
+  image,
+  title,
+  subtitle,
+  userPicture,
+  partySymbol,
+  leaderPhotoStrip,
+  leader,
+  defaulty;
+
+  String get displayName {
+    switch (this) {
+      case TemplateElementTag.bgImage:
+        return 'Background Image';
+      case TemplateElementTag.image:
+        return 'Image';
+      case TemplateElementTag.title:
+        return 'Title';
+      case TemplateElementTag.subtitle:
+        return 'Subtitle';
+      case TemplateElementTag.userPicture:
+        return 'User Picture';
+      case TemplateElementTag.partySymbol:
+        return 'Party Symbol';
+      case TemplateElementTag.leaderPhotoStrip:
+        return 'Leader Photo Strip';
+      case TemplateElementTag.leader:
+        return 'Leader';
+      case TemplateElementTag.defaulty:
+        return 'Default';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case TemplateElementTag.bgImage:
+        return 'Main background image of the poster';
+      case TemplateElementTag.image:
+        return 'Relevant image related to event or content';
+      case TemplateElementTag.title:
+        return 'Main title or heading text';
+      case TemplateElementTag.subtitle:
+        return 'Secondary or descriptive text';
+      case TemplateElementTag.userPicture:
+        return 'Picture of the user/candidate';
+      case TemplateElementTag.partySymbol:
+        return 'Political party symbol or logo';
+      case TemplateElementTag.leaderPhotoStrip:
+        return 'Strip of leader photos';
+      case TemplateElementTag.leader:
+        return 'Leader photo';
+      case TemplateElementTag.defaulty:
+        return 'Standard element with no special handling';
+    }
+  }
+}
+
+class TemplateBox {
+  double xPercent;
+  double yPercent;
+  double widthPercent;
+  double heightPercent;
+  String alignment;
+  double rotation;
+
+  TemplateBox({
+    required this.xPercent,
+    required this.yPercent,
+    required this.widthPercent,
+    required this.heightPercent,
+    this.alignment = 'left',
+    this.rotation = 0,
+  });
+
+  factory TemplateBox.fromJson(Map<String, dynamic> json) {
+    return TemplateBox(
+      xPercent: json['x_percent']?.toDouble() ?? 0.0,
+      yPercent: json['y_percent']?.toDouble() ?? 0.0,
+      widthPercent: json['width_percent']?.toDouble() ?? 0.0,
+      heightPercent: json['height_percent']?.toDouble() ?? 0.0,
+      alignment: json['alignment'] ?? 'left',
+      rotation: json['rotation']?.toDouble() ?? 0.0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'x_percent': xPercent,
+      'y_percent': yPercent,
+      'width_percent': widthPercent,
+      'height_percent': heightPercent,
+      'alignment': alignment,
+      'rotation': rotation,
+    };
+  }
+}
+
+class TemplateStyle {
+  double fontSizeVw;
+  String color;
+  String fontFamily;
+  FontWeight fontWeight;
+  BoxFit imageFit;
+  bool isItalic;
+  bool isUnderlined;
+  List<String>? decorations;
+  String? borderStyle;
+  String? borderColor;
+  double? borderWidth;
+  double? borderRadius;
+  // New fields
+  double opacity;
+  String? imageShape; // 'rectangle' or 'circle'
+  bool isReadOnly;
+  Map<String, dynamic>?
+      boxShadow; // Contains color, offsetX, offsetY, blurRadius, spreadRadius
+
+  TemplateStyle({
+    required this.fontSizeVw,
+    required this.color,
+    this.fontFamily = 'Roboto',
+    this.imageFit = BoxFit.contain,
+    this.fontWeight = FontWeight.normal,
+    this.isItalic = false,
+    this.isUnderlined = false,
+    this.decorations,
+    this.borderStyle,
+    this.borderColor,
+    this.borderWidth,
+    this.borderRadius,
+    this.opacity = 1.0,
+    this.imageShape,
+    this.isReadOnly = false,
+    this.boxShadow,
+  });
+
+  factory TemplateStyle.fromJson(Map<String, dynamic> json) {
+    return TemplateStyle(
+      fontSizeVw: json['font_size']?.toDouble() ?? 4.0,
+      color: json['color'] ?? '#000000',
+      fontFamily: json['font_family'] ?? 'Roboto',
+      fontWeight: _parseFontWeight(json['font_weight']),
+      imageFit: _parseBoxFit(json['imageFit']),
+      isItalic: json['is_italic'] ?? false,
+      isUnderlined: json['is_underlined'] ?? false,
+      decorations: json['decorations']?.cast<String>(),
+      borderStyle: json['border_style'],
+      borderColor: json['border_color'],
+      borderWidth: json['border_width']?.toDouble(),
+      borderRadius: json['border_radius']?.toDouble(),
+      opacity: json['opacity']?.toDouble() ?? 1.0,
+      imageShape: json['image_shape'],
+      isReadOnly: json['is_read_only'] ?? false,
+      boxShadow: json['box_shadow'],
+    );
+  }
+
+  static BoxFit _parseBoxFit(String value) {
+    switch (value) {
+      case 'BoxFit.contain':
+        return BoxFit.contain;
+      case 'BoxFit.cover':
+        return BoxFit.cover;
+      case 'BoxFit.fill':
+        return BoxFit.fill;
+      case 'BoxFit.fitWidth':
+        return BoxFit.fitWidth;
+      case 'BoxFit.fitHeight':
+        return BoxFit.fitHeight;
+      default:
+        return BoxFit.contain;
+    }
+  }
+
+  static FontWeight _parseFontWeight(String? weight) {
+    switch (weight) {
+      case 'FontWeight.w100':
+        return FontWeight.w100;
+      case 'FontWeight.w200':
+        return FontWeight.w200;
+      case 'FontWeight.w300':
+        return FontWeight.w300;
+      case 'FontWeight.w400':
+        return FontWeight.w400;
+      case 'FontWeight.w500':
+        return FontWeight.w500;
+      case 'FontWeight.w600':
+        return FontWeight.w600;
+      case 'FontWeight.w700':
+        return FontWeight.w700;
+      case 'FontWeight.w800':
+        return FontWeight.w800;
+      case 'FontWeight.w900':
+        return FontWeight.w900;
+      default:
+        return FontWeight.normal;
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'font_size': fontSizeVw,
+      'color': color,
+      'font_family': fontFamily,
+      'font_weight': fontWeight.toString(),
+      'is_italic': isItalic,
+      'imageFit': imageFit.toString(),
+      'is_underlined': isUnderlined,
+      'decorations': decorations,
+      'border_style': borderStyle,
+      'border_color': borderColor,
+      'border_width': borderWidth,
+      'border_radius': borderRadius,
+      'opacity': opacity,
+      'image_shape': imageShape,
+      'is_read_only': isReadOnly,
+      'box_shadow': boxShadow,
+    };
+  }
+}
+
+class TemplateElement {
+  String type;
+  TemplateBox box;
+  Map<String, dynamic> content;
+  TemplateStyle style;
+  int zIndex;
+  TemplateElementTag tag;
+
+  TemplateElement({
+    required this.type,
+    required this.box,
+    required this.content,
+    required this.style,
+    this.zIndex = 0,
+    this.tag = TemplateElementTag.defaulty,
+  });
+
+factory TemplateElement.createLeader(String imageUrl) {
+    return TemplateElement(
+      type: 'image',
+      tag: TemplateElementTag.leader,
+      box: TemplateBox(
+        xPercent: 0,  // Position will be handled by leader strip
+        yPercent: 0,
+        widthPercent: 100,  // Will be adjusted by strip
+        heightPercent: 100,
+        alignment: 'center',
+      ),
+      content: {
+        'url': imageUrl,
+      },
+      style: TemplateStyle(
+        fontSizeVw: 0,
+        color: '#000000',
+        imageShape: 'circle',  // Default shape
+        imageFit: BoxFit.cover,
+      ),
+    );
+  }
+
+  factory TemplateElement.createLeaderStrip() {
+    return TemplateElement(
+      type: 'leader_strip',
+      tag: TemplateElementTag.leaderPhotoStrip,
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 10,
+        widthPercent: 80,
+        heightPercent: LeaderStripSize.medium.heightPercent,
+        alignment: 'center',
+      ),
+      content: {
+        'leaders': <Map<String, dynamic>>[],  // List of serialized leader elements
+        'stripSize': 'medium',
+        'spacing': 8.0,
+      },
+      style: TemplateStyle(
+        fontSizeVw: 0,
+        color: '#000000',
+      ),
+    );
+  }
+
+  List<TemplateElement> getLeaders() {
+    if (type != 'leader_strip') return [];
+    
+    return (content['leaders'] as List? ?? [])
+        .map((leaderJson) => TemplateElement.fromJson(leaderJson))
+        .toList();
+  }
+
+  void setLeaders(List<TemplateElement> leaders) {
+    if (type != 'leader_strip') return;
+    content['leaders'] = leaders.map((e) => e.toJson()).toList();
+  }
+
+  factory TemplateElement.fromJson(Map<String, dynamic> json) {
+    return TemplateElement(
+      type: json['type'] ?? 'text',
+      box: TemplateBox.fromJson(json['box'] ?? {}),
+      content: json['content'] ?? {},
+      style: TemplateStyle.fromJson(json['style'] ?? {}),
+      zIndex: json['z_index'] ?? 0,
+      tag: _parseTag(json['tag']),
+    );
+  }
+
+  static TemplateElementTag _parseTag(String? tagStr) {
+    if (tagStr == null) return TemplateElementTag.defaulty;
+    try {
+      return TemplateElementTag.values.firstWhere(
+        (tag) => tag.toString() == tagStr,
+        orElse: () => TemplateElementTag.defaulty,
+      );
+    } catch (e) {
+    return TemplateElementTag.defaulty;
+    }
+  }
+
+
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type,
+      'box': box.toJson(),
+      'content': content,
+      'style': style.toJson(),
+      'z_index': zIndex,
+      'tag': tag.toString(),
+    };
+  }
+
+  @override
+  String toString() {
+    return 'TemplateElement(type: $type, box: $box, content: $content, style: $style, zIndex: $zIndex)';
+  }
+}
+
+
+
+--- File: ./lib/models/shape_types.dart ---
+
+import 'package:flutter/material.dart';
+
+enum HandlePosition { topLeft, topRight, bottomLeft, bottomRight }
+
+enum ShapeType {
+  rectangle,
+  circle,
+  triangle,
+  line,
+  arrow,
+  diamond,
+  pentagon,
+  hexagon,
+  star
+}
+
+extension ShapeTypeExtension on ShapeType {
+  String get displayName {
+    switch (this) {
+      case ShapeType.rectangle:
+        return 'Rectangle';
+      case ShapeType.circle:
+        return 'Circle';
+      case ShapeType.triangle:
+        return 'Triangle';
+      case ShapeType.line:
+        return 'Line';
+      case ShapeType.arrow:
+        return 'Arrow';
+      case ShapeType.diamond:
+        return 'Diamond';
+      case ShapeType.pentagon:
+        return 'Pentagon';
+      case ShapeType.hexagon:
+        return 'Hexagon';
+      case ShapeType.star:
+        return 'Star';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case ShapeType.rectangle:
+        return Icons.rectangle_outlined;
+      case ShapeType.circle:
+        return Icons.circle_outlined;
+      case ShapeType.triangle:
+        return Icons.change_history_outlined;
+      case ShapeType.line:
+        return Icons.horizontal_rule;
+      case ShapeType.arrow:
+        return Icons.arrow_right_alt;
+      case ShapeType.diamond:
+        return Icons.diamond_outlined;
+      case ShapeType.pentagon:
+        return Icons.pentagon_outlined;
+      case ShapeType.hexagon:
+        return Icons.hexagon_outlined;
+      case ShapeType.star:
+        return Icons.star_border;
+    }
+  }
+}
+
+
+
+--- File: ./lib/models/editor_config.dart ---
+
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+enum EditorCapability {
+  // Element manipulation
+  addElements,
+  deleteElements,
+  repositionElements,
+  resizeElements,
+  rotateElements,
+
+  // Style modifications
+  changeColors,
+  changeFonts,
+  changeTextContent,
+  changeBorders,
+
+  // Layout controls
+  changeAlignment,
+  changeZIndex,
+
+  // Shape specific
+  modifyShapeProperties,
+
+  // Image specific
+  changeImageFit,
+  uploadNewImage,
+
+  // History controls
+  undoRedo,
+}
+
+class EditorConfiguration {
+  final Set<EditorCapability> capabilities;
+  final List<String> availableFonts;
+  final double pixelRatio; // the more the better image export quality
+
+  const EditorConfiguration({
+    required this.capabilities,
+    this.availableFonts = supportedFallbackFonts,
+    this.pixelRatio = 6,
+  });
+
+  static const supportedFallbackFonts = [
+    'Roboto',
+    'Lato',
+    'Open Sans',
+    'Montserrat',
+    'Poppins',
+    'Raleway',
+    'Ubuntu',
+    'Playfair Display',
+    'Merriweather',
+  ];
+
+  // Predefined configurations
+  static const admin = EditorConfiguration(
+    capabilities: {
+      EditorCapability.addElements,
+      EditorCapability.deleteElements,
+      EditorCapability.repositionElements,
+      EditorCapability.resizeElements,
+      EditorCapability.changeColors,
+      EditorCapability.changeFonts,
+      EditorCapability.changeTextContent,
+      EditorCapability.changeBorders,
+      EditorCapability.changeAlignment,
+      EditorCapability.changeZIndex,
+      EditorCapability.modifyShapeProperties,
+      EditorCapability.changeImageFit,
+      EditorCapability.uploadNewImage,
+      EditorCapability.undoRedo,
+      EditorCapability.rotateElements,
+    },
+  );
+
+  static const endUser = EditorConfiguration(
+    capabilities: {
+      EditorCapability.changeTextContent,
+      EditorCapability.changeColors,
+      EditorCapability.changeFonts,
+      EditorCapability.undoRedo,
+    },
+  );
+
+  bool can(EditorCapability capability) {
+    return capabilities.contains(capability);
+  }
+
+  EditorConfiguration copyWith({
+    Set<EditorCapability>? capabilities,
+    List<String>? availableFonts,
+    double? pixelRatio,
+  }) {
+    return EditorConfiguration(
+      capabilities: capabilities ?? this.capabilities,
+      availableFonts: availableFonts ?? this.availableFonts,
+      pixelRatio: pixelRatio ?? this.pixelRatio,
+    );
+  }
+}
+
+
+
+--- File: ./lib/state/history_state.dart ---
+
+import 'package:flutter/foundation.dart';
+import '../models/template_types.dart';
+
+class HistoryState extends ChangeNotifier {
+  final List<HistoryStateSnapshot> _undoStack = [];
+  final List<HistoryStateSnapshot> _redoStack = [];
+  static const int maxHistorySize = 50;
+
+  bool get canUndo => _undoStack.isNotEmpty;
+  bool get canRedo => _redoStack.isNotEmpty;
+
+  void pushState(
+      List<TemplateElement> elements, TemplateElement? selectedElement) {
+    _undoStack.add(HistoryStateSnapshot(
+      elements:
+          List.from(elements.map((e) => TemplateElement.fromJson(e.toJson()))),
+      selectedElement: selectedElement != null
+          ? TemplateElement.fromJson(selectedElement.toJson())
+          : null,
+    ));
+
+    if (_undoStack.length > maxHistorySize) {
+      _undoStack.removeAt(0);
+    }
+    _redoStack.clear();
+    notifyListeners();
+  }
+
+  HistoryStateSnapshot? undo() {
+    if (_undoStack.isEmpty) return null;
+
+    final currentState = _undoStack.removeLast();
+    _redoStack.add(currentState);
+    notifyListeners();
+
+    return _undoStack.isNotEmpty ? _undoStack.last : null;
+  }
+
+  HistoryStateSnapshot? redo() {
+    if (_redoStack.isEmpty) return null;
+
+    final state = _redoStack.removeLast();
+    _undoStack.add(state);
+    notifyListeners();
+
+    return state;
+  }
+}
+
+class HistoryStateSnapshot {
+  final List<TemplateElement> elements;
+  final TemplateElement? selectedElement;
+
+  HistoryStateSnapshot({
+    required this.elements,
+    this.selectedElement,
+  });
+}
+
+
+
+--- File: ./lib/state/editor_state.dart ---
+
+import 'package:flutter/material.dart';
+import '../models/template_types.dart';
+import '../models/editor_config.dart';
+
+class EditorState extends ChangeNotifier {
+  List<TemplateElement> _elements;
+  TemplateElement? _selectedElement;
+  bool _isCreationSidebarExpanded;
+  bool _isRotating;
+  final EditorConfiguration configuration;
+  Size _viewportSize;
+  final double _canvasAspectRatio;
+
+  EditorState({
+    required List<TemplateElement> initialElements,
+    required this.configuration,
+    required double canvasAspectRatio,
+    required Size initialViewportSize,
+  })  : _elements = initialElements,
+        _isCreationSidebarExpanded = true,
+        _isRotating = false,
+        _canvasAspectRatio = canvasAspectRatio,
+        _viewportSize = initialViewportSize;
+
+  List<TemplateElement> get elements => _elements;
+  TemplateElement? get selectedElement => _selectedElement;
+  bool get isCreationSidebarExpanded => _isCreationSidebarExpanded;
+  bool get isRotating => _isRotating;
+  Size get viewportSize => _viewportSize;
+  double get canvasAspectRatio => _canvasAspectRatio;
+
+  void setElements(List<TemplateElement> elements) {
+    _elements = elements;
+    notifyListeners();
+  }
+
+  void setSelectedElement(TemplateElement? element) {
+    _selectedElement = element;
+    notifyListeners();
+  }
+
+  void toggleCreationSidebar() {
+    _isCreationSidebarExpanded = !_isCreationSidebarExpanded;
+    notifyListeners();
+  }
+
+  void setRotating(bool isRotating) {
+    _isRotating = isRotating;
+    notifyListeners();
+  }
+
+  void setViewportSize(Size size) {
+    _viewportSize = size;
+    notifyListeners();
+  }
+
+  void addElement(TemplateElement element) {
+    _elements.add(element);
+    _selectedElement = element;
+    notifyListeners();
+  }
+
+  void removeElement(TemplateElement element) {
+    _elements.remove(element);
+    _selectedElement = null;
+    notifyListeners();
+  }
+
+  void updateElement(TemplateElement element) {
+    final index = _elements.indexWhere((e) => e == element);
+    if (index != -1) {
+      _elements[index] = element;
+      notifyListeners();
+    }
+  }
+}
+
+
+
+--- File: ./lib/extensions/color_extensions.dart ---
+
+import 'package:flutter/widgets.dart';
+
+extension XColor on Color {
+  String get hexString {
+    return '#${value.toRadixString(16).substring(2)}';
+  }
+}
+
+
+
+--- File: ./lib/screens/template_editor_widget.dart ---
+
+import 'package:core_image_editor/widgets/editor_element.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:widgets_to_image/widgets_to_image.dart';
+import '../models/editor_config.dart';
+import '../models/template_types.dart';
+import '../state/editor_state.dart';
+import '../state/history_state.dart';
+import '../utils/responsive_utils.dart';
+import '../widgets/element_creation_sidebar.dart';
+import '../widgets/mobile_element_creation_sheet.dart';
+import '../widgets/mobile_property_sheet.dart';
+import '../widgets/property_sidebar.dart';
+import '../widgets/responsive_builder.dart';
+
+class CoreImageEditor extends StatelessWidget {
+  final Map<String, dynamic> template;
+  final EditorConfiguration configuration;
+  final Future<String> Function(BuildContext) onSelectImage;
+  final Function(Map<String, dynamic>, Uint8List? canvasCapture) onSave;
+
+  const CoreImageEditor({
+    super.key,
+    required this.template,
+    required this.configuration,
+    required this.onSelectImage,
+    required this.onSave,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => EditorState(
+            initialElements: (template['content_json'] as List? ?? [])
+                .map((e) => TemplateElement.fromJson(e))
+                .toList(),
+            configuration: configuration,
+            canvasAspectRatio:
+                template['original_width'] / template['original_height'],
+            initialViewportSize: Size.zero,
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => HistoryState(),
+        ),
+      ],
+      child: _CoreImageEditorContent(
+        template: template,
+        onSelectImage: onSelectImage,
+        onSave: onSave,
+      ),
+    );
+  }
+}
+
+class _CoreImageEditorContent extends StatefulWidget {
+  final Map<String, dynamic> template;
+  final Future<String> Function(BuildContext) onSelectImage;
+  final Function(Map<String, dynamic>, Uint8List? canvasCapture) onSave;
+
+  const _CoreImageEditorContent({
+    required this.template,
+    required this.onSelectImage,
+    required this.onSave,
+  });
+
+  @override
+  _CoreImageEditorContentState createState() => _CoreImageEditorContentState();
+}
+
+class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
+  late final TransformationController transformationController;
+  late final WidgetsToImageController controller;
+  final GlobalKey _stackKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    controller = WidgetsToImageController();
+    transformationController = TransformationController();
+    _setupKeyboardShortcuts();
+  }
+
+  void _setupKeyboardShortcuts() {
+    RawKeyboard.instance.addListener(_handleKeyEvent);
+  }
+
+  void _handleKeyEvent(RawKeyEvent event) {
+    if (event is! RawKeyDownEvent) return;
+
+    final editorState = context.read<EditorState>();
+    final historyState = context.read<HistoryState>();
+    final selectedElement = editorState.selectedElement;
+
+    if (event.isControlPressed || event.isMetaPressed) {
+      if (event.logicalKey == LogicalKeyboardKey.keyZ) {
+        if (event.isShiftPressed) {
+          _handleRedo(context);
+        } else {
+          _handleUndo(context);
+        }
+      } else if (selectedElement != null && selectedElement.type == 'text') {
+        if (event.logicalKey == LogicalKeyboardKey.keyB) {
+          selectedElement.style.fontWeight =
+              selectedElement.style.fontWeight == FontWeight.bold
+                  ? FontWeight.normal
+                  : FontWeight.bold;
+          editorState.updateElement(selectedElement);
+          historyState.pushState(editorState.elements, selectedElement);
+        } else if (event.logicalKey == LogicalKeyboardKey.keyI) {
+          selectedElement.style.isItalic = !selectedElement.style.isItalic;
+          editorState.updateElement(selectedElement);
+          historyState.pushState(editorState.elements, selectedElement);
+        } else if (event.logicalKey == LogicalKeyboardKey.keyU) {
+          selectedElement.style.isUnderlined =
+              !selectedElement.style.isUnderlined;
+          editorState.updateElement(selectedElement);
+          historyState.pushState(editorState.elements, selectedElement);
+        }
+      }
+    }
+  }
+
+  void _handleUndo(BuildContext context) {
+    final historyState = context.read<HistoryState>();
+    final editorState = context.read<EditorState>();
+
+    final state = historyState.undo();
+    if (state != null) {
+      editorState.setElements(state.elements);
+      editorState.setSelectedElement(state.selectedElement);
+    }
+  }
+
+  void _handleRedo(BuildContext context) {
+    final historyState = context.read<HistoryState>();
+    final editorState = context.read<EditorState>();
+
+    final state = historyState.redo();
+    if (state != null) {
+      editorState.setElements(state.elements);
+      editorState.setSelectedElement(state.selectedElement);
+    }
+  }
+
+  void _handleNewElement(BuildContext context, TemplateElement element) {
+    final editorState = context.read<EditorState>();
+    final historyState = context.read<HistoryState>();
+
+    editorState.addElement(element);
+    historyState.pushState(editorState.elements, element);
+  }
+
+  Future<void> _saveChanges(BuildContext context) async {
+    final editorState = context.read<EditorState>();
+    editorState.setSelectedElement(null);
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    final original = widget.template;
+    original['edited_content'] =
+        editorState.elements.map((e) => e.toJson()).toList();
+    original['viewport'] = {
+      'width': editorState.viewportSize.width,
+      'height': editorState.viewportSize.height,
+    };
+
+    final imgBytes = await controller.capture(
+      pixelRatio: editorState.configuration.pixelRatio,
+    );
+
+    await widget.onSave(original, imgBytes);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final editorState = context.watch<EditorState>();
+    final historyState = context.watch<HistoryState>();
+
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        actions: [
+          if (editorState.configuration.can(EditorCapability.undoRedo)) ...[
+            IconButton(
+              icon: const Icon(Icons.undo),
+              onPressed:
+                  historyState.canUndo ? () => _handleUndo(context) : null,
+            ),
+            IconButton(
+              icon: const Icon(Icons.redo),
+              onPressed:
+                  historyState.canRedo ? () => _handleRedo(context) : null,
+            ),
+          ],
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: () => _saveChanges(context),
+          ),
+        ],
+      ),
+      floatingActionButton: ResponsiveLayoutBuilder(
+        builder: (context, isMobile) {
+          if (!isMobile ||
+              editorState.selectedElement != null ||
+              !editorState.configuration.can(EditorCapability.addElements)) {
+            return const SizedBox();
+          }
+          return FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => MobileElementCreationSheet(
+                  onUploadImage: widget.onSelectImage,
+                  onCreateElement: (element) {
+                    Navigator.pop(context);
+                    _handleNewElement(context, element);
+                  },
+                  viewportSize: editorState.viewportSize,
+                ),
+              );
+            },
+          );
+        },
+      ),
+      body: ResponsiveLayoutBuilder(
+        builder: (context, isMobile) {
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final viewportSize = ResponsiveUtils.calculateViewportSize(
+                constraints,
+                editorState.canvasAspectRatio,
+              );
+
+              if (viewportSize != editorState.viewportSize) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  editorState.setViewportSize(viewportSize);
+                });
+              }
+
+              if (isMobile) {
+                return _buildMobileLayout(context, viewportSize);
+              }
+              return _buildDesktopLayout(context, viewportSize);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout(BuildContext context, Size viewportSize) {
+    final editorState = context.watch<EditorState>();
+
+    return Stack(
+      children: [
+        Center(
+          child: _buildCanvas(context, viewportSize),
+        ),
+        if (editorState.selectedElement != null)
+          Positioned.fill(
+            child: MobilePropertySheet(
+              configuration: editorState.configuration,
+              onSelectImage: widget.onSelectImage,
+              element: editorState.selectedElement!,
+              viewportSize: viewportSize,
+              onClose: () => editorState.setSelectedElement(null),
+              onUpdate: () {
+                final historyState = context.read<HistoryState>();
+                historyState.pushState(
+                  editorState.elements,
+                  editorState.selectedElement,
+                );
+              },
+              onDelete:
+                  editorState.configuration.can(EditorCapability.deleteElements)
+                      ? (element) {
+                          editorState.removeElement(element);
+                          final historyState = context.read<HistoryState>();
+                          historyState.pushState(editorState.elements, null);
+                        }
+                      : (_) {},
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildDesktopLayout(BuildContext context, Size viewportSize) {
+    final editorState = context.watch<EditorState>();
+
+    return Row(
+      children: [
+        ElementCreationSidebar(
+          isExpanded: editorState.isCreationSidebarExpanded,
+          onCreateElement: (element) => _handleNewElement(context, element),
+          onUploadImage: widget.onSelectImage,
+          viewportSize: viewportSize,
+          onToggle: () => editorState.toggleCreationSidebar(),
+        ),
+        Expanded(
+          child: Center(
+            child: _buildCanvas(context, viewportSize),
+          ),
+        ),
+        if (editorState.selectedElement != null)
+          PropertySidebar(
+            onSelectImage: widget.onSelectImage,
+            onClose: () => editorState.setSelectedElement(null),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCanvas(BuildContext context, Size viewportSize) {
+    final editorState = context.watch<EditorState>();
+
+    return InteractiveViewer(
+      boundaryMargin: const EdgeInsets.all(double.infinity),
+      transformationController: transformationController,
+      minScale: 0.1,
+      maxScale: 4.0,
+      constrained: false,
+      child: WidgetsToImage(
+        controller: controller,
+        child: SizedBox(
+          width: viewportSize.width,
+          height: viewportSize.height,
+          child: Stack(
+            key: _stackKey,
+            children: [
+              Image.network(
+                widget.template['base_image'],
+                width: viewportSize.width,
+                height: viewportSize.height,
+                fit: BoxFit.contain,
+              ),
+              ...(() {
+                final sortedElements =
+                    List<TemplateElement>.from(editorState.elements);
+                sortedElements.sort((a, b) => a.zIndex.compareTo(b.zIndex));
+                return sortedElements.map(
+                  (element) => EditorElement(
+                    key: ValueKey(element),
+                    element: element,
+                  ),
+                );
+              })(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    RawKeyboard.instance.removeListener(_handleKeyEvent);
+    transformationController.dispose();
+    super.dispose();
+  }
+}
+
+
+
+--- File: ./lib/widgets/element_creation_sidebar.dart ---
+
+import 'package:flutter/material.dart';
+import 'package:core_image_editor/models/shape_types.dart';
+import '../models/template_types.dart';
+
+class ElementCreationSidebar extends StatelessWidget {
+  final bool isExpanded;
+  final VoidCallback onToggle;
+  final Function(TemplateElement) onCreateElement;
+  final Future<String?> Function(BuildContext) onUploadImage;
+  final Size viewportSize;
+
+  const ElementCreationSidebar({
+    super.key,
+    required this.isExpanded,
+    required this.onToggle,
+    required this.onCreateElement,
+    required this.viewportSize,
+    required this.onUploadImage,
+  });
+
+  TemplateElement _createTextElement({
+    required String text,
+    required double fontSizeVw,
+    required String type,
+  }) {
+    TemplateElementTag tag = type == 'heading'
+        ? TemplateElementTag.title
+        : TemplateElementTag.subtitle;
+
+    return TemplateElement(
+      type: 'text',
+      tag: tag,
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 10,
+        widthPercent: 80,
+        heightPercent: 10,
+        alignment: 'center',
+      ),
+      content: {'text': text},
+      style: TemplateStyle(
+        fontSizeVw: fontSizeVw,
+        color: '#000000',
+      ),
+    );
+  }
+
+  TemplateElement _createImageElement() {
+    return TemplateElement(
+      type: 'image',
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 10,
+        widthPercent: 30,
+        heightPercent: 30,
+        alignment: 'center',
+      ),
+      tag: TemplateElementTag.image,
+      content: {
+        'url': 'https://via.placeholder.com/200x200',
+      },
+      style: TemplateStyle(
+        fontSizeVw: 0,
+        color: '#000000',
+      ),
+    );
+  }
+
+  TemplateElement _createShapeElement(ShapeType shapeType) {
+    return TemplateElement(
+      type: 'shape',
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 10,
+        widthPercent: 20,
+        heightPercent: shapeType == ShapeType.line ? 1 : 20,
+        alignment: 'center',
+      ),
+      content: {
+        'shapeType': shapeType.toString(),
+        'fillColor': '#FFFFFF',
+        'strokeColor': '#000000',
+        'strokeWidth': 2.0,
+        'isStrokeDashed': false,
+      },
+      style: TemplateStyle(
+        fontSizeVw: 0,
+        color: '#000000',
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      width: isExpanded ? 250 : 60,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 5,
+            offset: const Offset(2, 0),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: isExpanded ? 16 : 8),
+            leading: isExpanded ? const Icon(Icons.add_box) : null,
+            title: isExpanded ? const Text('Add Elements') : null,
+            trailing: IconButton(
+              icon: Icon(isExpanded ? Icons.chevron_left : Icons.chevron_right),
+              onPressed: onToggle,
+            ),
+          ),
+          const Divider(),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.all(isExpanded ? 16 : 8),
+              children: [
+                if (isExpanded) ...[
+                  Text(
+                    'Text Elements',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 8),
+                ],
+                _buildElementButton(
+                  context: context,
+                  icon: Icons.title,
+                  label: 'Heading',
+                  onTap: () => onCreateElement(_createTextElement(
+                    text: 'New Heading',
+                    fontSizeVw: 6.0,
+                    type: 'heading',
+                  )),
+                ),
+                const SizedBox(height: 8),
+                _buildElementButton(
+                  context: context,
+                  icon: Icons.text_fields,
+                  label: 'Body Text',
+                  onTap: () => onCreateElement(_createTextElement(
+                    text: 'New Text Block',
+                    fontSizeVw: 4.0,
+                    type: 'body',
+                  )),
+                ),
+                if (isExpanded) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    'Shapes',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 8),
+                ],
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: ShapeType.values.map((shapeType) {
+                    return _buildElementButton(
+                      context: context,
+                      icon: shapeType.icon,
+                      label: shapeType.displayName,
+                      onTap: () =>
+                          onCreateElement(_createShapeElement(shapeType)),
+                    );
+                  }).toList(),
+                ),
+                if (isExpanded) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    'Media Elements',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 8),
+                ],
+                _buildElementButton(
+                  context: context,
+                  icon: Icons.image,
+                  label: 'Image',
+                  onTap: () async {
+                    final url = await onUploadImage(context);
+                    if (url != null) {
+                      final element = _createImageElement();
+                      element.content['url'] = url;
+                      onCreateElement(element);
+                    }
+                  },
+                ),
+                const SizedBox(height: 8),
+                _buildElementButton(
+                  context: context,
+                  icon: Icons.people,
+                  label: 'Leader Strip',
+                  onTap: () =>
+                      onCreateElement(TemplateElement.createLeaderStrip()),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildElementButton({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(isExpanded ? 12 : 8),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 24),
+            if (isExpanded) ...[
+              const SizedBox(width: 12),
+              Expanded(child: Text(label)),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/responsive_builder.dart ---
+
+import 'package:flutter/widgets.dart';
+
+class ResponsiveLayoutBuilder extends StatelessWidget {
+  final Widget Function(BuildContext, bool) builder;
+  final double breakpoint;
+
+  const ResponsiveLayoutBuilder({
+    Key? key,
+    required this.builder,
+    this.breakpoint = 768, // Default breakpoint for mobile/desktop
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return builder(
+          context,
+          constraints.maxWidth < breakpoint,
+        );
+      },
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/editor_element.dart ---
+
+import 'package:core_image_editor/models/editor_config.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/template_types.dart';
+import '../models/shape_types.dart';
+import '../state/editor_state.dart';
+import '../state/history_state.dart';
+import 'rotation_handle.dart';
+import 'resize_handle.dart';
+import 'shape_painter.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class EditorElement extends StatelessWidget {
+  final TemplateElement element;
+
+  const EditorElement({
+    super.key,
+    required this.element,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final editorState = context.watch<EditorState>();
+    final historyState = context.read<HistoryState>();
+    final viewportSize = editorState.viewportSize;
+    final isSelected = editorState.selectedElement == element;
+
+    bool isRotating = false;
+
+    double x = element.box.xPercent * viewportSize.width / 100;
+    double y = element.box.yPercent * viewportSize.height / 100;
+    double width = element.box.widthPercent * viewportSize.width / 100;
+    double height = element.box.heightPercent * viewportSize.height / 100;
+
+    // Build border decoration based on style
+    BoxDecoration? borderDecoration;
+    if (element.style.borderStyle != null &&
+        element.style.borderStyle != 'none') {
+      BorderStyle borderStyle;
+      switch (element.style.borderStyle) {
+        case 'dashed':
+        case 'dotted':
+          borderStyle = BorderStyle.none; // We'll use a custom dash pattern
+          break;
+        default:
+          borderStyle = BorderStyle.solid;
+      }
+
+      final borderColor = Color(
+        int.parse(
+            (element.style.borderColor ?? '#000000').replaceFirst('#', '0xff')),
+      );
+
+      borderDecoration = BoxDecoration(
+        border: Border.all(
+          color: borderColor,
+          width: element.style.borderWidth ?? 1,
+          style: borderStyle,
+        ),
+        borderRadius: BorderRadius.circular(element.style.borderRadius ?? 1),
+      );
+    }
+
+    Widget elementContent = Transform.rotate(
+      angle: element.box.rotation * 3.14159 / 180,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: borderDecoration?.copyWith(
+          border: isSelected
+              ? Border.all(color: Colors.blue, width: 2)
+              : borderDecoration.border,
+        ),
+        child: Stack(
+          children: [
+            if (isSelected)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.blue.withOpacity(0.5),
+                        width: 1.5,
+                        style: BorderStyle.solid,
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+              ),
+            Positioned.fill(
+              child: Align(
+                alignment: element.box.alignment == 'center'
+                    ? Alignment.center
+                    : element.box.alignment == 'right'
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                child: _buildElementContent(element, Size(width, height)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    void pushHistory() {
+      historyState.pushState(editorState.elements, element);
+    }
+
+    return Positioned(
+      left: x,
+      top: y,
+      child: GestureDetector(
+        onTap: () => editorState.setSelectedElement(element),
+        onSecondaryTapDown: (details) {
+          editorState.setSelectedElement(element);
+          // Add context menu if needed
+        },
+        onPanStart: (details) {
+          editorState.setSelectedElement(element);
+        },
+        onPanUpdate:
+            editorState.configuration.can(EditorCapability.repositionElements)
+                ? (details) {
+                    double deltaXPercent =
+                        details.delta.dx / viewportSize.width * 100;
+                    double deltaYPercent =
+                        details.delta.dy / viewportSize.height * 100;
+
+                    double newX = element.box.xPercent + deltaXPercent;
+                    double newY = element.box.yPercent + deltaYPercent;
+
+                    newX = newX.clamp(0.0, 100.0 - element.box.widthPercent);
+                    newY = newY.clamp(0.0, 100.0 - element.box.heightPercent);
+
+                    element.box.xPercent = newX;
+                    element.box.yPercent = newY;
+                    editorState.updateElement(element);
+                  }
+                : null,
+        onPanEnd: (details) => pushHistory(),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            elementContent,
+            if (!isRotating &&
+                isSelected &&
+                editorState.configuration
+                    .can(EditorCapability.resizeElements)) ...[
+              ResizeHandle(
+                position: HandlePosition.topLeft,
+                element: element,
+                viewportSize: viewportSize,
+                onUpdate: pushHistory,
+              ),
+              ResizeHandle(
+                position: HandlePosition.topRight,
+                element: element,
+                viewportSize: viewportSize,
+                onUpdate: pushHistory,
+              ),
+              ResizeHandle(
+                position: HandlePosition.bottomLeft,
+                element: element,
+                viewportSize: viewportSize,
+                onUpdate: pushHistory,
+              ),
+              ResizeHandle(
+                position: HandlePosition.bottomRight,
+                element: element,
+                viewportSize: viewportSize,
+                onUpdate: pushHistory,
+              ),
+            ],
+            if (isSelected &&
+                editorState.configuration.can(EditorCapability.rotateElements))
+              RotationHandle(
+                element: element,
+                viewportSize: viewportSize,
+                onRotationStart: () => isRotating = true,
+                onRotationEnd: () {
+                  isRotating = false;
+                  pushHistory();
+                },
+                onUpdate: pushHistory,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildElementContent(TemplateElement element, Size elementSize) {
+    if (element.type == 'leader_strip') {
+      return _buildLeaderStrip(element, elementSize);
+    }
+
+    Widget content;
+    switch (element.type) {
+      case 'shape':
+        content = CustomPaint(
+          painter: ShapePainter(
+            shapeType: ShapeType.values.firstWhere(
+              (type) => type.toString() == element.content['shapeType'],
+            ),
+            fillColor: Color(
+              int.parse(
+                (element.content['fillColor'] ?? '#FFFFFF')
+                    .replaceFirst('#', '0xff'),
+              ),
+            ),
+            strokeColor: Color(
+              int.parse(
+                (element.content['strokeColor'] ?? '#000000')
+                    .replaceFirst('#', '0xff'),
+              ),
+            ),
+            strokeWidth: element.content['strokeWidth']?.toDouble() ?? 2.0,
+            isStrokeDashed: element.content['isStrokeDashed'] ?? false,
+          ),
+          size: elementSize,
+        );
+        break;
+      case 'image':
+        Widget imageWidget = Image.network(
+          element.content['url'] ?? '',
+          width: elementSize.width,
+          height: elementSize.height,
+          fit: element.style.imageFit,
+        );
+
+        if (element.style.imageShape == 'circle') {
+          content = ClipOval(child: imageWidget);
+        } else {
+          content = ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: imageWidget,
+          );
+        }
+        break;
+      default: // Text elements
+        double fontSizePixels =
+            element.style.fontSizeVw * elementSize.width / 100;
+
+        List<TextDecoration> decorations = [];
+        if (element.style.isUnderlined) {
+          decorations.add(TextDecoration.underline);
+        }
+
+        content = Text(
+          element.content['text'] ?? 'Default Text',
+          style: GoogleFonts.getFont(
+            element.style.fontFamily,
+            fontSize: fontSizePixels,
+            color:
+                Color(int.parse(element.style.color.replaceFirst('#', '0xff'))),
+            fontWeight: element.style.fontWeight,
+            fontStyle:
+                element.style.isItalic ? FontStyle.italic : FontStyle.normal,
+            decoration: decorations.isEmpty
+                ? null
+                : TextDecoration.combine(decorations),
+          ),
+        );
+    }
+
+    if (element.style.opacity != 1.0) {
+      content = Opacity(
+        opacity: element.style.opacity,
+        child: content,
+      );
+    }
+
+    if (element.style.boxShadow != null) {
+      content = Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Color(
+                int.parse(
+                  (element.style.boxShadow!['color'] ?? '#000000')
+                      .replaceFirst('#', '0xff'),
+                ),
+              ),
+              offset: Offset(
+                element.style.boxShadow!['offsetX']?.toDouble() ?? 0.0,
+                element.style.boxShadow!['offsetY']?.toDouble() ?? 2.0,
+              ),
+              blurRadius:
+                  element.style.boxShadow!['blurRadius']?.toDouble() ?? 4.0,
+              spreadRadius:
+                  element.style.boxShadow!['spreadRadius']?.toDouble() ?? 0.0,
+            ),
+          ],
+        ),
+        child: content,
+      );
+    }
+
+    return content;
+  }
+
+  // Widget _buildLeaderStrip(TemplateElement element, Size elementSize) {
+  //   final leaders = element.getLeaders();
+  //   final spacing = element.content['spacing']?.toDouble() ?? 8.0;
+
+  //   if (leaders.isEmpty) {
+  //     return const Center(
+  //       child: Text(
+  //         'Add leader photos',
+  //         style: TextStyle(color: Colors.grey),
+  //       ),
+  //     );
+  //   }
+
+  //   return LayoutBuilder(
+  //     builder: (context, constraints) {
+  //       final imageSize = elementSize.height;
+  //       return Wrap(
+  //         children: [
+  //           for (int i = 0; i < leaders.length; i++) ...[
+  //             ClipRRect(
+  //               borderRadius: BorderRadius.circular(
+  //                 leaders[i].style.imageShape == 'circle' ? imageSize / 2 : 0,
+  //               ),
+  //               child: SizedBox(
+  //                 width: imageSize,
+  //                 height: imageSize,
+  //                 child: Image.network(
+  //                   leaders[i].content['url'],
+  //                   fit: BoxFit.cover,
+  //                 ),
+  //               ),
+  //             ),
+  //             if (i < leaders.length - 1) SizedBox(width: spacing),
+  //           ],
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  Widget _buildLeaderStrip(TemplateElement element, Size elementSize) {
+  final leaders = element.getLeaders();
+  final horizontalSpacing = element.content['spacing']?.toDouble() ?? 8.0;
+  final verticalSpacing = element.content['verticalSpacing']?.toDouble() ?? 8.0;
+  final justifyContent = element.content['justifyContent'] ?? 'start';
+
+  if (leaders.isEmpty) {
+    return const Center(
+      child: Text(
+        'Add leader photos',
+        style: TextStyle(color: Colors.grey),
+      ),
+    );
+  }
+
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final imageSize = elementSize.height;
+      
+      // Convert justifyContent to WrapAlignment
+      WrapAlignment alignment;
+      switch (justifyContent) {
+        case 'center':
+          alignment = WrapAlignment.center;
+          break;
+        case 'end':
+          alignment = WrapAlignment.end;
+          break;
+        case 'space-between':
+          alignment = WrapAlignment.spaceBetween;
+          break;
+        case 'space-around':
+          alignment = WrapAlignment.spaceAround;
+          break;
+        case 'space-evenly':
+          alignment = WrapAlignment.spaceEvenly;
+          break;
+        default:
+          alignment = WrapAlignment.start;
+      }
+
+      return Container(
+        // decoration: borderDecoration,
+        padding: EdgeInsets.all((element.style.borderWidth ?? 0) + 4),
+        child: Wrap(
+          alignment: alignment,
+          spacing: horizontalSpacing,
+          runSpacing: verticalSpacing,
+          children: leaders.map((leader) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(
+                leader.style.imageShape == 'circle' ? imageSize / 2 : 0,
+              ),
+              child: SizedBox(
+                width: imageSize,
+                height: imageSize,
+                child: Image.network(
+                  leader.content['url'],
+                  fit: BoxFit.cover,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    },
+  );
+}
+}
+
+
+
+--- File: ./lib/widgets/dashed_border_painter.dart ---
+
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+
+class DashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double gap;
+
+  DashedBorderPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.gap,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final Path path = Path();
+    path.addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    final Path dashedPath = Path();
+    final double dash = gap * 2;
+
+    // Draw dashed border
+    for (final PathMetric metric in path.computeMetrics()) {
+      double distance = 0.0;
+      while (distance < metric.length) {
+        dashedPath.addPath(
+          metric.extractPath(distance, distance + gap),
+          Offset.zero,
+        );
+        distance += dash;
+      }
+    }
+
+    canvas.drawPath(dashedPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(DashedBorderPainter oldDelegate) {
+    return oldDelegate.color != color ||
+        oldDelegate.strokeWidth != strokeWidth ||
+        oldDelegate.gap != gap;
+  }
+}
+
+
+
+--- File: ./lib/widgets/mobile_property_sheet.dart ---
+
+import 'package:core_image_editor/models/editor_config.dart';
+import 'package:core_image_editor/models/template_types.dart';
+import 'package:core_image_editor/widgets/property_sidebar.dart';
+import 'package:flutter/material.dart';
+
+class MobilePropertySheet extends StatelessWidget {
+  final TemplateElement element;
+  final Size viewportSize;
+  final VoidCallback onUpdate;
+  final VoidCallback onClose;
+  final EditorConfiguration configuration;
+  final Future<String> Function(BuildContext) onSelectImage;
+  final Function(TemplateElement) onDelete;
+
+  const MobilePropertySheet({
+    super.key,
+    required this.element,
+    required this.viewportSize,
+    required this.onUpdate,
+    required this.onClose,
+    required this.onDelete,
+    required this.configuration,
+    required this.onSelectImage,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.6,
+      minChildSize: 0.3,
+      maxChildSize: 0.9,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: PropertySidebar(
+            onSelectImage: onSelectImage,
+            onClose: onClose,
+          ),
+        );
+      },
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/resize_handle.dart ---
+
+import 'package:core_image_editor/models/shape_types.dart';
+import 'package:core_image_editor/models/template_types.dart';
+import 'package:core_image_editor/utils/responsive_utils.dart';
+import 'package:flutter/material.dart';
+
+class ResizeHandle extends StatefulWidget {
+  final HandlePosition position;
+  final TemplateElement element;
+  final Size viewportSize;
+  final VoidCallback onUpdate;
+  final double handleSize;
+
+  const ResizeHandle({
+    super.key,
+    required this.position,
+    required this.element,
+    required this.viewportSize,
+    required this.onUpdate,
+    this.handleSize = 24,
+  });
+
+  @override
+  _ResizeHandleState createState() => _ResizeHandleState();
+}
+
+class _ResizeHandleState extends State<ResizeHandle>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late Animation<double> _scaleAnimation;
+  bool _isHovered = false;
+  Offset? dragStart;
+  double? initialWidth;
+  double? initialHeight;
+  double? initialX;
+  double? initialY;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  void _handleDragStart(DragStartDetails details) {
+    dragStart = details.localPosition;
+    initialWidth = widget.element.box.widthPercent;
+    initialHeight = widget.element.box.heightPercent;
+    initialX = widget.element.box.xPercent;
+    initialY = widget.element.box.yPercent;
+  }
+
+  void _handleDragUpdate(DragUpdateDetails details) {
+    if (dragStart == null || initialWidth == null || initialHeight == null)
+      return;
+
+    final deltaX = ResponsiveUtils.pixelToPercentX(
+      details.localPosition.dx - dragStart!.dx,
+      widget.viewportSize.width,
+    );
+    final deltaY = ResponsiveUtils.pixelToPercentY(
+      details.localPosition.dy - dragStart!.dy,
+      widget.viewportSize.height,
+    );
+
+    setState(() {
+      switch (widget.position) {
+        case HandlePosition.topLeft:
+          _updateTopLeft(deltaX, deltaY);
+          break;
+        case HandlePosition.topRight:
+          _updateTopRight(deltaX, deltaY);
+          break;
+        case HandlePosition.bottomLeft:
+          _updateBottomLeft(deltaX, deltaY);
+          break;
+        case HandlePosition.bottomRight:
+          _updateBottomRight(deltaX, deltaY);
+          break;
+      }
+
+      // Apply constraints
+      _applyConstraints();
+      widget.onUpdate();
+    });
+  }
+
+  void _updateTopLeft(double deltaX, double deltaY) {
+    widget.element.box.xPercent = (initialX! + deltaX).clamp(0.0, 100.0);
+    widget.element.box.yPercent = (initialY! + deltaY).clamp(0.0, 100.0);
+    widget.element.box.widthPercent =
+        (initialWidth! - deltaX).clamp(1.0, 100.0);
+    widget.element.box.heightPercent =
+        (initialHeight! - deltaY).clamp(1.0, 100.0);
+  }
+
+  void _updateTopRight(double deltaX, double deltaY) {
+    widget.element.box.yPercent = (initialY! + deltaY).clamp(0.0, 100.0);
+    widget.element.box.widthPercent =
+        (initialWidth! + deltaX).clamp(1.0, 100.0);
+    widget.element.box.heightPercent =
+        (initialHeight! - deltaY).clamp(1.0, 100.0);
+  }
+
+  void _updateBottomLeft(double deltaX, double deltaY) {
+    widget.element.box.xPercent = (initialX! + deltaX).clamp(0.0, 100.0);
+    widget.element.box.widthPercent =
+        (initialWidth! - deltaX).clamp(1.0, 100.0);
+    widget.element.box.heightPercent =
+        (initialHeight! + deltaY).clamp(1.0, 100.0);
+  }
+
+  void _updateBottomRight(double deltaX, double deltaY) {
+    widget.element.box.widthPercent =
+        (initialWidth! + deltaX).clamp(1.0, 100.0);
+    widget.element.box.heightPercent =
+        (initialHeight! + deltaY).clamp(1.0, 100.0);
+  }
+
+  void _applyConstraints() {
+    // Ensure element stays within viewport bounds
+    if (widget.element.box.xPercent + widget.element.box.widthPercent > 100) {
+      widget.element.box.widthPercent = 100 - widget.element.box.xPercent;
+    }
+    if (widget.element.box.yPercent + widget.element.box.heightPercent > 100) {
+      widget.element.box.heightPercent = 100 - widget.element.box.yPercent;
+    }
+
+    // Minimum dimensions
+    widget.element.box.widthPercent =
+        widget.element.box.widthPercent.clamp(1.0, 100.0);
+    widget.element.box.heightPercent =
+        widget.element.box.heightPercent.clamp(1.0, 100.0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: widget.position == HandlePosition.topLeft ||
+              widget.position == HandlePosition.bottomLeft
+          ? -widget.handleSize / 2
+          : null,
+      right: widget.position == HandlePosition.topRight ||
+              widget.position == HandlePosition.bottomRight
+          ? -widget.handleSize / 2
+          : null,
+      top: widget.position == HandlePosition.topLeft ||
+              widget.position == HandlePosition.topRight
+          ? -widget.handleSize / 2
+          : null,
+      bottom: widget.position == HandlePosition.bottomLeft ||
+              widget.position == HandlePosition.bottomRight
+          ? -widget.handleSize / 2
+          : null,
+      child: MouseRegion(
+        cursor: _getCursor(),
+        onEnter: (_) {
+          setState(() {
+            _isHovered = true;
+            _scaleController.forward();
+          });
+        },
+        onExit: (_) {
+          setState(() {
+            _isHovered = false;
+            _scaleController.reverse();
+          });
+        },
+        child: GestureDetector(
+          onPanStart: _handleDragStart,
+          onPanUpdate: _handleDragUpdate,
+          child: ScaleTransition(
+            scale: _scaleAnimation,
+            child: Container(
+              width: widget.handleSize,
+              height: widget.handleSize,
+              decoration: BoxDecoration(
+                color: _isHovered ? Colors.blue : Colors.white,
+                border: Border.all(
+                  color: _isHovered ? Colors.white : Colors.blue,
+                  width: 2,
+                ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(_isHovered ? 0.3 : 0.2),
+                    blurRadius: _isHovered ? 6 : 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Icon(
+                  _getHandleIcon(),
+                  size: 12,
+                  color: _isHovered ? Colors.white : Colors.blue,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  IconData _getHandleIcon() {
+    switch (widget.position) {
+      case HandlePosition.topLeft:
+        return Icons.north_west;
+      case HandlePosition.topRight:
+        return Icons.north_east;
+      case HandlePosition.bottomLeft:
+        return Icons.south_west;
+      case HandlePosition.bottomRight:
+        return Icons.south_east;
+    }
+  }
+
+  MouseCursor _getCursor() {
+    switch (widget.position) {
+      case HandlePosition.topLeft:
+      case HandlePosition.bottomRight:
+        return SystemMouseCursors.resizeUpDown;
+      case HandlePosition.topRight:
+      case HandlePosition.bottomLeft:
+        return SystemMouseCursors.resizeUpLeft;
+    }
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_sidebar.dart ---
+
+import 'package:core_image_editor/models/editor_config.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/template_types.dart';
+import '../state/editor_state.dart';
+import '../state/history_state.dart';
+import '../widgets/property_controls/alignment_control.dart';
+import '../widgets/property_controls/border_control.dart';
+import '../widgets/property_controls/box_shadow_control.dart';
+import '../widgets/property_controls/color_picker.dart';
+import '../widgets/property_controls/font_controls.dart';
+import '../widgets/property_controls/image_controls.dart';
+import '../widgets/property_controls/layer_control.dart';
+import '../widgets/property_controls/leader_controls.dart';
+import '../widgets/property_controls/opacity_control.dart';
+import '../widgets/property_controls/position_control.dart';
+import '../widgets/property_controls/readonly_control.dart';
+import '../widgets/property_controls/shape_controls.dart';
+import '../widgets/property_controls/size_control.dart';
+import '../widgets/property_controls/tag_selector.dart';
+import '../widgets/property_controls/text_content_control.dart';
+
+class PropertySidebar extends StatelessWidget {
+  final Future<String> Function(BuildContext) onSelectImage;
+  final VoidCallback onClose;
+
+  const PropertySidebar({
+    super.key,
+    required this.onSelectImage,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final editorState = context.watch<EditorState>();
+    final element = editorState.selectedElement;
+
+    if (element == null) return const SizedBox.shrink();
+
+    return Container(
+      width: 300,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 5,
+            offset: const Offset(-2, 0),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(context, element),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                _buildControls(context, element),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, TemplateElement element) {
+    final editorState = context.read<EditorState>();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      color: Colors.grey[100],
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Element Properties',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          Row(
+            children: [
+              if (editorState.configuration
+                  .can(EditorCapability.deleteElements))
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    editorState.removeElement(element);
+                    final historyState = context.read<HistoryState>();
+                    historyState.pushState(editorState.elements, null);
+                  },
+                ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: onClose,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControls(BuildContext context, TemplateElement element) {
+    final editorState = context.read<EditorState>();
+    final historyState = context.read<HistoryState>();
+
+    void pushHistory() {
+      historyState.pushState(editorState.elements, element);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (element.type == 'leader_strip')
+          LeaderControls(
+            element: element,
+            onSelectImage: onSelectImage,
+            onUpdate: pushHistory,
+            configuration: editorState.configuration,
+          ),
+        const SectionTitle(title: 'Tag'),
+        TagSelector(
+          element: element,
+          onUpdate: pushHistory,
+        ),
+        const SectionTitle(title: 'Position & Size'),
+        if (editorState.configuration.can(EditorCapability.repositionElements))
+          PositionControl(
+            element: element,
+            onUpdate: pushHistory,
+          ),
+        if (editorState.configuration.can(EditorCapability.resizeElements))
+          SizeControl(
+            element: element,
+            onUpdate: pushHistory,
+          ),
+        if (editorState.configuration
+            .can(EditorCapability.changeAlignment)) ...[
+          const SectionTitle(title: 'Alignment'),
+          AlignmentControl(
+            element: element,
+            onUpdate: pushHistory,
+          ),
+        ],
+        if (editorState.configuration.can(EditorCapability.changeBorders))
+          BorderControl(
+            element: element,
+            onUpdate: pushHistory,
+          ),
+        OpacityControl(
+          element: element,
+          onUpdate: pushHistory,
+        ),
+        BoxShadowControl(
+          element: element,
+          onUpdate: pushHistory,
+        ),
+        ReadOnlyControl(
+          element: element,
+          onUpdate: pushHistory,
+        ),
+        if (element.type == 'text') ...[
+          const SectionTitle(title: 'Text Style'),
+          if (editorState.configuration.can(EditorCapability.changeFonts)) ...[
+            FontFamilyControl(
+              element: element,
+              availableFonts: editorState.configuration.availableFonts,
+              onUpdate: pushHistory,
+            ),
+            FontWeightControl(
+              element: element,
+              onUpdate: pushHistory,
+            ),
+            FontStyleControl(
+              element: element,
+              onUpdate: pushHistory,
+            ),
+          ],
+          if (editorState.configuration.can(EditorCapability.changeColors))
+            NColorPicker(
+              label: 'Color',
+              color: element.style.color,
+              onColorChanged: (color) {
+                element.style.color = color;
+                pushHistory();
+              },
+            ),
+          if (editorState.configuration.can(EditorCapability.changeTextContent))
+            TextContentControl(
+              element: element,
+              viewportSize: editorState.viewportSize,
+              onUpdate: pushHistory,
+            ),
+        ] else if (element.type == 'image') ...[
+          const SectionTitle(title: 'Image Properties'),
+          ImageControls(
+            element: element,
+            onSelectImage: onSelectImage,
+            onUpdate: pushHistory,
+            configuration: editorState.configuration,
+          ),
+        ] else if (element.type == 'shape') ...[
+          ShapeControls(
+            element: element,
+            onUpdate: pushHistory,
+          ),
+        ],
+        const SectionTitle(title: 'Layer'),
+        LayerControl(
+          element: element,
+          onUpdate: pushHistory,
+        ),
+      ],
+    );
+  }
+}
+
+class SectionTitle extends StatelessWidget {
+  final String title;
+
+  const SectionTitle({
+    super.key,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/leader_thumnail.dart ---
+
+import 'package:core_image_editor/models/template_types.dart';
+import 'package:flutter/material.dart';
+
+class LeaderThumbnail extends StatefulWidget {
+  final TemplateElement leader;
+  final VoidCallback onDelete;
+  final VoidCallback onEdit;
+
+  const LeaderThumbnail({
+    super.key,
+    required this.leader,
+    required this.onDelete,
+    required this.onEdit,
+  });
+
+  @override
+  State<LeaderThumbnail> createState() => _LeaderThumbnailState();
+}
+
+class _LeaderThumbnailState extends State<LeaderThumbnail> {
+  bool isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => isHovered = true),
+      onExit: (_) => setState(() => isHovered = false),
+      child: Container(
+        width: 100,
+        margin: const EdgeInsets.only(right: 8),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(
+                  widget.leader.style.imageShape == 'circle' ? 999 : 0,
+                ),
+                child: Image.network(
+                  widget.leader.content['url'],
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            if (isHovered)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(
+                      widget.leader.style.imageShape == 'circle' ? 999 : 0,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.white),
+                        onPressed: widget.onEdit,
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.white),
+                        onPressed: widget.onDelete,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.7),
+                    ],
+                  ),
+                ),
+                padding: const EdgeInsets.all(4),
+                child: Icon(
+                  Icons.drag_handle,
+                  color: Colors.white.withOpacity(0.7),
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/mobile_element_creation_sheet.dart ---
+
+import 'package:flutter/material.dart';
+import 'package:core_image_editor/models/shape_types.dart';
+import 'package:core_image_editor/models/template_types.dart';
+
+class MobileElementCreationSheet extends StatelessWidget {
+  final Function(TemplateElement) onCreateElement;
+  final Future<String?> Function(BuildContext) onUploadImage;
+  final Size viewportSize;
+
+  const MobileElementCreationSheet({
+    super.key,
+    required this.viewportSize,
+    required this.onCreateElement,
+    required this.onUploadImage,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.4,
+      minChildSize: 0.2,
+      maxChildSize: 0.8,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: ListView(
+            controller: scrollController,
+            padding: const EdgeInsets.all(16),
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Text(
+                'Add Elements',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              _buildElementButton(
+                context: context,
+                icon: Icons.title,
+                label: 'Heading',
+                onTap: () => onCreateElement(_createTextElement(
+                  text: 'New Heading',
+                  fontSizeVw: 6.0,
+                  type: 'heading',
+                )),
+              ),
+              const SizedBox(height: 8),
+              _buildElementButton(
+                context: context,
+                icon: Icons.text_fields,
+                label: 'Body Text',
+                onTap: () => onCreateElement(_createTextElement(
+                  text: 'New Text Block',
+                  fontSizeVw: 4.0,
+                  type: 'body',
+                )),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Shapes',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: ShapeType.values.map((shapeType) {
+                  return _buildElementButton(
+                    context: context,
+                    icon: shapeType.icon,
+                    label: shapeType.displayName,
+                    onTap: () =>
+                        onCreateElement(_createShapeElement(shapeType)),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 16),
+              _buildElementButton(
+                context: context,
+                icon: Icons.image,
+                label: 'Image',
+                onTap: () async {
+                  final url = await onUploadImage(context);
+                  if (url != null) {
+                    final element = _createImageElement();
+                    element.content['url'] = url;
+                    onCreateElement(element);
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  TemplateElement _createShapeElement(ShapeType shapeType) {
+    return TemplateElement(
+      type: 'shape',
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 10,
+        widthPercent: 20,
+        heightPercent: shapeType == ShapeType.line ? 1 : 20,
+        alignment: 'center',
+      ),
+      content: {
+        'shapeType': shapeType.toString(),
+        'fillColor': '#FFFFFF',
+        'strokeColor': '#000000',
+        'strokeWidth': 2.0,
+        'isStrokeDashed': false,
+      },
+      style: TemplateStyle(
+        fontSizeVw: 0,
+        color: '#000000',
+      ),
+    );
+  }
+
+  TemplateElement _createTextElement({
+    required String text,
+    required double fontSizeVw,
+    required String type,
+  }) {
+    return TemplateElement(
+      type: 'text',
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 10,
+        widthPercent: 80,
+        heightPercent: 10,
+        alignment: 'center',
+      ),
+      content: {'text': text},
+      style: TemplateStyle(
+        fontSizeVw: fontSizeVw,
+        color: '#000000',
+      ),
+    );
+  }
+
+  TemplateElement _createImageElement() {
+    return TemplateElement(
+      type: 'image',
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 10,
+        widthPercent: 30,
+        heightPercent: 30,
+        alignment: 'center',
+      ),
+      content: {
+        'url': 'https://via.placeholder.com/200x200',
+      },
+      style: TemplateStyle(
+        fontSizeVw: 0,
+        color: '#000000',
+      ),
+    );
+  }
+
+  Widget _buildElementButton({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 24),
+            const SizedBox(width: 12),
+            Expanded(child: Text(label)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/rotation_handle.dart ---
+
+import 'dart:math' as math;
+import 'package:flutter/material.dart';
+import '../models/template_types.dart';
+
+class RotationHandle extends StatefulWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+  final double handleSize;
+  final VoidCallback onRotationStart;
+  final VoidCallback onRotationEnd;
+  final Size viewportSize;
+
+  const RotationHandle({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+    required this.onRotationStart,
+    required this.onRotationEnd,
+    required this.viewportSize,
+    this.handleSize = 24,
+  });
+
+  @override
+  State<RotationHandle> createState() => _RotationHandleState();
+}
+
+class _RotationHandleState extends State<RotationHandle>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late Animation<double> _scaleAnimation;
+  bool _isHovered = false;
+  Offset? _startPosition;
+  double? _startRotation;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  void _handleDragStart(DragStartDetails details) {
+    widget.onRotationStart();
+    _startPosition = details.globalPosition;
+    _startRotation = widget.element.box.rotation;
+  }
+
+  void _handleDragUpdate(DragUpdateDetails details) {
+    if (_startPosition == null || _startRotation == null) return;
+
+    final RenderBox box = context.findRenderObject() as RenderBox;
+    final elementCenter = box.localToGlobal(
+      Offset(
+        widget.element.box.widthPercent * widget.viewportSize.width / 200,
+        widget.element.box.heightPercent * widget.viewportSize.height / 200,
+      ),
+    );
+
+    // Calculate angles
+    final startAngle = (math.atan2(
+          _startPosition!.dy - elementCenter.dy,
+          _startPosition!.dx - elementCenter.dx,
+        ) *
+        180 /
+        math.pi);
+
+    final currentAngle = (math.atan2(
+          details.globalPosition.dy - elementCenter.dy,
+          details.globalPosition.dx - elementCenter.dx,
+        ) *
+        180 /
+        math.pi);
+
+    var angleDelta = currentAngle - startAngle;
+    var newRotation = _startRotation! + angleDelta;
+
+    // Normalize to 0-360 range
+    newRotation = ((newRotation % 360) + 360) % 360;
+
+    widget.element.box.rotation = newRotation;
+    widget.onUpdate();
+  }
+
+   void _handleDragEnd(DragEndDetails details) {
+    widget.onRotationEnd();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: -(widget.handleSize / 2),
+      left: 0,
+      right: 0,
+      child: Center(
+        child: MouseRegion(
+          cursor: SystemMouseCursors.grab,
+          onEnter: (_) {
+            setState(() {
+              _isHovered = true;
+              _scaleController.forward();
+            });
+          },
+          onExit: (_) {
+            setState(() {
+              _isHovered = false;
+              _scaleController.reverse();
+            });
+          },
+          child: GestureDetector(
+            behavior:
+                HitTestBehavior.opaque, // Important for proper hit testing
+            onPanStart: _handleDragStart,
+            onPanUpdate: _handleDragUpdate,
+            onPanEnd: _handleDragEnd,
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: Container(
+                width: widget.handleSize,
+                height: widget.handleSize,
+                decoration: BoxDecoration(
+                  color: _isHovered ? Colors.blue : Colors.white,
+                  border: Border.all(
+                    color: _isHovered ? Colors.white : Colors.blue,
+                    width: 2,
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(_isHovered ? 0.3 : 0.2),
+                      blurRadius: _isHovered ? 6 : 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.rotate_right,
+                    size: 16,
+                    color: _isHovered ? Colors.white : Colors.blue,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/re_orderable_leader_strip.dart ---
+
+import 'dart:ui';
+
+import 'package:core_image_editor/models/template_types.dart';
+import 'package:core_image_editor/widgets/leader_thumnail.dart';
+import 'package:flutter/material.dart';
+
+class ReorderableLeaderStrip extends StatelessWidget {
+  final List<TemplateElement> leaders;
+  final Function(int oldIndex, int newIndex) onReorder;
+  final Function(int index) onDelete;
+  final Function(TemplateElement leader) onEdit;
+
+  const ReorderableLeaderStrip({
+    super.key,
+    required this.leaders,
+    required this.onReorder,
+    required this.onDelete,
+    required this.onEdit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: ReorderableListView(
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(8),
+          proxyDecorator: (child, index, animation) {
+            return AnimatedBuilder(
+              animation: animation,
+              builder: (BuildContext context, Widget? child) {
+                final double animValue =
+                    Curves.easeInOut.transform(animation.value);
+                return Material(
+                  elevation: lerpDouble(0, 6, animValue)!,
+                  color: Colors.transparent,
+                  child: child,
+                );
+              },
+              child: child,
+            );
+          },
+          onReorder: onReorder,
+          children: [
+            for (int index = 0; index < leaders.length; index++)
+              LeaderThumbnail(
+                key: ValueKey(leaders[index].content['url']),
+                leader: leaders[index],
+                onDelete: () => onDelete(index),
+                onEdit: () => onEdit(leaders[index]),
+              ),
+          ],
+        ));
+  }
+}
+
+
+
+--- File: ./lib/widgets/shape_painter.dart ---
+
+import 'dart:math' as math;
+import 'package:flutter/material.dart';
+import '../models/shape_types.dart';
+
+class ShapePainter extends CustomPainter {
+  final ShapeType shapeType;
+  final Color fillColor;
+  final Color strokeColor;
+  final double strokeWidth;
+  final bool isStrokeDashed;
+  final int? points;
+  final double? innerRadiusRatio;
+  final int? sides;
+  final double? headSize;
+
+  ShapePainter({
+    required this.shapeType,
+    required this.fillColor,
+    required this.strokeColor,
+    this.strokeWidth = 2.0,
+    this.isStrokeDashed = false,
+    this.points,
+    this.innerRadiusRatio,
+    this.sides,
+    this.headSize,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = fillColor
+      ..style = PaintingStyle.fill;
+
+    final strokePaint = Paint()
+      ..color = strokeColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth;
+
+    if (isStrokeDashed) {
+      strokePaint.shader = _createDashPattern(size);
+    }
+
+    switch (shapeType) {
+      case ShapeType.rectangle:
+        _drawRectangle(canvas, size, paint, strokePaint);
+        break;
+      case ShapeType.circle:
+        _drawCircle(canvas, size, paint, strokePaint);
+        break;
+      case ShapeType.triangle:
+        _drawTriangle(canvas, size, paint, strokePaint);
+        break;
+      case ShapeType.line:
+        _drawLine(canvas, size, strokePaint);
+        break;
+      case ShapeType.arrow:
+        _drawArrow(canvas, size, paint, strokePaint);
+        break;
+      case ShapeType.diamond:
+        _drawDiamond(canvas, size, paint, strokePaint);
+        break;
+      case ShapeType.pentagon:
+        _drawPolygon(canvas, size, paint, strokePaint, customSides: 5);
+        break;
+      case ShapeType.hexagon:
+        _drawPolygon(canvas, size, paint, strokePaint, customSides: 6);
+        break;
+      case ShapeType.star:
+        _drawStar(canvas, size, paint, strokePaint);
+        break;
+    }
+  }
+
+  void _drawRectangle(Canvas canvas, Size size, Paint fill, Paint stroke) {
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    canvas.drawRect(rect, fill);
+    canvas.drawRect(rect, stroke);
+  }
+
+  void _drawCircle(Canvas canvas, Size size, Paint fill, Paint stroke) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = math.min(size.width, size.height) / 2;
+    canvas.drawCircle(center, radius, fill);
+    canvas.drawCircle(center, radius, stroke);
+  }
+
+  void _drawTriangle(Canvas canvas, Size size, Paint fill, Paint stroke) {
+    final path = Path()
+      ..moveTo(size.width / 2, 0)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+    canvas.drawPath(path, fill);
+    canvas.drawPath(path, stroke);
+  }
+
+  void _drawLine(Canvas canvas, Size size, Paint stroke) {
+    canvas.drawLine(
+      Offset(0, size.height / 2),
+      Offset(size.width, size.height / 2),
+      stroke,
+    );
+  }
+
+  void _drawArrow(Canvas canvas, Size size, Paint fill, Paint stroke) {
+    final arrowHeadSize = headSize ?? 0.3;
+    final path = Path()
+      ..moveTo(0, size.height / 2)
+      ..lineTo(size.width - size.height * arrowHeadSize, size.height / 2)
+      ..lineTo(size.width - size.height * arrowHeadSize,
+          size.height * (0.5 - arrowHeadSize))
+      ..lineTo(size.width, size.height / 2)
+      ..lineTo(size.width - size.height * arrowHeadSize,
+          size.height * (0.5 + arrowHeadSize))
+      ..lineTo(size.width - size.height * arrowHeadSize, size.height / 2)
+      ..close();
+    canvas.drawPath(path, fill);
+    canvas.drawPath(path, stroke);
+  }
+
+  void _drawDiamond(Canvas canvas, Size size, Paint fill, Paint stroke) {
+    final path = Path()
+      ..moveTo(size.width / 2, 0)
+      ..lineTo(size.width, size.height / 2)
+      ..lineTo(size.width / 2, size.height)
+      ..lineTo(0, size.height / 2)
+      ..close();
+    canvas.drawPath(path, fill);
+    canvas.drawPath(path, stroke);
+  }
+
+  void _drawPolygon(
+    Canvas canvas,
+    Size size,
+    Paint fill,
+    Paint stroke, {
+    int? customSides,
+  }) {
+    final path = Path();
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = math.min(size.width, size.height) / 2;
+    final numSides = customSides ??
+        sides ??
+        (shapeType == ShapeType.pentagon
+            ? 5
+            : shapeType == ShapeType.hexagon
+                ? 6
+                : 3);
+
+    for (int i = 0; i < numSides; i++) {
+      final angle = (i * 2 * math.pi / numSides) - math.pi / 2;
+      final point = Offset(
+        center.dx + radius * math.cos(angle),
+        center.dy + radius * math.sin(angle),
+      );
+      if (i == 0) {
+        path.moveTo(point.dx, point.dy);
+      } else {
+        path.lineTo(point.dx, point.dy);
+      }
+    }
+    path.close();
+    canvas.drawPath(path, fill);
+    canvas.drawPath(path, stroke);
+  }
+
+  void _drawStar(Canvas canvas, Size size, Paint fill, Paint stroke) {
+    final path = Path();
+    final center = Offset(size.width / 2, size.height / 2);
+    final outerRadius = math.min(size.width, size.height) / 2;
+    final innerRadius = outerRadius * (innerRadiusRatio ?? 0.4);
+    final numPoints = points ?? 5;
+
+    for (int i = 0; i < numPoints * 2; i++) {
+      final radius = i.isEven ? outerRadius : innerRadius;
+      final angle = (i * math.pi / numPoints) - math.pi / 2;
+      final point = Offset(
+        center.dx + radius * math.cos(angle),
+        center.dy + radius * math.sin(angle),
+      );
+      if (i == 0) {
+        path.moveTo(point.dx, point.dy);
+      } else {
+        path.lineTo(point.dx, point.dy);
+      }
+    }
+    path.close();
+    canvas.drawPath(path, fill);
+    canvas.drawPath(path, stroke);
+  }
+
+  Shader _createDashPattern(Size size) {
+    const dashWidth = 5.0;
+    const dashSpace = 5.0;
+
+    return const LinearGradient(
+      colors: [Colors.black, Colors.transparent],
+      stops: [0.5, 0.5],
+      tileMode: TileMode.repeated,
+    ).createShader(
+      Rect.fromLTWH(0, 0, dashWidth + dashSpace, dashWidth + dashSpace),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant ShapePainter oldDelegate) {
+    return oldDelegate.shapeType != shapeType ||
+        oldDelegate.fillColor != fillColor ||
+        oldDelegate.strokeColor != strokeColor ||
+        oldDelegate.strokeWidth != strokeWidth ||
+        oldDelegate.isStrokeDashed != isStrokeDashed;
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/index.dart ---
+
+export 'alignment_control.dart';
+export 'border_control.dart';
+export 'box_shadow_control.dart';
+export 'color_picker.dart';
+export 'font_controls.dart';
+export 'image_controls.dart';
+export 'layer_control.dart';
+export 'leader_controls.dart';
+export 'number_input.dart';
+export 'opacity_control.dart';
+export 'position_control.dart';
+export 'readonly_control.dart';
+export 'shape_controls.dart';
+export 'size_control.dart';
+export 'tag_selector.dart';
+export 'text_content_control.dart';
+
+
+--- File: ./lib/widgets/property_controls/shape_controls.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/shape_types.dart';
+import '../../models/template_types.dart';
+import 'color_picker.dart';
+import 'number_input.dart';
+
+class ShapeControls extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const ShapeControls({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final shapeType = ShapeType.values.firstWhere(
+      (type) => type.toString() == element.content['shapeType'],
+      orElse: () => ShapeType.rectangle,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Shape Properties'),
+        const SizedBox(height: 8),
+        // Fill Color
+        NColorPicker(
+          label: 'Fill Color',
+          color: element.content['fillColor'] ?? '#FFFFFF',
+          onColorChanged: (color) {
+            element.content['fillColor'] = color;
+            onUpdate();
+          },
+        ),
+        // Stroke Color
+        NColorPicker(
+          label: 'Stroke Color',
+          color: element.content['strokeColor'] ?? '#000000',
+          onColorChanged: (color) {
+            element.content['strokeColor'] = color;
+            onUpdate();
+          },
+        ),
+        // Stroke Width
+        NumberInput(
+          label: 'Stroke Width',
+          value: element.content['strokeWidth']?.toDouble() ?? 2.0,
+          onChanged: (value) {
+            element.content['strokeWidth'] = value;
+            onUpdate();
+          },
+          min: 0.5,
+          max: 20,
+        ),
+        // Stroke Style
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: CheckboxListTile(
+                  title: const Text('Dashed Stroke'),
+                  value: element.content['isStrokeDashed'] ?? false,
+                  onChanged: (value) {
+                    element.content['isStrokeDashed'] = value;
+                    onUpdate();
+                  },
+                  dense: true,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Shape-specific properties
+        if (shapeType == ShapeType.star) ...[
+          NumberInput(
+            label: 'Points',
+            value: (element.content['points'] ?? 5).toDouble(),
+            onChanged: (value) {
+              element.content['points'] = value.toInt();
+              onUpdate();
+            },
+            min: 3,
+            max: 12,
+          ),
+          NumberInput(
+            label: 'Inner Radius Ratio',
+            value: element.content['innerRadiusRatio']?.toDouble() ?? 0.4,
+            onChanged: (value) {
+              element.content['innerRadiusRatio'] = value;
+              onUpdate();
+            },
+            min: 0.1,
+            max: 0.9,
+          ),
+        ] else if (shapeType == ShapeType.pentagon ||
+            shapeType == ShapeType.hexagon) ...[
+          NumberInput(
+            label: 'Sides',
+            value: (element.content['sides'] ??
+                    (shapeType == ShapeType.pentagon ? 5 : 6))
+                .toDouble(),
+            onChanged: (value) {
+              element.content['sides'] = value.toInt();
+              onUpdate();
+            },
+            min: 3,
+            max: 12,
+          ),
+        ] else if (shapeType == ShapeType.arrow) ...[
+          NumberInput(
+            label: 'Head Size',
+            value: element.content['headSize']?.toDouble() ?? 0.3,
+            onChanged: (value) {
+              element.content['headSize'] = value;
+              onUpdate();
+            },
+            min: 0.1,
+            max: 0.5,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/tag_selector.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+
+class TagSelector extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const TagSelector({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Element Tag',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 4),
+          DropdownButtonFormField<TemplateElementTag>(
+            value: element.tag,
+            decoration: const InputDecoration(
+              isDense: true,
+              border: OutlineInputBorder(),
+            ),
+            items: TemplateElementTag.values.map((tag) {
+              return DropdownMenuItem(
+                value: tag,
+                child: Tooltip(
+                  message: tag.description,
+                  child: Text(tag.displayName),
+                ),
+              );
+            }).toList(),
+            onChanged: (TemplateElementTag? newTag) {
+              if (newTag != null) {
+                element.tag = newTag;
+                onUpdate();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/size_control.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+import 'number_input.dart';
+
+class SizeControl extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const SizeControl({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        NumberInput(
+          label: 'Width',
+          value: element.box.widthPercent,
+          onChanged: (value) {
+            element.box.widthPercent = value;
+            onUpdate();
+          },
+          min: 1,
+          max: 100 - element.box.xPercent,
+          suffix: '%',
+        ),
+        NumberInput(
+          label: 'Height',
+          value: element.box.heightPercent,
+          onChanged: (value) {
+            element.box.heightPercent = value;
+            onUpdate();
+          },
+          min: 1,
+          max: 100 - element.box.yPercent,
+          suffix: '%',
+        ),
+      ],
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/alignment_control.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+
+class AlignmentControl extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const AlignmentControl({
+    Key? key,
+    required this.element,
+    required this.onUpdate,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(
+                  value: 'left',
+                  icon: Icon(Icons.format_align_left),
+                ),
+                ButtonSegment(
+                  value: 'center',
+                  icon: Icon(Icons.format_align_center),
+                ),
+                ButtonSegment(
+                  value: 'right',
+                  icon: Icon(Icons.format_align_right),
+                ),
+              ],
+              selected: {element.box.alignment},
+              onSelectionChanged: (Set<String> newSelection) {
+                element.box.alignment = newSelection.first;
+                onUpdate();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+--- File: ./lib/widgets/property_controls/number_input.dart ---
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+class NumberInput extends StatefulWidget {
+  final String label;
+  final double value;
+  final Function(double) onChanged;
+  final double? min;
+  final double? max;
+  final String? suffix;
+  final int? decimalPlaces;
+  final double stepSize;
+
+  const NumberInput({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.min,
+    this.max,
+    this.suffix,
+    this.decimalPlaces = 2,
+    this.stepSize = 1.0,
+  });
+
+  @override
+  State<NumberInput> createState() => _NumberInputState();
+}
+
+class _NumberInputState extends State<NumberInput> {
+  late TextEditingController _controller;
+  late FocusNode _focusNode;
+  bool _isHovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: widget.value.toStringAsFixed(widget.decimalPlaces ?? 2),
+    );
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(NumberInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value && !_focusNode.hasFocus) {
+      _controller.text =
+          widget.value.toStringAsFixed(widget.decimalPlaces ?? 2);
+    }
+  }
+
+  void _onFocusChange() {
+    if (!_focusNode.hasFocus) {
+      _validateAndUpdateValue(_controller.text);
+    }
+  }
+
+  void _validateAndUpdateValue(String text) {
+    double? newValue = double.tryParse(text);
+    if (newValue != null) {
+      if (widget.min != null) {
+        newValue = newValue.clamp(widget.min!, widget.max ?? double.infinity);
+      }
+      if (widget.max != null) {
+        newValue =
+            newValue.clamp(widget.min ?? double.negativeInfinity, widget.max!);
+      }
+      widget.onChanged(newValue);
+      _controller.text = newValue.toStringAsFixed(widget.decimalPlaces ?? 2);
+    } else {
+      _controller.text =
+          widget.value.toStringAsFixed(widget.decimalPlaces ?? 2);
+    }
+  }
+
+  void _increment() {
+    double newValue = widget.value + widget.stepSize;
+    if (widget.max != null) {
+      newValue =
+          newValue.clamp(widget.min ?? double.negativeInfinity, widget.max!);
+    }
+    widget.onChanged(newValue);
+  }
+
+  void _decrement() {
+    double newValue = widget.value - widget.stepSize;
+    if (widget.min != null) {
+      newValue = newValue.clamp(widget.min!, widget.max ?? double.infinity);
+    }
+    widget.onChanged(newValue);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${widget.label}${widget.suffix != null ? ' (${widget.suffix})' : ''}',
+              style: theme.textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.-]')),
+                    ],
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      suffixText: widget.suffix,
+                    ),
+                    onChanged: (text) {
+                      // Allow live typing but don't update state until focus is lost
+                      if (text.isEmpty) return;
+                      if (text == '-' || text == '.') return;
+                      _validateAndUpdateValue(text);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: theme.dividerColor,
+                    ),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _StepperButton(
+                        icon: Icons.remove,
+                        onPressed:
+                            widget.min == null || widget.value > widget.min!
+                                ? _decrement
+                                : null,
+                        isHovered: _isHovered,
+                      ),
+                      Container(
+                        width: 1,
+                        height: 24,
+                        color: theme.dividerColor,
+                      ),
+                      _StepperButton(
+                        icon: Icons.add,
+                        onPressed:
+                            widget.max == null || widget.value < widget.max!
+                                ? _increment
+                                : null,
+                        isHovered: _isHovered,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (widget.min != null || widget.max != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'Range: ${widget.min?.toStringAsFixed(1) ?? '-∞'} to ${widget.max?.toStringAsFixed(1) ?? '∞'}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StepperButton extends StatefulWidget {
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final bool isHovered;
+
+  const _StepperButton({
+    required this.icon,
+    this.onPressed,
+    required this.isHovered,
+  });
+
+  @override
+  State<_StepperButton> createState() => _StepperButtonState();
+}
+
+class _StepperButtonState extends State<_StepperButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: IconButton(
+        icon: Icon(
+          widget.icon,
+          size: 16,
+          color: widget.onPressed == null
+              ? theme.disabledColor
+              : _isHovered
+                  ? theme.primaryColor
+                  : theme.iconTheme.color,
+        ),
+        onPressed: widget.onPressed,
+        constraints: const BoxConstraints(
+          minWidth: 32,
+          minHeight: 32,
+        ),
+        padding: EdgeInsets.zero,
+        splashRadius: 16,
+        mouseCursor: widget.onPressed == null
+            ? SystemMouseCursors.forbidden
+            : SystemMouseCursors.click,
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/text_content_control.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+import '../../utils/text_measurement.dart';
+
+class TextContentControl extends StatefulWidget {
+  final TemplateElement element;
+  final Size viewportSize;
+  final VoidCallback onUpdate;
+
+  const TextContentControl({
+    super.key,
+    required this.element,
+    required this.viewportSize,
+    required this.onUpdate,
+  });
+
+  @override
+  State<TextContentControl> createState() => _TextContentControlState();
+}
+
+class _TextContentControlState extends State<TextContentControl> {
+  late TextEditingController _controller;
+  late FocusNode _focusNode;
+  bool _isMultiline = false;
+  bool _isHovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: widget.element.content['text'] ?? '',
+    );
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+
+    // Detect if the current text contains newlines
+    _isMultiline = (_controller.text.contains('\n'));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(TextContentControl oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.element.content['text'] != widget.element.content['text'] &&
+        !_focusNode.hasFocus) {
+      _controller.text = widget.element.content['text'] ?? '';
+      _isMultiline = _controller.text.contains('\n');
+    }
+  }
+
+  void _onFocusChange() {
+    if (!_focusNode.hasFocus) {
+      _updateContent(_controller.text);
+    }
+  }
+
+  void _updateContent(String newText) {
+    if (widget.element.content['text'] != newText) {
+      widget.element.content['text'] = newText;
+      TextMeasurement.adjustBoxHeight(
+        element: widget.element,
+        newText: newText,
+        viewportSize: widget.viewportSize,
+        context: context,
+      );
+      widget.onUpdate();
+    }
+  }
+
+  void _toggleMultiline() {
+    setState(() {
+      _isMultiline = !_isMultiline;
+      if (!_isMultiline) {
+        // Remove newlines when switching to single line
+        final newText = _controller.text.replaceAll('\n', ' ');
+        _controller.text = newText;
+        _updateContent(newText);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Text Content',
+                  style: theme.textTheme.bodyMedium,
+                ),
+                IconButton(
+                  icon: Icon(
+                    _isMultiline ? Icons.wrap_text : Icons.short_text,
+                    size: 20,
+                    color: _isHovered || _isMultiline
+                        ? theme.primaryColor
+                        : theme.iconTheme.color,
+                  ),
+                  tooltip: _isMultiline
+                      ? 'Switch to Single Line'
+                      : 'Switch to Multiline',
+                  onPressed: _toggleMultiline,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 32,
+                    minHeight: 32,
+                  ),
+                  splashRadius: 20,
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            TextFormField(
+              controller: _controller,
+              focusNode: _focusNode,
+              maxLines: _isMultiline ? null : 1,
+              minLines: _isMultiline ? 3 : 1,
+              keyboardType:
+                  _isMultiline ? TextInputType.multiline : TextInputType.text,
+              textInputAction:
+                  _isMultiline ? TextInputAction.newline : TextInputAction.done,
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                hintText: 'Enter text...',
+              ),
+              onChanged: (value) {
+                // Update the element's content immediately
+                _isMultiline = value.contains('\n');
+                _updateContent(value);
+              },
+            ),
+            if (_isMultiline)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Lines: ${_controller.text.split('\n').length}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color:
+                            theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                      ),
+                    ),
+                    Text(
+                      'Characters: ${_controller.text.length}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color:
+                            theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            // Quick text tools
+            if (_isMultiline)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _QuickTextButton(
+                      label: 'Clear',
+                      icon: Icons.clear_all,
+                      onPressed: () {
+                        _controller.clear();
+                        _updateContent('');
+                      },
+                    ),
+                    _QuickTextButton(
+                      label: 'Capitalize',
+                      icon: Icons.text_fields,
+                      onPressed: () {
+                        final newText = _controller.text.toUpperCase();
+                        _controller.text = newText;
+                        _updateContent(newText);
+                      },
+                    ),
+                    _QuickTextButton(
+                      label: 'Lowercase',
+                      icon: Icons.text_fields,
+                      onPressed: () {
+                        final newText = _controller.text.toLowerCase();
+                        _controller.text = newText;
+                        _updateContent(newText);
+                      },
+                    ),
+                    _QuickTextButton(
+                      label: 'Title Case',
+                      icon: Icons.text_fields,
+                      onPressed: () {
+                        final newText = _controller.text
+                            .split(' ')
+                            .map((word) => word.isEmpty
+                                ? ''
+                                : '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}')
+                            .join(' ');
+                        _controller.text = newText;
+                        _updateContent(newText);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickTextButton extends StatefulWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const _QuickTextButton({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  @override
+  State<_QuickTextButton> createState() => _QuickTextButtonState();
+}
+
+class _QuickTextButtonState extends State<_QuickTextButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: InkWell(
+        onTap: widget.onPressed,
+        borderRadius: BorderRadius.circular(4),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 6,
+          ),
+          decoration: BoxDecoration(
+            color: _isHovered ? theme.primaryColor.withOpacity(0.1) : null,
+            border: Border.all(
+              color: _isHovered ? theme.primaryColor : theme.dividerColor,
+            ),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                widget.icon,
+                size: 16,
+                color: _isHovered ? theme.primaryColor : theme.iconTheme.color,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                widget.label,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: _isHovered
+                      ? theme.primaryColor
+                      : theme.textTheme.bodySmall?.color,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/layer_control.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+import 'number_input.dart';
+
+class LayerControl extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const LayerControl({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return NumberInput(
+      label: 'Z-Index',
+      value: element.zIndex.toDouble(),
+      onChanged: (value) {
+        element.zIndex = value.toInt();
+        onUpdate();
+      },
+      min: 0,
+      max: 999,
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/leader_edit_dialog.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/editor_config.dart';
+import '../../models/template_types.dart';
+import 'image_controls.dart';
+
+class LeaderEditDialog extends StatelessWidget {
+  final TemplateElement leader;
+  final Future<String> Function(BuildContext) onSelectImage;
+  final VoidCallback onUpdate;
+  final EditorConfiguration configuration;
+
+  const LeaderEditDialog({
+    super.key,
+    required this.leader,
+    required this.onSelectImage,
+    required this.onUpdate,
+    required this.configuration,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.8,
+          maxWidth: 400,
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Edit Leader Image',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+              const Divider(),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ImageControls(
+                      element: leader,
+                      onSelectImage: onSelectImage,
+                      onUpdate: onUpdate,
+                      configuration: configuration,
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Done'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/readonly_control.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+
+class ReadOnlyControl extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const ReadOnlyControl({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: CheckboxListTile(
+        title: const Text('Read Only'),
+        subtitle: const Text('Prevent editing by end users'),
+        value: element.style.isReadOnly,
+        onChanged: (value) {
+          element.style.isReadOnly = value ?? false;
+          onUpdate();
+        },
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/position_control.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+import 'number_input.dart';
+
+class PositionControl extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const PositionControl({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        NumberInput(
+          label: 'X Position',
+          value: element.box.xPercent,
+          onChanged: (value) {
+            element.box.xPercent = value;
+            onUpdate();
+          },
+          min: 0,
+          max: 100 - element.box.widthPercent,
+          suffix: '%',
+        ),
+        NumberInput(
+          label: 'Y Position',
+          value: element.box.yPercent,
+          onChanged: (value) {
+            element.box.yPercent = value;
+            onUpdate();
+          },
+          min: 0,
+          max: 100 - element.box.heightPercent,
+          suffix: '%',
+        ),
+      ],
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/font_controls.dart ---
+
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../models/template_types.dart';
+
+class FontFamilyControl extends StatelessWidget {
+  final TemplateElement element;
+  final List<String> availableFonts;
+  final VoidCallback onUpdate;
+
+  const FontFamilyControl({
+    super.key,
+    required this.element,
+    required this.availableFonts,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Font Family'),
+          const SizedBox(height: 4),
+          DropdownButtonFormField<String>(
+            value: element.style.fontFamily,
+            decoration: const InputDecoration(
+              isDense: true,
+              border: OutlineInputBorder(),
+            ),
+            items: availableFonts.map((String font) {
+              return DropdownMenuItem<String>(
+                value: font,
+                child: Text(
+                  font,
+                  style: GoogleFonts.getFont(font),
+                ),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                element.style.fontFamily = newValue;
+                onUpdate();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FontWeightControl extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const FontWeightControl({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Font Weight'),
+          const SizedBox(height: 4),
+          DropdownButtonFormField<FontWeight>(
+            value: element.style.fontWeight,
+            decoration: const InputDecoration(
+              isDense: true,
+              border: OutlineInputBorder(),
+            ),
+            items: [
+              DropdownMenuItem(
+                value: FontWeight.w100,
+                child: Text(
+                  'Thin (100)',
+                  style: TextStyle(fontWeight: FontWeight.w100),
+                ),
+              ),
+              DropdownMenuItem(
+                value: FontWeight.w200,
+                child: Text(
+                  'Extra-Light (200)',
+                  style: TextStyle(fontWeight: FontWeight.w200),
+                ),
+              ),
+              DropdownMenuItem(
+                value: FontWeight.w300,
+                child: Text(
+                  'Light (300)',
+                  style: TextStyle(fontWeight: FontWeight.w300),
+                ),
+              ),
+              DropdownMenuItem(
+                value: FontWeight.w400,
+                child: Text(
+                  'Regular (400)',
+                  style: TextStyle(fontWeight: FontWeight.w400),
+                ),
+              ),
+              DropdownMenuItem(
+                value: FontWeight.w500,
+                child: Text(
+                  'Medium (500)',
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ),
+              DropdownMenuItem(
+                value: FontWeight.w600,
+                child: Text(
+                  'Semi-Bold (600)',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+              DropdownMenuItem(
+                value: FontWeight.w700,
+                child: Text(
+                  'Bold (700)',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ),
+              DropdownMenuItem(
+                value: FontWeight.w800,
+                child: Text(
+                  'Extra-Bold (800)',
+                  style: TextStyle(fontWeight: FontWeight.w800),
+                ),
+              ),
+              DropdownMenuItem(
+                value: FontWeight.w900,
+                child: Text(
+                  'Black (900)',
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+              ),
+            ],
+            onChanged: (FontWeight? newValue) {
+              if (newValue != null) {
+                element.style.fontWeight = newValue;
+                onUpdate();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FontStyleControl extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const FontStyleControl({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Text Style'),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 8,
+            children: [
+              FilterChip(
+                label: const Text('Italic'),
+                selected: element.style.isItalic,
+                onSelected: (bool selected) {
+                  element.style.isItalic = selected;
+                  onUpdate();
+                },
+              ),
+              FilterChip(
+                label: const Text('Underline'),
+                selected: element.style.isUnderlined,
+                onSelected: (bool selected) {
+                  element.style.isUnderlined = selected;
+                  onUpdate();
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/border_control.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+import 'color_picker.dart';
+import 'number_input.dart';
+
+class BorderControl extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const BorderControl({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Border Style'),
+        const SizedBox(height: 4),
+        DropdownButtonFormField<String>(
+          value: element.style.borderStyle ?? 'none',
+          decoration: const InputDecoration(
+            isDense: true,
+            border: OutlineInputBorder(),
+          ),
+          items: const [
+            DropdownMenuItem(value: 'none', child: Text('None')),
+            DropdownMenuItem(value: 'solid', child: Text('Solid')),
+            DropdownMenuItem(value: 'dashed', child: Text('Dashed')),
+            DropdownMenuItem(value: 'dotted', child: Text('Dotted')),
+          ],
+          onChanged: (String? newValue) {
+            element.style.borderStyle = newValue;
+            if (newValue == 'none') {
+              element.style.borderWidth = 0;
+              element.style.borderColor = null;
+            } else {
+              element.style.borderWidth ??= 1;
+              element.style.borderColor ??= '#000000';
+            }
+            onUpdate();
+          },
+        ),
+        if (element.style.borderStyle != null &&
+            element.style.borderStyle != 'none') ...[
+          NumberInput(
+            label: 'Border Width',
+            value: element.style.borderWidth ?? 1,
+            onChanged: (value) {
+              element.style.borderWidth = value;
+              onUpdate();
+            },
+            min: 0.5,
+            max: 20,
+          ),
+          NumberInput(
+            label: 'Border Radius',
+            value: element.style.borderRadius ?? 1,
+            onChanged: (value) {
+              element.style.borderRadius = value;
+              onUpdate();
+            },
+            min: 1,
+            max: 100,
+          ),
+          NColorPicker(
+            label: 'Border Color',
+            color: element.style.borderColor ?? '#000000',
+            onColorChanged: (color) {
+              element.style.borderColor = color;
+              onUpdate();
+            },
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/box_shadow_control.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+import 'color_picker.dart';
+import 'number_input.dart';
+
+class BoxShadowControl extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const BoxShadowControl({
+    Key? key,
+    required this.element,
+    required this.onUpdate,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Box Shadow'),
+          const SizedBox(height: 4),
+          CheckboxListTile(
+            title: const Text('Enable Shadow'),
+            value: element.style.boxShadow != null,
+            onChanged: (value) {
+              if (value == true) {
+                element.style.boxShadow = {
+                  'color': '#000000',
+                  'offsetX': 0.0,
+                  'offsetY': 2.0,
+                  'blurRadius': 4.0,
+                  'spreadRadius': 0.0,
+                };
+              } else {
+                element.style.boxShadow = null;
+              }
+              onUpdate();
+            },
+          ),
+          if (element.style.boxShadow != null) ...[
+            NColorPicker(
+              label: 'Shadow Color',
+              color: element.style.boxShadow!['color'] ?? '#000000',
+              onColorChanged: (color) {
+                element.style.boxShadow!['color'] = color;
+                onUpdate();
+              },
+            ),
+            NumberInput(
+              label: 'Offset X',
+              value: element.style.boxShadow!['offsetX'] ?? 0.0,
+              onChanged: (value) {
+                element.style.boxShadow!['offsetX'] = value;
+                onUpdate();
+              },
+              min: -50,
+              max: 50,
+            ),
+            NumberInput(
+              label: 'Offset Y',
+              value: element.style.boxShadow!['offsetY'] ?? 2.0,
+              onChanged: (value) {
+                element.style.boxShadow!['offsetY'] = value;
+                onUpdate();
+              },
+              min: -50,
+              max: 50,
+            ),
+            NumberInput(
+              label: 'Blur Radius',
+              value: element.style.boxShadow!['blurRadius'] ?? 4.0,
+              onChanged: (value) {
+                element.style.boxShadow!['blurRadius'] = value;
+                onUpdate();
+              },
+              min: 0,
+              max: 50,
+            ),
+            NumberInput(
+              label: 'Spread Radius',
+              value: element.style.boxShadow!['spreadRadius'] ?? 0.0,
+              onChanged: (value) {
+                element.style.boxShadow!['spreadRadius'] = value;
+                onUpdate();
+              },
+              min: -50,
+              max: 50,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/color_picker.dart ---
+
+import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+
+class NColorPicker extends StatelessWidget {
+  final String label;
+  final String color;
+  final Function(String) onColorChanged;
+
+  const NColorPicker({
+    super.key,
+    required this.label,
+    required this.color,
+    required this.onColorChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label),
+          const SizedBox(height: 4),
+          InkWell(
+            onTap: () => _showColorPicker(context),
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: Color(
+                  int.parse(color.replaceFirst('#', '0xff')),
+                ),
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(4),
+                image: color == '#00000000'
+                    ? const DecorationImage(
+                        image: NetworkImage(
+                          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGElEQVQYlWNgYGCQwoKxgqGgcJA5h3yFAAs8BRWVSwooAAAAAElFTkSuQmCC',
+                        ),
+                        repeat: ImageRepeat.repeat,
+                      )
+                    : null,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showColorPicker(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Pick $label'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Add transparent color option
+            InkWell(
+              onTap: () {
+                onColorChanged('#00000000');
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: Colors.grey),
+                  image: const DecorationImage(
+                    image: NetworkImage(
+                      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGElEQVQYlWNgYGCQwoKxgqGgcJA5h3yFAAs8BRWVSwooAAAAAElFTkSuQmCC',
+                    ),
+                    repeat: ImageRepeat.repeat,
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Transparent',
+                    style: TextStyle(fontSize: 10),
+                  ),
+                ),
+              ),
+            ),
+            ColorPicker(
+              pickerColor: Color(
+                int.parse(color.replaceFirst('#', '0xff')),
+              ),
+              onColorChanged: (color) {
+                onColorChanged(
+                  '#${color.value.toRadixString(16).substring(2)}',
+                );
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Done'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/leader_controls.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+import '../../models/editor_config.dart';
+import 'leader_edit_dialog.dart';
+
+class LeaderControls extends StatelessWidget {
+  final TemplateElement element;
+  final Future<String> Function(BuildContext) onSelectImage;
+  final VoidCallback onUpdate;
+  final EditorConfiguration configuration;
+
+  const LeaderControls({
+    super.key,
+    required this.element,
+    required this.onSelectImage,
+    required this.onUpdate,
+    required this.configuration,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    List<TemplateElement> leaders = element.getLeaders();
+    double verticalSpacing =
+        element.content['verticalSpacing']?.toDouble() ?? 8.0;
+    double horizontalSpacing =
+        element.content['horizontalSpacing']?.toDouble() ?? 8.0;
+    String justifyContent = element.content['justifyContent'] ?? 'start';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Leader Photos'),
+        const SizedBox(height: 12),
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey[300]!),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    // Add button
+                    InkWell(
+                      onTap: () async {
+                        final url = await onSelectImage(context);
+                        leaders.add(TemplateElement.createLeader(url));
+                        element.setLeaders(leaders);
+                        onUpdate();
+                      },
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey[300]!),
+                        ),
+                        child: const Center(
+                          child: Icon(Icons.add_photo_alternate, size: 32),
+                        ),
+                      ),
+                    ),
+                    // Leader thumbnails
+                    ...leaders.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final leader = entry.value;
+                      return Stack(
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey[300]!),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                leader.style.imageShape == 'circle' ? 40 : 8,
+                              ),
+                              child: Image.network(
+                                leader.content['url'],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (index > 0)
+                                    IconButton(
+                                      icon: const Icon(Icons.arrow_left,
+                                          size: 16),
+                                      constraints: const BoxConstraints(
+                                        minWidth: 24,
+                                        minHeight: 24,
+                                      ),
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () {
+                                        final temp = leaders[index];
+                                        leaders[index] = leaders[index - 1];
+                                        leaders[index - 1] = temp;
+                                        element.setLeaders(leaders);
+                                        onUpdate();
+                                      },
+                                    ),
+                                  if (index < leaders.length - 1)
+                                    IconButton(
+                                      icon: const Icon(Icons.arrow_right,
+                                          size: 16),
+                                      constraints: const BoxConstraints(
+                                        minWidth: 24,
+                                        minHeight: 24,
+                                      ),
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () {
+                                        final temp = leaders[index];
+                                        leaders[index] = leaders[index + 1];
+                                        leaders[index + 1] = temp;
+                                        element.setLeaders(leaders);
+                                        onUpdate();
+                                      },
+                                    ),
+                                  // Add Edit button
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, size: 16),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 24,
+                                      minHeight: 24,
+                                    ),
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => LeaderEditDialog(
+                                          leader: leader,
+                                          onSelectImage: onSelectImage,
+                                          onUpdate: () {
+                                            element.setLeaders(leaders);
+                                            onUpdate();
+                                          },
+                                          configuration: configuration,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 4,
+                            right: 4,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      size: 16,
+                                      color: Colors.red,
+                                    ),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 24,
+                                      minHeight: 24,
+                                    ),
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {
+                                      leaders.removeAt(index);
+                                      element.setLeaders(leaders);
+                                      onUpdate();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Spacing Control
+        const SizedBox(height: 16),
+
+        // Horizontal Spacing Control
+        Text(
+          'Horizontal Spacing',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        Slider(
+          value: horizontalSpacing,
+          min: 0,
+          max: 40,
+          divisions: 8,
+          label: '${horizontalSpacing.round()}px',
+          onChanged: (value) {
+            element.content['spacing'] = value;
+            onUpdate();
+          },
+        ),
+
+        const SizedBox(height: 16),
+
+        // Vertical Spacing Control
+        Text(
+          'Vertical Spacing',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        Slider(
+          value: verticalSpacing,
+          min: 0,
+          max: 40,
+          divisions: 8,
+          label: '${verticalSpacing.round()}px',
+          onChanged: (value) {
+            element.content['verticalSpacing'] = value;
+            onUpdate();
+          },
+        ),
+
+        const SizedBox(height: 16),
+
+        // Justify Content Control
+        Text(
+          'Alignment',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SegmentedButton<String>(
+            segments: [
+              ButtonSegment(
+                value: 'start',
+                label: const Text('Start'),
+                icon: const Icon(Icons.format_align_left),
+              ),
+              ButtonSegment(
+                value: 'center',
+                label: const Text('Center'),
+                icon: const Icon(Icons.format_align_center),
+              ),
+              ButtonSegment(
+                value: 'end',
+                label: const Text('End'),
+                icon: const Icon(Icons.format_align_right),
+              ),
+              ButtonSegment(
+                value: 'space-between',
+                label: const Text('Space Between'),
+                icon: const Icon(Icons.space_bar),
+              ),
+              ButtonSegment(
+                value: 'space-around',
+                label: const Text('Space Around'),
+                icon: const Icon(Icons.space_dashboard),
+              ),
+              ButtonSegment(
+                value: 'space-evenly',
+                label: const Text('Space Evenly'),
+                icon: const Icon(Icons.space_dashboard_outlined),
+              ),
+            ],
+            selected: {justifyContent},
+            onSelectionChanged: (Set<String> newSelection) {
+              element.content['justifyContent'] = newSelection.first;
+              onUpdate();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/image_controls.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/editor_config.dart';
+import '../../models/template_types.dart';
+import 'number_input.dart';
+
+class ImageControls extends StatefulWidget {
+  final TemplateElement element;
+  final Future<String> Function(BuildContext) onSelectImage;
+  final VoidCallback onUpdate;
+  final EditorConfiguration configuration;
+
+  const ImageControls({
+    super.key,
+    required this.element,
+    required this.onSelectImage,
+    required this.onUpdate,
+    required this.configuration,
+  });
+
+  @override
+  State<ImageControls> createState() => _ImageControlsState();
+}
+
+class _ImageControlsState extends State<ImageControls> {
+  late TextEditingController _urlController;
+  late FocusNode _focusNode;
+  bool _isLoading = false;
+  bool _hasError = false;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _urlController = TextEditingController(
+      text: widget.element.content['url'] ?? '',
+    );
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+    _validateImageUrl(_urlController.text);
+  }
+
+  @override
+  void dispose() {
+    _urlController.dispose();
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(ImageControls oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.element.content['url'] != widget.element.content['url'] &&
+        !_focusNode.hasFocus) {
+      _urlController.text = widget.element.content['url'] ?? '';
+      _validateImageUrl(_urlController.text);
+    }
+  }
+
+  void _onFocusChange() {
+    if (!_focusNode.hasFocus) {
+      _updateImageUrl(_urlController.text);
+    }
+  }
+
+  Future<void> _validateImageUrl(String url) async {
+    if (url.isEmpty) {
+      setState(() {
+        _hasError = false;
+        _errorMessage = null;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+      _errorMessage = null;
+    });
+
+    try {
+      final Uri? uri = Uri.tryParse(url);
+      if (uri == null || !uri.isAbsolute) {
+        throw Exception('Invalid URL format');
+      }
+
+      final result = NetworkImage(url).resolve(ImageConfiguration.empty);
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _hasError = false;
+        _errorMessage = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+        _errorMessage = 'Invalid or inaccessible image URL';
+      });
+    }
+  }
+
+  void _updateImageUrl(String url) {
+    if (widget.element.content['url'] != url) {
+      widget.element.content['url'] = url;
+      widget.onUpdate();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildImageShapeControl(theme),
+        const SizedBox(height: 16),
+        _buildImageUrlControl(theme),
+        const SizedBox(height: 16),
+        _buildImageFitControl(theme),
+        const SizedBox(height: 16),
+        _buildAdvancedControls(theme),
+      ],
+    );
+  }
+
+  Widget _buildImageShapeControl(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Image Shape',
+          style: theme.textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 8),
+        SegmentedButton<String>(
+          segments: const [
+            ButtonSegment(
+              value: 'rectangle',
+              icon: Icon(Icons.rectangle_outlined),
+              label: Text('Rectangle'),
+            ),
+            ButtonSegment(
+              value: 'circle',
+              icon: Icon(Icons.circle_outlined),
+              label: Text('Circle'),
+            ),
+          ],
+          selected: {widget.element.style.imageShape ?? 'rectangle'},
+          onSelectionChanged: (Set<String> newSelection) {
+            widget.element.style.imageShape = newSelection.first;
+            widget.onUpdate();
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImageUrlControl(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Image URL',
+              style: theme.textTheme.bodyMedium,
+            ),
+            if (_isLoading)
+              const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _urlController,
+          focusNode: _focusNode,
+          decoration: InputDecoration(
+            isDense: true,
+            border: const OutlineInputBorder(),
+            errorText: _errorMessage,
+            prefixIcon: const Icon(Icons.link),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: _urlController.text.isNotEmpty
+                  ? () {
+                      _urlController.clear();
+                      _updateImageUrl('');
+                      setState(() {
+                        _hasError = false;
+                        _errorMessage = null;
+                      });
+                    }
+                  : null,
+            ),
+          ),
+          onChanged: (value) {
+            _validateImageUrl(value);
+          },
+        ),
+        const SizedBox(height: 8),
+        if (widget.configuration.can(EditorCapability.uploadNewImage))
+          ElevatedButton.icon(
+            onPressed: () async {
+              try {
+                final url = await widget.onSelectImage(context);
+                _urlController.text = url;
+                _updateImageUrl(url);
+                _validateImageUrl(url);
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Failed to upload image: $e'),
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.upload),
+            label: const Text('Upload New Image'),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildImageFitControl(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Image Fit',
+          style: theme.textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<BoxFit>(
+          value: widget.element.style.imageFit,
+          decoration: const InputDecoration(
+            isDense: true,
+            border: OutlineInputBorder(),
+          ),
+          items: [
+            DropdownMenuItem(
+              value: BoxFit.contain,
+              child: Row(
+                children: [
+                  const Icon(Icons.fit_screen, size: 16),
+                  const SizedBox(width: 8),
+                  const Text('Contain - Fit Within'),
+                ],
+              ),
+            ),
+            DropdownMenuItem(
+              value: BoxFit.cover,
+              child: Row(
+                children: [
+                  const Icon(Icons.crop, size: 16),
+                  const SizedBox(width: 8),
+                  const Text('Cover - Fill & Crop'),
+                ],
+              ),
+            ),
+            DropdownMenuItem(
+              value: BoxFit.fill,
+              child: Row(
+                children: [
+                  const Icon(Icons.expand, size: 16),
+                  const SizedBox(width: 8),
+                  const Text('Fill - Stretch'),
+                ],
+              ),
+            ),
+            DropdownMenuItem(
+              value: BoxFit.fitWidth,
+              child: Row(
+                children: [
+                  const Icon(Icons.trending_flat, size: 16),
+                  const SizedBox(width: 8),
+                  const Text('Fit Width'),
+                ],
+              ),
+            ),
+            DropdownMenuItem(
+              value: BoxFit.fitHeight,
+              child: Row(
+                children: [
+                  const Icon(Icons.height, size: 16),
+                  const SizedBox(width: 8),
+                  const Text('Fit Height'),
+                ],
+              ),
+            ),
+          ],
+          onChanged: (BoxFit? newValue) {
+            if (newValue != null) {
+              widget.element.style.imageFit = newValue;
+              widget.onUpdate();
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAdvancedControls(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ExpansionTile(
+          title: Text(
+            'Advanced Settings',
+            style: theme.textTheme.bodyMedium,
+          ),
+          children: [
+            // Image Quality Control
+            NumberInput(
+              label: 'Quality',
+              value: widget.element.content['quality']?.toDouble() ?? 100,
+              min: 1,
+              max: 100,
+              suffix: '%',
+              onChanged: (value) {
+                widget.element.content['quality'] = value.toInt();
+                widget.onUpdate();
+              },
+            ),
+            // Image Background Color
+            CheckboxListTile(
+              title: const Text('Keep Aspect Ratio'),
+              value: widget.element.content['keepAspectRatio'] ?? true,
+              onChanged: (bool? value) {
+                widget.element.content['keepAspectRatio'] = value ?? true;
+                widget.onUpdate();
+              },
+            ),
+            // Image Smoothing
+            CheckboxListTile(
+              title: const Text('Enable Smoothing'),
+              subtitle: const Text('Apply smooth scaling to the image'),
+              value: widget.element.content['smoothing'] ?? true,
+              onChanged: (bool? value) {
+                widget.element.content['smoothing'] = value ?? true;
+                widget.onUpdate();
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/opacity_control.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+
+class OpacityControl extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const OpacityControl({
+    Key? key,
+    required this.element,
+    required this.onUpdate,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Opacity: ${(element.style.opacity * 100).toInt()}%'),
+          Slider(
+            value: element.style.opacity,
+            min: 0.0,
+            max: 1.0,
+            divisions: 100,
+            onChanged: (value) {
+              element.style.opacity = value;
+              onUpdate();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
