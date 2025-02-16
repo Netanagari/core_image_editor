@@ -43,12 +43,7 @@ class MobilePropertySheet extends StatelessWidget {
             ],
           ),
           child: PropertySidebar(
-            element: element,
-            configuration: configuration,
-            viewportSize: viewportSize,
-            onUpdate: onUpdate,
             onSelectImage: onSelectImage,
-            onDelete: onDelete,
             onClose: onClose,
           ),
         );
