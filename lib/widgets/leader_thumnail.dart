@@ -33,7 +33,7 @@ class _LeaderThumbnailState extends State<LeaderThumbnail> {
             Positioned.fill(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(
-                  widget.leader.style.imageShape == 'circle' ? 999 : 8,
+                  widget.leader.style.imageShape == 'circle' ? 999 : 0,
                 ),
                 child: Image.network(
                   widget.leader.content['url'],
@@ -47,7 +47,7 @@ class _LeaderThumbnailState extends State<LeaderThumbnail> {
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(
-                      widget.leader.style.imageShape == 'circle' ? 999 : 8,
+                      widget.leader.style.imageShape == 'circle' ? 999 : 0,
                     ),
                   ),
                   child: Column(

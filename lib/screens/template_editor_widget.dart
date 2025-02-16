@@ -577,7 +577,7 @@ class _CoreImageEditorState extends State<CoreImageEditor> {
               for (int i = 0; i < leaders.length; i++) ...[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(
-                    leaders[i].style.imageShape == 'circle' ? imageSize / 2 : 8,
+                    leaders[i].style.imageShape == 'circle' ? imageSize / 2 : 0,
                   ),
                   child: SizedBox(
                     width: imageSize,
