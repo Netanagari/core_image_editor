@@ -27,7 +27,7 @@ class ShapeControls extends StatelessWidget {
         const Text('Shape Properties'),
         const SizedBox(height: 8),
         // Fill Color
-        ColorPicker(
+        NColorPicker(
           label: 'Fill Color',
           color: element.content['fillColor'] ?? '#FFFFFF',
           onColorChanged: (color) {
@@ -36,7 +36,7 @@ class ShapeControls extends StatelessWidget {
           },
         ),
         // Stroke Color
-        ColorPicker(
+        NColorPicker(
           label: 'Stroke Color',
           color: element.content['strokeColor'] ?? '#000000',
           onColorChanged: (color) {

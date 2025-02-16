@@ -178,7 +178,7 @@ class PropertySidebar extends StatelessWidget {
             ),
           ],
           if (editorState.configuration.can(EditorCapability.changeColors))
-            ColorPicker(
+            NColorPicker(
               label: 'Color',
               color: element.style.color,
               onColorChanged: (color) {

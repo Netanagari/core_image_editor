@@ -66,7 +66,7 @@ class BorderControl extends StatelessWidget {
             min: 1,
             max: 100,
           ),
-          ColorPicker(
+          NColorPicker(
             label: 'Border Color',
             color: element.style.borderColor ?? '#000000',
             onColorChanged: (color) {

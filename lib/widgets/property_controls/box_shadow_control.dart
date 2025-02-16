@@ -41,7 +41,7 @@ class BoxShadowControl extends StatelessWidget {
             },
           ),
           if (element.style.boxShadow != null) ...[
-            ColorPicker(
+            NColorPicker(
               label: 'Shadow Color',
               color: element.style.boxShadow!['color'] ?? '#000000',
               onColorChanged: (color) {

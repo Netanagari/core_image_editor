@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
-class ColorPicker extends StatelessWidget {
+class NColorPicker extends StatelessWidget {
   final String label;
   final String color;
   final Function(String) onColorChanged;
 
-  const ColorPicker({
+  const NColorPicker({
     super.key,
     required this.label,
     required this.color,
@@ -84,7 +84,7 @@ class ColorPicker extends StatelessWidget {
                 ),
               ),
             ),
-            BlockPicker(
+            ColorPicker(
               pickerColor: Color(
                 int.parse(color.replaceFirst('#', '0xff')),
               ),
@@ -92,11 +92,18 @@ class ColorPicker extends StatelessWidget {
                 onColorChanged(
                   '#${color.value.toRadixString(16).substring(2)}',
                 );
-                Navigator.of(context).pop();
               },
             ),
           ],
         ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Done'),
+          ),
+        ],
       ),
     );
   }
