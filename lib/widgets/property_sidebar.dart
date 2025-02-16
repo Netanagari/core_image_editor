@@ -118,6 +118,7 @@ class PropertySidebar extends StatelessWidget {
             element: element,
             onSelectImage: onSelectImage,
             onUpdate: pushHistory,
+            configuration: editorState.configuration,
           ),
         const SectionTitle(title: 'Tag'),
         TagSelector(

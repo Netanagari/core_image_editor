@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';
+import '../../models/editor_config.dart';
+import 'leader_edit_dialog.dart';
 
 class LeaderControls extends StatelessWidget {
   final TemplateElement element;
   final Future<String> Function(BuildContext) onSelectImage;
   final VoidCallback onUpdate;
+  final EditorConfiguration configuration;
 
   const LeaderControls({
     super.key,
     required this.element,
     required this.onSelectImage,
     required this.onUpdate,
+    required this.configuration,
   });
 
   @override
@@ -127,6 +131,29 @@ class LeaderControls extends StatelessWidget {
                                         onUpdate();
                                       },
                                     ),
+                                  // Add Edit button
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, size: 16),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 24,
+                                      minHeight: 24,
+                                    ),
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => LeaderEditDialog(
+                                          leader: leader,
+                                          onSelectImage: onSelectImage,
+                                          onUpdate: () {
+                                            element.setLeaders(leaders);
+                                            onUpdate();
+                                          },
+                                          configuration: configuration,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                   IconButton(
                                     icon: const Icon(Icons.close, size: 16),
                                     constraints: const BoxConstraints(
@@ -163,32 +190,6 @@ class LeaderControls extends StatelessWidget {
           label: '${spacing.round()}px',
           onChanged: (value) {
             element.content['spacing'] = value;
-            onUpdate();
-          },
-        ),
-        // Shape Control
-        const Text('Photo Shape'),
-        const SizedBox(height: 8),
-        SegmentedButton<String>(
-          segments: const [
-            ButtonSegment(
-              value: 'circle',
-              icon: Icon(Icons.circle_outlined),
-              label: Text('Circle'),
-            ),
-            ButtonSegment(
-              value: 'rectangle',
-              icon: Icon(Icons.rectangle_outlined),
-              label: Text('Rectangle'),
-            ),
-          ],
-          selected: {element.content['imageShape'] ?? 'circle'},
-          onSelectionChanged: (Set<String> selected) {
-            for (var leader in leaders) {
-              leader.style.imageShape = selected.first;
-            }
-            element.setLeaders(leaders);
-            element.content['imageShape'] = selected.first;
             onUpdate();
           },
         ),
