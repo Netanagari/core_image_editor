@@ -154,8 +154,27 @@ class LeaderControls extends StatelessWidget {
                                       );
                                     },
                                   ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 4,
+                            right: 4,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
                                   IconButton(
-                                    icon: const Icon(Icons.close, size: 16),
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      size: 16,
+                                      color: Colors.red,
+                                    ),
                                     constraints: const BoxConstraints(
                                       minWidth: 24,
                                       minHeight: 24,
