@@ -336,7 +336,7 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
             key: _stackKey,
             children: [
               Image.network(
-                widget.template['base_image'],
+                widget.template['base_image_url'],
                 width: viewportSize.width,
                 height: viewportSize.height,
                 fit: BoxFit.contain,
