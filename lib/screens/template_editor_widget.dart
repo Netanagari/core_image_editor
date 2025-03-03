@@ -1,6 +1,13 @@
+import 'dart:io';
+
+import 'package:core_image_editor/screens/mobile_textEdit_bottomsheet.dart';
+import 'package:core_image_editor/screens/profile_editor_view.dart';
+import 'package:core_image_editor/utils/app_color.dart';
+import 'package:core_image_editor/utils/app_text_style.dart';
 import 'package:core_image_editor/widgets/editor_element.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
 import '../models/editor_config.dart';
@@ -9,8 +16,6 @@ import '../state/editor_state.dart';
 import '../state/history_state.dart';
 import '../utils/responsive_utils.dart';
 import '../widgets/element_creation_sidebar.dart';
-import '../widgets/mobile_element_creation_sheet.dart';
-import '../widgets/mobile_property_sheet.dart';
 import '../widgets/property_sidebar.dart';
 import '../widgets/responsive_builder.dart';
 
@@ -75,6 +80,17 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
   late final TransformationController transformationController;
   late final WidgetsToImageController controller;
   final GlobalKey _stackKey = GlobalKey();
+  int selectedIndex = 0;
+  bool isBottomSheetVisible = false;
+
+  // A list of the screens
+
+  // Method to handle index change
+  void onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
 
   @override
   void initState() {
@@ -84,6 +100,12 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
     _setupKeyboardShortcuts();
   }
 
+  List<Widget> bottomContent = [
+    MobileTextEditBottomSheet(),
+    ImageDisplayScreen(),
+    ProfileEditorScreen(),
+    ProfileEditorScreen(),
+  ];
   void _setupKeyboardShortcuts() {
     RawKeyboard.instance.addListener(_handleKeyEvent);
   }
@@ -183,6 +205,14 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
+        backgroundColor: AppColors.bg100,
+        title: Text(
+          'Edit Poster',
+          style: AppTextStyles.labelMdMedium
+              .copyWith(color: AppColors.secondary100),
+        ),
+        centerTitle: true,
+        automaticallyImplyLeading: true,
         actions: [
           if (editorState.configuration.can(EditorCapability.undoRedo)) ...[
             IconButton(
@@ -201,33 +231,6 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
             onPressed: () => _saveChanges(context),
           ),
         ],
-      ),
-      floatingActionButton: ResponsiveLayoutBuilder(
-        builder: (context, isMobile) {
-          if (!isMobile ||
-              editorState.selectedElement != null ||
-              !editorState.configuration.can(EditorCapability.addElements)) {
-            return const SizedBox();
-          }
-          return FloatingActionButton(
-            child: const Icon(Icons.add),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => MobileElementCreationSheet(
-                  onUploadImage: widget.onSelectImage,
-                  onCreateElement: (element) {
-                    Navigator.pop(context);
-                    _handleNewElement(context, element);
-                  },
-                  viewportSize: editorState.viewportSize,
-                ),
-              );
-            },
-          );
-        },
       ),
       body: ResponsiveLayoutBuilder(
         builder: (context, isMobile) {
@@ -263,31 +266,59 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
         Center(
           child: _buildCanvas(context, viewportSize),
         ),
-        if (editorState.selectedElement != null)
-          Positioned.fill(
-            child: MobilePropertySheet(
-              configuration: editorState.configuration,
-              onSelectImage: widget.onSelectImage,
-              element: editorState.selectedElement!,
-              viewportSize: viewportSize,
-              onClose: () => editorState.setSelectedElement(null),
-              onUpdate: () {
-                final historyState = context.read<HistoryState>();
-                historyState.pushState(
-                  editorState.elements,
-                  editorState.selectedElement,
-                );
-              },
-              onDelete:
-                  editorState.configuration.can(EditorCapability.deleteElements)
-                      ? (element) {
-                          editorState.removeElement(element);
-                          final historyState = context.read<HistoryState>();
-                          historyState.pushState(editorState.elements, null);
-                        }
-                      : (_) {},
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 80,
+            decoration: const BoxDecoration(
+              color: AppColors.primary100,
+              border: Border(
+                top: BorderSide(
+                  color: AppColors.secondary100,
+                  width: 0.75,
+                ),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(
+                  isSelected: selectedIndex == 0,
+                  icon: Icons.abc,
+                  label: 'Text',
+                  onTap: () => onItemTapped(0),
+                ),
+                _buildNavItem(
+                  isSelected: selectedIndex == 1,
+                  icon: Icons.image,
+                  label: 'Image',
+                  onTap: () => onItemTapped(1),
+                ),
+                _buildNavItem(
+                  isSelected: selectedIndex == 2,
+                  icon: Icons.plus_one,
+                  label: 'Calendar',
+                  onTap: () => onItemTapped(2),
+                ),
+                _buildNavItem(
+                  isSelected: selectedIndex == 3,
+                  icon: Icons.person,
+                  label: 'You',
+                  onTap: () => onItemTapped(3),
+                ),
+              ],
             ),
           ),
+        ),
+        Positioned(
+            bottom: 80,
+            left: 0,
+            right: 0,
+            child: Container(
+              child: bottomContent[selectedIndex],
+            )),
       ],
     );
   }
@@ -321,40 +352,84 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
   Widget _buildCanvas(BuildContext context, Size viewportSize) {
     final editorState = context.watch<EditorState>();
 
-    return InteractiveViewer(
-      boundaryMargin: const EdgeInsets.all(double.infinity),
-      transformationController: transformationController,
-      minScale: 0.1,
-      maxScale: 4.0,
-      constrained: false,
-      child: WidgetsToImage(
-        controller: controller,
-        child: SizedBox(
-          width: viewportSize.width,
-          height: viewportSize.height,
-          child: Stack(
-            key: _stackKey,
-            children: [
-              Image.network(
-                widget.template['base_image_url'],
-                width: viewportSize.width,
-                height: viewportSize.height,
-                fit: BoxFit.contain,
-              ),
-              ...(() {
-                final sortedElements =
-                    List<TemplateElement>.from(editorState.elements);
-                sortedElements.sort((a, b) => a.zIndex.compareTo(b.zIndex));
-                return sortedElements.map(
-                  (element) => EditorElement(
-                    key: ValueKey(element),
-                    element: element,
+    return Container(
+      color: AppColors.bg100,
+      child: InteractiveViewer(
+        boundaryMargin: const EdgeInsets.all(double.infinity),
+        transformationController: transformationController,
+        minScale: 0.1,
+        maxScale: 4.0,
+        constrained: false,
+        alignment: Alignment.topCenter,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 24),
+          child: WidgetsToImage(
+            controller: controller,
+            child: SizedBox(
+              width: viewportSize.width,
+              height: viewportSize.height,
+              child: Stack(
+                key: _stackKey,
+                children: [
+                  Image.network(
+                    widget.template['base_image_url'],
+                    fit: BoxFit.contain,
                   ),
-                );
-              })(),
-            ],
+                  ...(() {
+                    final sortedElements =
+                        List<TemplateElement>.from(editorState.elements);
+                    sortedElements.sort((a, b) => a.zIndex.compareTo(b.zIndex));
+                    return sortedElements.map(
+                      (element) => EditorElement(
+                        key: ValueKey(element),
+                        element: element,
+                      ),
+                    );
+                  })(),
+                ],
+              ),
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required bool isSelected,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.secondary100 : Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 24,
+              color: isSelected ? AppColors.primary100 : AppColors.secondary100,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: isSelected
+                ? AppTextStyles.labelSmMedium.copyWith(
+                    color: AppColors.secondary100,
+                  )
+                : AppTextStyles.labelSmRegular.copyWith(
+                    color: AppColors.tertiary100,
+                  ),
+          ),
+        ],
       ),
     );
   }
@@ -364,5 +439,170 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
     RawKeyboard.instance.removeListener(_handleKeyEvent);
     transformationController.dispose();
     super.dispose();
+  }
+}
+
+class MobileBottomContentArea extends StatefulWidget {
+  const MobileBottomContentArea({super.key, required this.childrens});
+  final List<Widget> childrens;
+
+  @override
+  State<MobileBottomContentArea> createState() =>
+      _MobileBottomContentAreaState();
+}
+
+class _MobileBottomContentAreaState extends State<MobileBottomContentArea> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+          color: AppColors.primary100,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(12), topRight: Radius.circular(12))),
+      child: Column(
+        children: widget.childrens,
+      ),
+    );
+  }
+}
+
+class ImageDisplayScreen extends StatefulWidget {
+  const ImageDisplayScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ImageDisplayScreen> createState() => _ImageDisplayScreenState();
+}
+
+class _ImageDisplayScreenState extends State<ImageDisplayScreen> {
+  // For handling the selected image
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+  bool hasImage = false;
+
+  // Function to pick image from gallery
+  Future<void> _getImageFromGallery() async {
+    try {
+      final XFile? pickedFile =
+          await _picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile.path);
+          hasImage = true;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error picking image: $e')),
+        );
+      }
+    }
+  }
+
+  void _deleteImage() {
+    setState(() {
+      _image = null;
+      hasImage = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: AppColors.primary100,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              width: 300,
+              height: 200,
+              decoration: BoxDecoration(
+                color: AppColors.tertiary100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: hasImage && _image != null
+                  ? Image.file(
+                      _image!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Text(
+                            'Error loading image',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.red,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : const Center(
+                      child: Text(
+                        'No Image',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Action buttons row - Wrapped with LayoutBuilder to handle overflow
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Delete button
+              OutlinedButton.icon(
+                onPressed: hasImage ? _deleteImage : null,
+                icon: const Icon(Icons.delete_outline,
+                    size: 18, color: AppColors.secondary100),
+                label: Text('Delete',
+                    style: AppTextStyles.labelSmMedium
+                        .copyWith(color: AppColors.secondary100)),
+                style: OutlinedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+                  side: const BorderSide(color: AppColors.secondary100),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              // Upload button
+              ElevatedButton.icon(
+                onPressed: _getImageFromGallery,
+                icon: const Icon(Icons.upload,
+                    size: 18, color: AppColors.primary100),
+                label: Text('Upload',
+                    style: AppTextStyles.labelSmMedium
+                        .copyWith(color: AppColors.primary100)),
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+                  backgroundColor: AppColors.secondary100,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }
