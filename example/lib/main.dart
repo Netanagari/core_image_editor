@@ -14,13 +14,136 @@ final exampleJson = {
   "id": 1,
   "poster": 1,
   "base_image_url":
-      "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/WhatsApp_Image_2025-02-10_at_11.11.21_536d6b58.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250217%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250217T023011Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=061d0dd99a634c56fb7e51570ddf4bed8b7d778cda7bafba2d9218d0d271f4f4",
+      "https://plus.unsplash.com/premium_photo-1661616016088-1964194c7728?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cG9zdGVyfGVufDB8fDB8fHww",
   "thumbnail_url":
-      "https://netanagri-bucket.s3.amazonaws.com/https%3A//netanagri-bucket.s3.amazonaws.com/poster/1/content/1739703549624?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250217%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250217T023011Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=967c1272534869c299a53c79584ea6158a054d64747aa3b844bc255acb144003",
+      "https://plus.unsplash.com/premium_photo-1661616016088-1964194c7728?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cG9zdGVyfGVufDB8fDB8fHww",
   "original_width": 739,
   "original_height": 1600,
   "aspect_ratio": 0.461875,
-  "content_json": []
+  "content_json": [
+    {
+      "type": "text",
+      "box": {
+        "x_percent": 10.139908398428515,
+        "y_percent": 5.2751196426138485,
+        "width_percent": 80,
+        "height_percent": 12.504201680672269,
+        "alignment": "center",
+        "rotation": 0
+      },
+      "content": {"text": "Sample image"},
+      "style": {
+        "font_size": 7,
+        "color": "#000000",
+        "font_family": "Poppins",
+        "font_weight": "FontWeight.w700",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
+      },
+      "z_index": 0
+    },
+    {
+      "type": "shape",
+      "box": {
+        "x_percent": 0,
+        "y_percent": 80,
+        "width_percent": 20,
+        "height_percent": 20,
+        "alignment": "center",
+        "rotation": 0
+      },
+      "content": {
+        "shapeType": "ShapeType.diamond",
+        "fillColor": "#FFFFFF",
+        "strokeColor": "#000000",
+        "strokeWidth": 2,
+        "isStrokeDashed": false
+      },
+      "style": {
+        "font_size": 0,
+        "color": "#000000",
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
+      },
+      "z_index": 0
+    },
+    {
+      "type": "shape",
+      "box": {
+        "x_percent": 80,
+        "y_percent": 80,
+        "width_percent": 20,
+        "height_percent": 20,
+        "alignment": "center",
+        "rotation": 0
+      },
+      "content": {
+        "shapeType": "ShapeType.hexagon",
+        "fillColor": "#FFFFFF",
+        "strokeColor": "#000000",
+        "strokeWidth": 2,
+        "isStrokeDashed": false
+      },
+      "style": {
+        "font_size": 0,
+        "color": "#000000",
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
+      },
+      "z_index": 0
+    },
+    {
+      "type": "shape",
+      "box": {
+        "x_percent": 35.05549096039877,
+        "y_percent": 26.6280674315289,
+        "width_percent": 23.509597602409134,
+        "height_percent": 22.59333475779894,
+        "alignment": "center",
+        "rotation": 0
+      },
+      "content": {
+        "shapeType": "ShapeType.star",
+        "fillColor": "#FFFFFF",
+        "strokeColor": "#000000",
+        "strokeWidth": 2,
+        "isStrokeDashed": false
+      },
+      "style": {
+        "font_size": 0,
+        "color": "#000000",
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "is_italic": false,
+        "imageFit": "BoxFit.contain",
+        "is_underlined": false,
+        "decorations": null,
+        "border_style": null,
+        "border_color": null,
+        "border_width": null
+      },
+      "z_index": 0
+    }
+  ]
 };
 
 class MyApp extends StatelessWidget {
@@ -51,53 +174,43 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: CoreImageEditor(
-          onSave: (json, imageBytes) async {
-            final base64Data =
-                base64Encode(imageBytes ?? Uint8List.fromList([]));
-            final anchor =
-                html.AnchorElement(href: 'data:image/png;base64,$base64Data');
-            anchor.download = 'image.png';
-            anchor.click();
-          },
-          template: exampleJson,
-          configuration: EditorConfiguration.admin,
-          onSelectImage: (image) async {
-            final img = await showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text('Select Image'),
-                  content: const Text('Select an image from gallery or camera'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop("https://picsum.photos/200");
-                      },
-                      child: const Text('Random image 1'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context)
-                            .pop('https://picsum.photos/200/300');
-                      },
-                      child: const Text('Random image 2'),
-                    ),
-                  ],
-                );
-              },
+    return CoreImageEditor(
+      onSave: (json, imageBytes) async {
+        final base64Data = base64Encode(imageBytes ?? Uint8List.fromList([]));
+        final anchor =
+            html.AnchorElement(href: 'data:image/png;base64,$base64Data');
+        anchor.download = 'image.png';
+        anchor.click();
+      },
+      template: exampleJson,
+      configuration: EditorConfiguration.admin,
+      onSelectImage: (image) async {
+        final img = await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Select Image'),
+              content: const Text('Select an image from gallery or camera'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop("https://picsum.photos/200");
+                  },
+                  child: const Text('Random image 1'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop('https://picsum.photos/200/300');
+                  },
+                  child: const Text('Random image 2'),
+                ),
+              ],
             );
-            print(img);
-            return img;
           },
-        ),
-      ),
+        );
+        print(img);
+        return img;
+      },
     );
   }
 }
