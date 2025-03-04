@@ -25,6 +25,9 @@ enum TemplateElementTag {
   subtitle,
   userPicture,
   partySymbol,
+  userName,
+  userDesignation,
+  userParty,
   leaderPhotoStrip,
   leader,
   defaulty;
@@ -47,6 +50,12 @@ enum TemplateElementTag {
         return 'Leader Photo Strip';
       case TemplateElementTag.leader:
         return 'Leader';
+      case TemplateElementTag.userName:
+        return 'User Name';
+      case TemplateElementTag.userDesignation:
+        return 'User Designation';
+      case TemplateElementTag.userParty:
+        return 'User Party';
       case TemplateElementTag.defaulty:
         return 'Default';
     }
@@ -70,6 +79,12 @@ enum TemplateElementTag {
         return 'Strip of leader photos';
       case TemplateElementTag.leader:
         return 'Leader photo';
+      case TemplateElementTag.userName:
+        return 'The name of the user/candidate';
+      case TemplateElementTag.userDesignation:
+        return 'Job title or position of the user/candidate';
+      case TemplateElementTag.userParty:
+        return 'Political party of the user/candidate';
       case TemplateElementTag.defaulty:
         return 'Standard element with no special handling';
     }
@@ -322,6 +337,92 @@ class TemplateElement {
     this.nestedContent,
     this.tag = TemplateElementTag.defaulty,
   });
+
+  factory TemplateElement.createUserName() {
+    return TemplateElement(
+      type: 'text',
+      tag: TemplateElementTag.userName,
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 10,
+        widthPercent: 80,
+        heightPercent: 10,
+        alignment: 'center',
+      ),
+      content: {'text': 'Candidate Name'},
+      style: TemplateStyle(
+        fontSizeVw: 5.0,
+        color: '#000000',
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  factory TemplateElement.createUserDesignation() {
+    return TemplateElement(
+      type: 'text',
+      tag: TemplateElementTag.userDesignation,
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 20,
+        widthPercent: 80,
+        heightPercent: 6,
+        alignment: 'center',
+      ),
+      content: {'text': 'Candidate Designation'},
+      style: TemplateStyle(
+        fontSizeVw: 3.5,
+        color: '#444444',
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.normal,
+      ),
+    );
+  }
+
+  factory TemplateElement.createUserParty() {
+    return TemplateElement(
+      type: 'text',
+      tag: TemplateElementTag.userParty,
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 26,
+        widthPercent: 80,
+        heightPercent: 6,
+        alignment: 'center',
+      ),
+      content: {'text': 'Political Party'},
+      style: TemplateStyle(
+        fontSizeVw: 3.5,
+        color: '#333333',
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+
+  factory TemplateElement.createUserPicture() {
+    return TemplateElement(
+      type: 'image',
+      tag: TemplateElementTag.userPicture,
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 35,
+        widthPercent: 30,
+        heightPercent: 30,
+        alignment: 'center',
+      ),
+      content: {
+        'url': 'https://via.placeholder.com/200x200',
+      },
+      style: TemplateStyle(
+        fontSizeVw: 0,
+        color: '#000000',
+        imageShape: 'circle',
+        imageFit: BoxFit.cover,
+      ),
+    );
+  }
 
   factory TemplateElement.createLeader(String imageUrl) {
     return TemplateElement(
