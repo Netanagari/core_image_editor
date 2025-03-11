@@ -49,6 +49,14 @@ class EditorConfiguration {
     'Ubuntu',
     'Playfair Display',
     'Merriweather',
+    'Tiro Devanagari Hindi',
+    'Hind',
+    'Kalam',
+    'Yatra One',
+    'Khand',
+    'Modak',
+    'Bakbak One',
+    'Gajraj One',
   ];
 
   // Predefined configurations
