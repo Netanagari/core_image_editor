@@ -4,6 +4,7 @@ import 'package:core_image_editor/screens/mobile_textEdit_bottomsheet.dart';
 import 'package:core_image_editor/screens/profile_editor_view.dart';
 import 'package:core_image_editor/utils/app_color.dart';
 import 'package:core_image_editor/utils/app_text_style.dart';
+import 'package:core_image_editor/widgets/canvas_setting_control.dart';
 import 'package:core_image_editor/widgets/editor_element.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,6 +36,12 @@ class CoreImageEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Default to 1:1 aspect ratio (1080x1080) and blue background if not specified in template
+    final double aspectRatio = (template['original_width'] != null &&
+            template['original_height'] != null)
+        ? template['original_width'] / template['original_height']
+        : 1.0; // Default to 1:1 square
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -43,9 +50,10 @@ class CoreImageEditor extends StatelessWidget {
                 .map((e) => TemplateElement.fromJson(e))
                 .toList(),
             configuration: configuration,
-            canvasAspectRatio:
-                template['original_width'] / template['original_height'],
+            canvasAspectRatio: aspectRatio,
             initialViewportSize: Size.zero,
+            backgroundColor: Colors.blue, // Default blue background
+            backgroundImageUrl: template['base_image_url'],
           ),
         ),
         ChangeNotifierProvider(
@@ -189,6 +197,11 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
       'width': editorState.viewportSize.width,
       'height': editorState.viewportSize.height,
     };
+    // Save aspect ratio and background settings
+    original['aspect_ratio'] = editorState.canvasAspectRatio;
+    original['background_color'] =
+        '#${editorState.backgroundColor.value.toRadixString(16).substring(2)}';
+    original['base_image_url'] = editorState.backgroundImageUrl;
 
     final imgBytes = await controller.capture(
       pixelRatio: editorState.configuration.pixelRatio,
@@ -260,11 +273,37 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
 
   Widget _buildMobileLayout(BuildContext context, Size viewportSize) {
     final editorState = context.watch<EditorState>();
+    final historyState = context.read<HistoryState>();
 
     return Stack(
       children: [
         Center(
           child: _buildCanvas(context, viewportSize),
+        ),
+        // Add Canvas Settings at the top
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Card(
+            margin: const EdgeInsets.all(8),
+            elevation: 4,
+            child: CanvasSettingsControl(
+              onAspectRatioChanged: (ratio) {
+                editorState.setCanvasAspectRatio(ratio);
+                historyState.pushState(editorState.elements, null);
+              },
+              onBackgroundColorChanged: (color) {
+                editorState.setBackgroundColor(color);
+                historyState.pushState(editorState.elements, null);
+              },
+              onBackgroundImageChanged: (url) {
+                editorState.setBackgroundImage(url);
+                historyState.pushState(editorState.elements, null);
+              },
+              onSelectImage: widget.onSelectImage,
+            ),
+          ),
         ),
         Positioned(
           bottom: 0,
@@ -325,6 +364,7 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
 
   Widget _buildDesktopLayout(BuildContext context, Size viewportSize) {
     final editorState = context.watch<EditorState>();
+    final historyState = context.read<HistoryState>();
 
     return Row(
       children: [
@@ -336,8 +376,34 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
           onToggle: () => editorState.toggleCreationSidebar(),
         ),
         Expanded(
-          child: Center(
-            child: _buildCanvas(context, viewportSize),
+          child: Column(
+            children: [
+              // Add Canvas Settings at the top
+              Card(
+                margin: const EdgeInsets.all(8),
+                elevation: 4,
+                child: CanvasSettingsControl(
+                  onAspectRatioChanged: (ratio) {
+                    editorState.setCanvasAspectRatio(ratio);
+                    historyState.pushState(editorState.elements, null);
+                  },
+                  onBackgroundColorChanged: (color) {
+                    editorState.setBackgroundColor(color);
+                    historyState.pushState(editorState.elements, null);
+                  },
+                  onBackgroundImageChanged: (url) {
+                    editorState.setBackgroundImage(url);
+                    historyState.pushState(editorState.elements, null);
+                  },
+                  onSelectImage: widget.onSelectImage,
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: _buildCanvas(context, viewportSize),
+                ),
+              ),
+            ],
           ),
         ),
         if (editorState.selectedElement != null)
@@ -371,10 +437,22 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
               child: Stack(
                 key: _stackKey,
                 children: [
-                  Image.network(
-                    widget.template['base_image_url'],
-                    fit: BoxFit.contain,
+                  // Background color
+                  Container(
+                    width: viewportSize.width,
+                    height: viewportSize.height,
+                    color: editorState.backgroundColor,
                   ),
+                  // Background image (if any)
+                  if (editorState.backgroundImageUrl != null &&
+                      editorState.backgroundImageUrl!.isNotEmpty)
+                    Positioned.fill(
+                      child: Image.network(
+                        editorState.backgroundImageUrl!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  // Elements
                   ...(() {
                     final sortedElements =
                         List<TemplateElement>.from(editorState.elements);

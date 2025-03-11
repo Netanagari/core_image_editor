@@ -9,18 +9,24 @@ class EditorState extends ChangeNotifier {
   bool _isRotating;
   final EditorConfiguration configuration;
   Size _viewportSize;
-  final double _canvasAspectRatio;
+  double _canvasAspectRatio;
+  Color _backgroundColor;
+  String? _backgroundImageUrl;
 
   EditorState({
     required List<TemplateElement> initialElements,
     required this.configuration,
     required double canvasAspectRatio,
     required Size initialViewportSize,
+    Color? backgroundColor,
+    String? backgroundImageUrl,
   })  : _elements = initialElements,
         _isCreationSidebarExpanded = true,
         _isRotating = false,
         _canvasAspectRatio = canvasAspectRatio,
-        _viewportSize = initialViewportSize;
+        _viewportSize = initialViewportSize,
+        _backgroundColor = backgroundColor ?? Colors.blue,
+        _backgroundImageUrl = backgroundImageUrl;
 
   List<TemplateElement> get elements => _elements;
   TemplateElement? get selectedElement => _selectedElement;
@@ -28,6 +34,8 @@ class EditorState extends ChangeNotifier {
   bool get isRotating => _isRotating;
   Size get viewportSize => _viewportSize;
   double get canvasAspectRatio => _canvasAspectRatio;
+  Color get backgroundColor => _backgroundColor;
+  String? get backgroundImageUrl => _backgroundImageUrl;
 
   void setElements(List<TemplateElement> elements) {
     _elements = elements;
@@ -51,6 +59,21 @@ class EditorState extends ChangeNotifier {
 
   void setViewportSize(Size size) {
     _viewportSize = size;
+    notifyListeners();
+  }
+
+  void setCanvasAspectRatio(double ratio) {
+    _canvasAspectRatio = ratio;
+    notifyListeners();
+  }
+
+  void setBackgroundColor(Color color) {
+    _backgroundColor = color;
+    notifyListeners();
+  }
+
+  void setBackgroundImage(String url) {
+    _backgroundImageUrl = url.isEmpty ? null : url;
     notifyListeners();
   }
 
