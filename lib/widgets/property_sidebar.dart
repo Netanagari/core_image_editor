@@ -1,4 +1,5 @@
 import 'package:core_image_editor/models/editor_config.dart';
+import 'package:core_image_editor/widgets/property_controls/font_size_controls.dart';
 import 'package:core_image_editor/widgets/property_controls/nested_content_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -162,8 +163,12 @@ class PropertySidebar extends StatelessWidget {
           element: element,
           onUpdate: pushHistory,
         ),
+        const SectionTitle(title: 'Text Style'),
         if (element.type == 'text') ...[
-          const SectionTitle(title: 'Text Style'),
+          FontSizeControl(
+            element: element,
+            onUpdate: pushHistory,
+          ),
           if (editorState.configuration.can(EditorCapability.changeFonts)) ...[
             FontFamilyControl(
               element: element,

@@ -70,23 +70,50 @@ class NestedContentControls extends StatelessWidget {
         const SizedBox(height: 12),
 
         // Font Size
-        Row(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Font Size (vw)'),
-            Expanded(
-              child: Slider(
-                value: nestedElement.style.fontSizeVw,
-                min: 1,
-                max: 10,
-                divisions: 90,
-                label: nestedElement.style.fontSizeVw.toStringAsFixed(1),
-                onChanged: (value) {
-                  nestedElement.style.fontSizeVw = value;
-                  onUpdate();
-                },
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Slider(
+                    value: nestedElement.style.fontSizeVw.clamp(1.0, 10.0),
+                    min: 1,
+                    max: 10,
+                    divisions: 18,
+                    label: nestedElement.style.fontSizeVw.toStringAsFixed(1),
+                    onChanged: (value) {
+                      nestedElement.style.fontSizeVw = value;
+                      onUpdate();
+                    },
+                  ),
+                ),
+                Container(
+                  width: 64,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    '${nestedElement.style.fontSizeVw.toStringAsFixed(1)} vw',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ),
           ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildSizePresetButton(context, 'XS', 2.0, nestedElement),
+              _buildSizePresetButton(context, 'S', 3.0, nestedElement),
+              _buildSizePresetButton(context, 'M', 4.0, nestedElement),
+              _buildSizePresetButton(context, 'L', 5.0, nestedElement),
+              _buildSizePresetButton(context, 'XL', 6.0, nestedElement),
+            ],
+          ),
         ),
 
         // Font Weight
@@ -151,6 +178,40 @@ class NestedContentControls extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buildSizePresetButton(BuildContext context, String label, double size,
+      TemplateElement element) {
+    final isSelected = (element.style.fontSizeVw - size).abs() < 0.1;
+
+    return InkWell(
+      onTap: () {
+        element.style.fontSizeVw = size;
+        onUpdate();
+      },
+      borderRadius: BorderRadius.circular(4),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Theme.of(context).primaryColor.withOpacity(0.2)
+              : Colors.grey[100],
+          border: Border.all(
+            color:
+                isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? Theme.of(context).primaryColor : Colors.black87,
+          ),
+        ),
+      ),
     );
   }
 

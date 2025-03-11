@@ -49,11 +49,15 @@ void main() {
 }
 
 final exampleJson = {
-  "id": 4,
-  "base_image": "https://picsum.photos/512/512",
-  "original_width": 512,
-  "original_height": 512,
-  "aspect_ratio": 1.0,
+  "id": 1,
+  "poster": 1,
+  "base_image_url":
+      "https://plus.unsplash.com/premium_photo-1661616016088-1964194c7728?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cG9zdGVyfGVufDB8fDB8fHww",
+  "thumbnail_url":
+      "https://plus.unsplash.com/premium_photo-1661616016088-1964194c7728?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cG9zdGVyfGVufDB8fDB8fHww",
+  "original_width": 739,
+  "original_height": 1600,
+  "aspect_ratio": 0.461875,
   "content_json": [
     {
       "type": "text",
@@ -177,9 +181,7 @@ final exampleJson = {
       },
       "z_index": 0
     }
-  ],
-  "user_id": 1,
-  "poster": 1
+  ]
 };
 
 class MyApp extends StatelessWidget {
@@ -210,54 +212,201 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: CoreImageEditor(
-          onSave: (json, imageBytes) async {
-            final base64Data =
-                base64Encode(imageBytes ?? Uint8List.fromList([]));
-            final anchor =
-                html.AnchorElement(href: 'data:image/png;base64,$base64Data');
-            anchor.download = 'image.png';
-            anchor.click();
-          },
-          template: exampleJson,
-          configuration: EditorConfiguration.admin,
-          onSelectImage: (image) async {
-            final img = await showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text('Select Image'),
-                  content: const Text('Select an image from gallery or camera'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop("https://picsum.photos/200");
-                      },
-                      child: const Text('Random image 1'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context)
-                            .pop('https://picsum.photos/200/300');
-                      },
-                      child: const Text('Random image 2'),
-                    ),
-                  ],
-                );
-              },
+    return CoreImageEditor(
+      onSave: (json, imageBytes) async {
+        final base64Data = base64Encode(imageBytes ?? Uint8List.fromList([]));
+        final anchor =
+            html.AnchorElement(href: 'data:image/png;base64,$base64Data');
+        anchor.download = 'image.png';
+        anchor.click();
+      },
+      template: exampleJson,
+      configuration: EditorConfiguration.admin,
+      onSelectImage: (image) async {
+        final img = await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Select Image'),
+              content: const Text('Select an image from gallery or camera'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop("https://picsum.photos/200");
+                  },
+                  child: const Text('Random image 1'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop('https://picsum.photos/200/300');
+                  },
+                  child: const Text('Random image 2'),
+                ),
+              ],
             );
-            print(img);
-            return img;
           },
-        ),
-      ),
+        );
+        print(img);
+        return img;
+      },
     );
+  }
+}
+
+
+
+--- File: ./example/.dart_tool/flutter_build/dart_plugin_registrant.dart ---
+
+//
+// Generated file. Do not edit.
+// This file is generated from template in file `flutter_tools/lib/src/flutter_plugins.dart`.
+//
+
+// @dart = 3.6
+
+import 'dart:io'; // flutter_ignore: dart_io_import.
+import 'package:image_picker_android/image_picker_android.dart';
+import 'package:path_provider_android/path_provider_android.dart';
+import 'package:image_picker_ios/image_picker_ios.dart';
+import 'package:path_provider_foundation/path_provider_foundation.dart';
+import 'package:file_selector_linux/file_selector_linux.dart';
+import 'package:image_picker_linux/image_picker_linux.dart';
+import 'package:path_provider_linux/path_provider_linux.dart';
+import 'package:file_selector_macos/file_selector_macos.dart';
+import 'package:image_picker_macos/image_picker_macos.dart';
+import 'package:path_provider_foundation/path_provider_foundation.dart';
+import 'package:file_selector_windows/file_selector_windows.dart';
+import 'package:image_picker_windows/image_picker_windows.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
+
+@pragma('vm:entry-point')
+class _PluginRegistrant {
+
+  @pragma('vm:entry-point')
+  static void register() {
+    if (Platform.isAndroid) {
+      try {
+        ImagePickerAndroid.registerWith();
+      } catch (err) {
+        print(
+          '`image_picker_android` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+      try {
+        PathProviderAndroid.registerWith();
+      } catch (err) {
+        print(
+          '`path_provider_android` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+    } else if (Platform.isIOS) {
+      try {
+        ImagePickerIOS.registerWith();
+      } catch (err) {
+        print(
+          '`image_picker_ios` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+      try {
+        PathProviderFoundation.registerWith();
+      } catch (err) {
+        print(
+          '`path_provider_foundation` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+    } else if (Platform.isLinux) {
+      try {
+        FileSelectorLinux.registerWith();
+      } catch (err) {
+        print(
+          '`file_selector_linux` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+      try {
+        ImagePickerLinux.registerWith();
+      } catch (err) {
+        print(
+          '`image_picker_linux` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+      try {
+        PathProviderLinux.registerWith();
+      } catch (err) {
+        print(
+          '`path_provider_linux` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+    } else if (Platform.isMacOS) {
+      try {
+        FileSelectorMacOS.registerWith();
+      } catch (err) {
+        print(
+          '`file_selector_macos` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+      try {
+        ImagePickerMacOS.registerWith();
+      } catch (err) {
+        print(
+          '`image_picker_macos` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+      try {
+        PathProviderFoundation.registerWith();
+      } catch (err) {
+        print(
+          '`path_provider_foundation` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+    } else if (Platform.isWindows) {
+      try {
+        FileSelectorWindows.registerWith();
+      } catch (err) {
+        print(
+          '`file_selector_windows` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+      try {
+        ImagePickerWindows.registerWith();
+      } catch (err) {
+        print(
+          '`image_picker_windows` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+      try {
+        PathProviderWindows.registerWith();
+      } catch (err) {
+        print(
+          '`path_provider_windows` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+    }
   }
 }
 
@@ -270,9 +419,17 @@ class _MyHomePageState extends State<MyHomePage> {
 // Generated file. Do not edit.
 //
 
+// @dart = 2.13
 // ignore_for_file: type=lint
 
-void registerPlugins() {}
+import 'package:image_picker_for_web/image_picker_for_web.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+
+void registerPlugins([final Registrar? pluginRegistrar]) {
+  final Registrar registrar = pluginRegistrar ?? webPluginRegistrar;
+  ImagePickerPlugin.registerWith(registrar);
+  registrar.registerMessageHandler();
+}
 
 
 
@@ -376,6 +533,152 @@ class TextMeasurement {
 
 
 
+--- File: ./lib/utils/app_text_style.dart ---
+
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class AppTextStyles {
+  // Title (Poppins)
+  static TextStyle tXlRegular =
+      GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.w400);
+  static TextStyle tXlMedium =
+      GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.w500);
+  static TextStyle tXlSemiBold =
+      GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.w600);
+  static TextStyle tXlBold =
+      GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.w700);
+  static TextStyle tXlXBold =
+      GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.w800);
+
+  static TextStyle tLgRegular =
+      GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w400);
+  static TextStyle tLgMedium =
+      GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w500);
+  static TextStyle tLgSemiBold =
+      GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w600);
+  static TextStyle tLgBold =
+      GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w700);
+  static TextStyle tLgXBold =
+      GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w800);
+
+  static TextStyle tMdRegular =
+      GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w400);
+  static TextStyle tMdMedium =
+      GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w500);
+  static TextStyle tMdSemiBold =
+      GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w600);
+  static TextStyle tMdBold =
+      GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w700);
+  static TextStyle tMdXBold =
+      GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w800);
+
+  static TextStyle tSmRegular =
+      GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w400);
+  static TextStyle tSmMedium =
+      GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w500);
+  static TextStyle tSmSemiBold =
+      GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600);
+  static TextStyle tSmBold =
+      GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w700);
+  static TextStyle tSmXBold =
+      GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800);
+
+  // Headlines (Noto Sans)
+  static TextStyle hLgRegular =
+      GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w400);
+  static TextStyle hLgMedium =
+      GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w500);
+  static TextStyle hLgSemiBold =
+      GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w600);
+  static TextStyle hLgBold =
+      GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w700);
+
+  static TextStyle hSmRegular =
+      GoogleFonts.notoSans(fontSize: 18, fontWeight: FontWeight.w400);
+  static TextStyle hSmMedium =
+      GoogleFonts.notoSans(fontSize: 18, fontWeight: FontWeight.w500);
+  static TextStyle hSmSemiBold =
+      GoogleFonts.notoSans(fontSize: 18, fontWeight: FontWeight.w600);
+  static TextStyle hSmBold =
+      GoogleFonts.notoSans(fontSize: 18, fontWeight: FontWeight.w700);
+
+  // Body (Noto Sans)
+  static TextStyle bodyLgRegular =
+      GoogleFonts.notoSans(fontSize: 16, fontWeight: FontWeight.w400);
+  static TextStyle bodyLgMedium =
+      GoogleFonts.notoSans(fontSize: 16, fontWeight: FontWeight.w500);
+  static TextStyle bodyLgSemiBold =
+      GoogleFonts.notoSans(fontSize: 16, fontWeight: FontWeight.w600);
+  static TextStyle bodyLgBold =
+      GoogleFonts.notoSans(fontSize: 16, fontWeight: FontWeight.w700);
+
+  static TextStyle bodyMdRegular =
+      GoogleFonts.notoSans(fontSize: 14, fontWeight: FontWeight.w400);
+  static TextStyle bodyMdMedium =
+      GoogleFonts.notoSans(fontSize: 14, fontWeight: FontWeight.w500);
+  static TextStyle bodyMdSemiBold =
+      GoogleFonts.notoSans(fontSize: 14, fontWeight: FontWeight.w600);
+  static TextStyle bodyMdBold =
+      GoogleFonts.notoSans(fontSize: 14, fontWeight: FontWeight.w700);
+
+  static TextStyle bodySmRegular =
+      GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w400);
+  static TextStyle bodySmMedium =
+      GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w500);
+  static TextStyle bodySmSemiBold =
+      GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w600);
+  static TextStyle bodySmBold =
+      GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w700);
+
+  static TextStyle bodyXsRegular =
+      GoogleFonts.notoSans(fontSize: 10, fontWeight: FontWeight.w400);
+  static TextStyle bodyXsMedium =
+      GoogleFonts.notoSans(fontSize: 10, fontWeight: FontWeight.w500);
+  static TextStyle bodyXsSemiBold =
+      GoogleFonts.notoSans(fontSize: 10, fontWeight: FontWeight.w600);
+  static TextStyle bodyXsBold =
+      GoogleFonts.notoSans(fontSize: 10, fontWeight: FontWeight.w700);
+
+  // Labels (Poppins)
+  static TextStyle labelLgRegular =
+      GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w400);
+  static TextStyle labelLgMedium =
+      GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500);
+  static TextStyle labelLgSemiBold =
+      GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600);
+  static TextStyle labelLgBold =
+      GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700);
+
+  static TextStyle labelMdRegular =
+      GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w400);
+  static TextStyle labelMdMedium =
+      GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500);
+  static TextStyle labelMdSemiBold =
+      GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600);
+  static TextStyle labelMdBold =
+      GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700);
+
+  static TextStyle labelSmRegular =
+      GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w400);
+  static TextStyle labelSmMedium =
+      GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500);
+  static TextStyle labelSmSemiBold =
+      GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600);
+  static TextStyle labelSmBold =
+      GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700);
+
+  // Caption (Noto Sans)
+  static TextStyle captionRegular =
+      GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w400);
+  static TextStyle captionMedium =
+      GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w500);
+  static TextStyle captionSemiBold =
+      GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w600);
+}
+
+
+
 --- File: ./lib/utils/responsive_utils.dart ---
 
 // lib/utils/responsive_utils.dart
@@ -418,6 +721,19 @@ class ResponsiveUtils {
     return (pixels / viewportWidth) * 100;
   }
 }
+
+
+--- File: ./lib/utils/app_color.dart ---
+
+import 'dart:ui';
+
+class AppColors {
+  static const Color primary100 = Color.fromRGBO(255, 255, 255, 1);
+  static const Color secondary100 = Color.fromRGBO(33, 37, 40, 1);
+  static const Color tertiary100 = Color.fromRGBO(125, 125, 125, 1);
+  static const Color bg100 = Color.fromRGBO(244, 246, 248, 1);
+}
+
 
 
 --- File: ./lib/utils/history_manager.dart ---
@@ -491,6 +807,7 @@ class HistoryManager {
 
 --- File: ./lib/models/template_types.dart ---
 
+import 'package:core_image_editor/models/shape_types.dart';
 import 'package:flutter/widgets.dart';
 
 enum LeaderStripSize {
@@ -517,6 +834,9 @@ enum TemplateElementTag {
   subtitle,
   userPicture,
   partySymbol,
+  userName,
+  userDesignation,
+  userParty,
   leaderPhotoStrip,
   leader,
   defaulty;
@@ -539,6 +859,12 @@ enum TemplateElementTag {
         return 'Leader Photo Strip';
       case TemplateElementTag.leader:
         return 'Leader';
+      case TemplateElementTag.userName:
+        return 'User Name';
+      case TemplateElementTag.userDesignation:
+        return 'User Designation';
+      case TemplateElementTag.userParty:
+        return 'User Party';
       case TemplateElementTag.defaulty:
         return 'Default';
     }
@@ -562,8 +888,78 @@ enum TemplateElementTag {
         return 'Strip of leader photos';
       case TemplateElementTag.leader:
         return 'Leader photo';
+      case TemplateElementTag.userName:
+        return 'The name of the user/candidate';
+      case TemplateElementTag.userDesignation:
+        return 'Job title or position of the user/candidate';
+      case TemplateElementTag.userParty:
+        return 'Political party of the user/candidate';
       case TemplateElementTag.defaulty:
         return 'Standard element with no special handling';
+    }
+  }
+}
+
+class NestedContent {
+  TemplateElement? content;
+  BoxFit contentFit;
+  Alignment contentAlignment;
+
+  NestedContent({
+    this.content,
+    this.contentFit = BoxFit.contain,
+    this.contentAlignment = Alignment.center,
+  });
+
+  factory NestedContent.fromJson(Map<String, dynamic> json) {
+    return NestedContent(
+      content: json['content'] != null
+          ? TemplateElement.fromJson(json['content'])
+          : null,
+      contentFit: _parseBoxFit(json['contentFit'] ?? 'BoxFit.contain'),
+      contentAlignment: _parseAlignment(json['contentAlignment'] ?? 'center'),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'content': content?.toJson(),
+      'contentFit': contentFit.toString(),
+      'contentAlignment': contentAlignment.toString(),
+    };
+  }
+
+  static BoxFit _parseBoxFit(String value) {
+    switch (value) {
+      case 'BoxFit.contain':
+        return BoxFit.contain;
+      case 'BoxFit.cover':
+        return BoxFit.cover;
+      case 'BoxFit.fill':
+        return BoxFit.fill;
+      case 'BoxFit.fitWidth':
+        return BoxFit.fitWidth;
+      case 'BoxFit.fitHeight':
+        return BoxFit.fitHeight;
+      default:
+        return BoxFit.contain;
+    }
+  }
+
+  static Alignment _parseAlignment(String value) {
+    switch (value) {
+      case 'center':
+        return Alignment.center;
+      case 'topLeft':
+        return Alignment.topLeft;
+      case 'topRight':
+        return Alignment.topRight;
+      case 'bottomLeft':
+        return Alignment.bottomLeft;
+      case 'bottomRight':
+        return Alignment.bottomRight;
+      default:
+        return Alignment.center;
     }
   }
 }
@@ -739,6 +1135,7 @@ class TemplateElement {
   TemplateStyle style;
   int zIndex;
   TemplateElementTag tag;
+  NestedContent? nestedContent;
 
   TemplateElement({
     required this.type,
@@ -746,17 +1143,104 @@ class TemplateElement {
     required this.content,
     required this.style,
     this.zIndex = 0,
+    this.nestedContent,
     this.tag = TemplateElementTag.defaulty,
   });
 
-factory TemplateElement.createLeader(String imageUrl) {
+  factory TemplateElement.createUserName() {
+    return TemplateElement(
+      type: 'text',
+      tag: TemplateElementTag.userName,
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 10,
+        widthPercent: 80,
+        heightPercent: 10,
+        alignment: 'center',
+      ),
+      content: {'text': 'Candidate Name'},
+      style: TemplateStyle(
+        fontSizeVw: 5.0,
+        color: '#000000',
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  factory TemplateElement.createUserDesignation() {
+    return TemplateElement(
+      type: 'text',
+      tag: TemplateElementTag.userDesignation,
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 20,
+        widthPercent: 80,
+        heightPercent: 6,
+        alignment: 'center',
+      ),
+      content: {'text': 'Candidate Designation'},
+      style: TemplateStyle(
+        fontSizeVw: 3.5,
+        color: '#444444',
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.normal,
+      ),
+    );
+  }
+
+  factory TemplateElement.createUserParty() {
+    return TemplateElement(
+      type: 'text',
+      tag: TemplateElementTag.userParty,
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 26,
+        widthPercent: 80,
+        heightPercent: 6,
+        alignment: 'center',
+      ),
+      content: {'text': 'Political Party'},
+      style: TemplateStyle(
+        fontSizeVw: 3.5,
+        color: '#333333',
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+
+  factory TemplateElement.createUserPicture() {
+    return TemplateElement(
+      type: 'image',
+      tag: TemplateElementTag.userPicture,
+      box: TemplateBox(
+        xPercent: 10,
+        yPercent: 35,
+        widthPercent: 30,
+        heightPercent: 30,
+        alignment: 'center',
+      ),
+      content: {
+        'url': 'https://via.placeholder.com/200x200',
+      },
+      style: TemplateStyle(
+        fontSizeVw: 0,
+        color: '#000000',
+        imageShape: 'circle',
+        imageFit: BoxFit.cover,
+      ),
+    );
+  }
+
+  factory TemplateElement.createLeader(String imageUrl) {
     return TemplateElement(
       type: 'image',
       tag: TemplateElementTag.leader,
       box: TemplateBox(
-        xPercent: 0,  // Position will be handled by leader strip
+        xPercent: 0, // Position will be handled by leader strip
         yPercent: 0,
-        widthPercent: 100,  // Will be adjusted by strip
+        widthPercent: 100, // Will be adjusted by strip
         heightPercent: 100,
         alignment: 'center',
       ),
@@ -766,7 +1250,7 @@ factory TemplateElement.createLeader(String imageUrl) {
       style: TemplateStyle(
         fontSizeVw: 0,
         color: '#000000',
-        imageShape: 'circle',  // Default shape
+        imageShape: 'circle', // Default shape
         imageFit: BoxFit.cover,
       ),
     );
@@ -784,7 +1268,8 @@ factory TemplateElement.createLeader(String imageUrl) {
         alignment: 'center',
       ),
       content: {
-        'leaders': <Map<String, dynamic>>[],  // List of serialized leader elements
+        'leaders':
+            <Map<String, dynamic>>[], // List of serialized leader elements
         'stripSize': 'medium',
         'spacing': 8.0,
       },
@@ -797,7 +1282,7 @@ factory TemplateElement.createLeader(String imageUrl) {
 
   List<TemplateElement> getLeaders() {
     if (type != 'leader_strip') return [];
-    
+
     return (content['leaders'] as List? ?? [])
         .map((leaderJson) => TemplateElement.fromJson(leaderJson))
         .toList();
@@ -815,6 +1300,9 @@ factory TemplateElement.createLeader(String imageUrl) {
       content: json['content'] ?? {},
       style: TemplateStyle.fromJson(json['style'] ?? {}),
       zIndex: json['z_index'] ?? 0,
+      nestedContent: json['nested_content'] != null
+          ? NestedContent.fromJson(json['nested_content'])
+          : null,
       tag: _parseTag(json['tag']),
     );
   }
@@ -827,10 +1315,9 @@ factory TemplateElement.createLeader(String imageUrl) {
         orElse: () => TemplateElementTag.defaulty,
       );
     } catch (e) {
-    return TemplateElementTag.defaulty;
+      return TemplateElementTag.defaulty;
     }
   }
-
 
   Map<String, dynamic> toJson() {
     return {
@@ -840,7 +1327,17 @@ factory TemplateElement.createLeader(String imageUrl) {
       'style': style.toJson(),
       'z_index': zIndex,
       'tag': tag.toString(),
+      'nested_content': nestedContent?.toJson(),
     };
+  }
+
+  bool get canContainNestedContent {
+    if (type != 'shape') return false;
+    final shapeType = ShapeType.values.firstWhere(
+      (type) => type.toString() == content['shapeType'],
+      orElse: () => ShapeType.rectangle,
+    );
+    return shapeType != ShapeType.line && shapeType != ShapeType.arrow;
   }
 
   @override
@@ -1179,11 +1676,564 @@ extension XColor on Color {
 
 
 
+--- File: ./lib/screens/mobile_textEdit_bottomsheet.dart ---
+
+import 'package:core_image_editor/utils/app_color.dart';
+import 'package:core_image_editor/utils/app_text_style.dart';
+import 'package:flutter/material.dart';
+
+class MobileTextEditBottomSheet extends StatefulWidget {
+  const MobileTextEditBottomSheet({super.key});
+
+  @override
+  State<MobileTextEditBottomSheet> createState() =>
+      _MobileTextEditBottomSheetState();
+}
+
+class _MobileTextEditBottomSheetState extends State<MobileTextEditBottomSheet> {
+  String headerText = "This is poster header";
+  String subtitleText = "This is poster subtitle";
+  String bodyText = "This is poster subtitle";
+  double selectedFontSize = 16.0; // Medium by default
+  FontStyle fontStyle = FontStyle.normal;
+  FontWeight fontWeight = FontWeight.normal;
+  bool isUnderlined = false;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: AppColors.primary100,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
+      ),
+      child: Column(
+        children: [
+          TextEditorView(
+              label: "Heading",
+              value: headerText,
+              onChanged: (value) {
+                setState(() => headerText = value);
+              }),
+          TextEditorView(
+              label: "Sub Heading",
+              value: subtitleText,
+              onChanged: (value) {
+                setState(() => subtitleText = value);
+              }),
+          TextEditorView(
+              label: "Text",
+              value: bodyText,
+              onChanged: (value) {
+                setState(() => bodyText = value);
+              }),
+          const SizedBox(height: 16),
+          _buildFontSizeSelector(),
+          const SizedBox(height: 16),
+          _buildFontStyleSelector(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFontSizeSelector() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 120,
+          child: Text("Font Size",
+              style: AppTextStyles.labelSmRegular
+                  .copyWith(color: AppColors.secondary100)),
+        ),
+        _buildFontSizeOption("Small", 12.0),
+        const SizedBox(width: 12),
+        _buildFontSizeOption("Medium", 16.0, isSelected: true),
+        const SizedBox(width: 12),
+        _buildFontSizeOption("Large", 20.0),
+      ],
+    );
+  }
+
+  Widget _buildFontSizeOption(String label, double fontSize,
+      {bool isSelected = false}) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedFontSize = fontSize;
+        });
+      },
+      child: Column(
+        children: [
+          Container(
+            width: 12 + fontSize,
+            height: 12 + fontSize,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(8),
+              color: selectedFontSize == fontSize ? Colors.black : Colors.white,
+            ),
+            child: Center(
+              child: Text(
+                'T',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  color: selectedFontSize == fontSize
+                      ? Colors.white
+                      : Colors.black,
+                ),
+              ),
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              color: AppColors.secondary100,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFontStyleSelector() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 120,
+          child: Text(
+            "Font Style",
+            style: AppTextStyles.labelSmRegular
+                .copyWith(color: AppColors.secondary100),
+          ),
+        ),
+        _buildStyleOption(
+            "B", "Bold", FontWeight.bold, fontWeight == FontWeight.bold),
+        const SizedBox(width: 12),
+        _buildUnderlineOption("U", isUnderlined),
+        const SizedBox(width: 12),
+        _buildItalicOption("I", fontStyle == FontStyle.italic),
+      ],
+    );
+  }
+
+  Widget _buildStyleOption(
+      String text, String styleName, FontWeight weight, bool isSelected) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          fontWeight = isSelected ? FontWeight.normal : weight;
+        });
+      },
+      child: Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+          color: isSelected ? Colors.black : Colors.white,
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontWeight: weight,
+              color: isSelected ? Colors.white : Colors.black,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUnderlineOption(String text, bool isSelected) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isUnderlined = !isUnderlined;
+        });
+      },
+      child: Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+          color: isSelected ? Colors.black : Colors.white,
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              decoration: TextDecoration.underline,
+              color: isSelected ? Colors.white : Colors.black,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItalicOption(String text, bool isSelected) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          fontStyle = isSelected ? FontStyle.normal : FontStyle.italic;
+        });
+      },
+      child: Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+          color: isSelected ? Colors.black : Colors.white,
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontStyle: FontStyle.italic,
+              color: isSelected ? Colors.white : Colors.black,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TextEditorView extends StatelessWidget {
+  const TextEditorView({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String label;
+  final String value;
+  final Function(String p1) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Text(label,
+                style: AppTextStyles.labelSmRegular
+                    .copyWith(color: AppColors.secondary100)),
+          ),
+          Expanded(
+            flex: 2,
+            child: Container(
+              padding: EdgeInsets.zero,
+              decoration: BoxDecoration(
+                color: AppColors.primary100,
+                boxShadow: [
+                  BoxShadow(
+                      color: AppColors.tertiary100.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 1,
+                      offset: Offset(1, 1)),
+                ],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: TextField(
+                style: AppTextStyles.labelSmMedium
+                    .copyWith(color: AppColors.secondary100),
+                decoration: InputDecoration(
+                    isDense: true,
+                    border: InputBorder.none,
+                    hintText: "Enter text",
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    hintStyle: AppTextStyles.labelSmRegular
+                        .copyWith(color: AppColors.tertiary100),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 8, vertical: 12)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+--- File: ./lib/screens/profile_editor_view.dart ---
+
+import 'package:core_image_editor/screens/mobile_textEdit_bottomsheet.dart';
+import 'package:core_image_editor/utils/app_color.dart';
+import 'package:core_image_editor/utils/app_text_style.dart';
+import 'package:flutter/material.dart';
+
+class ProfileEditorScreen extends StatefulWidget {
+  const ProfileEditorScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileEditorScreen> createState() => _ProfileEditorScreenState();
+}
+
+class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
+  String name = "Name";
+  String designation = "Designation";
+  String party = "BJP";
+  String selectedImageSize = "Medium";
+  String selectedImageShape = "Circle";
+  double selectedSize = 64; // Circle
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: AppColors.primary100,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Profile image and edit buttons
+          Center(
+            child: Stack(
+              children: [
+                // Profile image
+                Container(
+                  width: selectedSize + 24,
+                  height: selectedSize + 24,
+                  decoration: BoxDecoration(
+                    shape: selectedImageShape == "Rectangle"
+                        ? BoxShape.rectangle
+                        : BoxShape.circle,
+                    image: const DecorationImage(
+                      image: NetworkImage(
+                          'https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D'),
+                      fit: BoxFit.cover,
+                    ),
+                    border: Border.all(color: Colors.grey.shade300, width: 1),
+                  ),
+                ),
+
+                // Edit button
+                Positioned(
+                  bottom: 4,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                      color: Colors.black,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.edit,
+                      color: Colors.white,
+                      size: 14,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 30),
+
+          // Name field
+          TextEditorView(
+              label: "Name",
+              value: name,
+              onChanged: (value) {
+                setState(() => name = value);
+              }),
+
+          const SizedBox(height: 8),
+
+          // Designation field
+          TextEditorView(
+              label: "Designation",
+              value: designation,
+              onChanged: (value) {
+                setState(() => designation = value);
+              }),
+
+          const SizedBox(height: 5),
+
+          // Party selector
+          Row(
+            children: [
+              SizedBox(
+                width: 120,
+                child: Text('Party',
+                    style: AppTextStyles.labelSmRegular
+                        .copyWith(color: AppColors.secondary100)),
+              ),
+              Expanded(
+                child: Container(
+                  height: 38,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      // Party logo
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        child: Image.network(
+                          'https://images.unsplash.com/photo-1496200186974-4293800e2c20?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YmhhanBhJTIwbG9nb3xlbnwwfHwwfHx8MA%3D%3D',
+                          width: 30,
+                          height: 30,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Party name
+                      Text('BJP',
+                          style: AppTextStyles.labelSmRegular
+                              .copyWith(color: AppColors.secondary100)),
+                      const Spacer(),
+                      // Dropdown icon
+                      const Icon(Icons.arrow_drop_down),
+                      const SizedBox(width: 8),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Delete button
+              TextButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.delete_outline, color: Colors.red),
+                label: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          // Image Size selector
+          Row(
+            children: [
+              SizedBox(
+                width: 120,
+                child: Text('Image Size',
+                    style: AppTextStyles.labelSmRegular
+                        .copyWith(color: AppColors.secondary100)),
+              ),
+              _buildSizeOption("Small", "Small", 24,
+                  isSelected: selectedImageSize == "Small"),
+              const SizedBox(width: 8),
+              _buildSizeOption("Medium", "Medium", 48,
+                  isSelected: selectedImageSize == "Medium"),
+              const SizedBox(width: 8),
+              _buildSizeOption("Large", "Large", 64,
+                  isSelected: selectedImageSize == "Large"),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          // Image Shape selector
+          Row(
+            children: [
+              SizedBox(
+                width: 120,
+                child: Text('Image Shape',
+                    style: AppTextStyles.labelSmRegular
+                        .copyWith(color: AppColors.secondary100)),
+              ),
+              _buildShapeOption("Rectangle", "Rectangle",
+                  isSelected: selectedImageShape == "Rectangle"),
+              const SizedBox(width: 16),
+              _buildShapeOption(
+                "Circle",
+                "Circle",
+                isSelected: selectedImageShape == "Circle",
+                isCircle: true,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSizeOption(String value, String label, double size,
+      {bool isSelected = false}) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedImageSize = value;
+          selectedSize = size;
+        });
+      },
+      child: Container(
+        width: 24 + size / 3,
+        height: 24 + size / 3,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+          color: isSelected ? Colors.black : Colors.white,
+        ),
+        child: Center(
+          child: Icon(
+            Icons.person,
+            color: isSelected ? Colors.white : Colors.black,
+            size: 12 + size * 0.1,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShapeOption(String value, String label,
+      {bool isSelected = false, bool isCircle = false}) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedImageShape = value;
+        });
+      },
+      child: Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.black : Colors.white,
+          border: Border.all(color: AppColors.secondary100, width: 1),
+          shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
+        ),
+      ),
+    );
+  }
+}
+
+
+
 --- File: ./lib/screens/template_editor_widget.dart ---
 
+import 'dart:io';
+
+import 'package:core_image_editor/screens/mobile_textEdit_bottomsheet.dart';
+import 'package:core_image_editor/screens/profile_editor_view.dart';
+import 'package:core_image_editor/utils/app_color.dart';
+import 'package:core_image_editor/utils/app_text_style.dart';
 import 'package:core_image_editor/widgets/editor_element.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
 import '../models/editor_config.dart';
@@ -1192,8 +2242,6 @@ import '../state/editor_state.dart';
 import '../state/history_state.dart';
 import '../utils/responsive_utils.dart';
 import '../widgets/element_creation_sidebar.dart';
-import '../widgets/mobile_element_creation_sheet.dart';
-import '../widgets/mobile_property_sheet.dart';
 import '../widgets/property_sidebar.dart';
 import '../widgets/responsive_builder.dart';
 
@@ -1258,6 +2306,17 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
   late final TransformationController transformationController;
   late final WidgetsToImageController controller;
   final GlobalKey _stackKey = GlobalKey();
+  int selectedIndex = 0;
+  bool isBottomSheetVisible = false;
+
+  // A list of the screens
+
+  // Method to handle index change
+  void onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
 
   @override
   void initState() {
@@ -1267,6 +2326,12 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
     _setupKeyboardShortcuts();
   }
 
+  List<Widget> bottomContent = [
+    MobileTextEditBottomSheet(),
+    ImageDisplayScreen(),
+    ProfileEditorScreen(),
+    ProfileEditorScreen(),
+  ];
   void _setupKeyboardShortcuts() {
     RawKeyboard.instance.addListener(_handleKeyEvent);
   }
@@ -1366,6 +2431,14 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
+        backgroundColor: AppColors.bg100,
+        title: Text(
+          'Edit Poster',
+          style: AppTextStyles.labelMdMedium
+              .copyWith(color: AppColors.secondary100),
+        ),
+        centerTitle: true,
+        automaticallyImplyLeading: true,
         actions: [
           if (editorState.configuration.can(EditorCapability.undoRedo)) ...[
             IconButton(
@@ -1384,33 +2457,6 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
             onPressed: () => _saveChanges(context),
           ),
         ],
-      ),
-      floatingActionButton: ResponsiveLayoutBuilder(
-        builder: (context, isMobile) {
-          if (!isMobile ||
-              editorState.selectedElement != null ||
-              !editorState.configuration.can(EditorCapability.addElements)) {
-            return const SizedBox();
-          }
-          return FloatingActionButton(
-            child: const Icon(Icons.add),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => MobileElementCreationSheet(
-                  onUploadImage: widget.onSelectImage,
-                  onCreateElement: (element) {
-                    Navigator.pop(context);
-                    _handleNewElement(context, element);
-                  },
-                  viewportSize: editorState.viewportSize,
-                ),
-              );
-            },
-          );
-        },
       ),
       body: ResponsiveLayoutBuilder(
         builder: (context, isMobile) {
@@ -1446,31 +2492,59 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
         Center(
           child: _buildCanvas(context, viewportSize),
         ),
-        if (editorState.selectedElement != null)
-          Positioned.fill(
-            child: MobilePropertySheet(
-              configuration: editorState.configuration,
-              onSelectImage: widget.onSelectImage,
-              element: editorState.selectedElement!,
-              viewportSize: viewportSize,
-              onClose: () => editorState.setSelectedElement(null),
-              onUpdate: () {
-                final historyState = context.read<HistoryState>();
-                historyState.pushState(
-                  editorState.elements,
-                  editorState.selectedElement,
-                );
-              },
-              onDelete:
-                  editorState.configuration.can(EditorCapability.deleteElements)
-                      ? (element) {
-                          editorState.removeElement(element);
-                          final historyState = context.read<HistoryState>();
-                          historyState.pushState(editorState.elements, null);
-                        }
-                      : (_) {},
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 80,
+            decoration: const BoxDecoration(
+              color: AppColors.primary100,
+              border: Border(
+                top: BorderSide(
+                  color: AppColors.secondary100,
+                  width: 0.75,
+                ),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(
+                  isSelected: selectedIndex == 0,
+                  icon: Icons.abc,
+                  label: 'Text',
+                  onTap: () => onItemTapped(0),
+                ),
+                _buildNavItem(
+                  isSelected: selectedIndex == 1,
+                  icon: Icons.image,
+                  label: 'Image',
+                  onTap: () => onItemTapped(1),
+                ),
+                _buildNavItem(
+                  isSelected: selectedIndex == 2,
+                  icon: Icons.plus_one,
+                  label: 'Calendar',
+                  onTap: () => onItemTapped(2),
+                ),
+                _buildNavItem(
+                  isSelected: selectedIndex == 3,
+                  icon: Icons.person,
+                  label: 'You',
+                  onTap: () => onItemTapped(3),
+                ),
+              ],
             ),
           ),
+        ),
+        Positioned(
+            bottom: 80,
+            left: 0,
+            right: 0,
+            child: Container(
+              child: bottomContent[selectedIndex],
+            )),
       ],
     );
   }
@@ -1504,40 +2578,84 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
   Widget _buildCanvas(BuildContext context, Size viewportSize) {
     final editorState = context.watch<EditorState>();
 
-    return InteractiveViewer(
-      boundaryMargin: const EdgeInsets.all(double.infinity),
-      transformationController: transformationController,
-      minScale: 0.1,
-      maxScale: 4.0,
-      constrained: false,
-      child: WidgetsToImage(
-        controller: controller,
-        child: SizedBox(
-          width: viewportSize.width,
-          height: viewportSize.height,
-          child: Stack(
-            key: _stackKey,
-            children: [
-              Image.network(
-                widget.template['base_image'],
-                width: viewportSize.width,
-                height: viewportSize.height,
-                fit: BoxFit.contain,
-              ),
-              ...(() {
-                final sortedElements =
-                    List<TemplateElement>.from(editorState.elements);
-                sortedElements.sort((a, b) => a.zIndex.compareTo(b.zIndex));
-                return sortedElements.map(
-                  (element) => EditorElement(
-                    key: ValueKey(element),
-                    element: element,
+    return Container(
+      color: AppColors.bg100,
+      child: InteractiveViewer(
+        boundaryMargin: const EdgeInsets.all(double.infinity),
+        transformationController: transformationController,
+        minScale: 0.1,
+        maxScale: 4.0,
+        constrained: false,
+        alignment: Alignment.topCenter,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 24),
+          child: WidgetsToImage(
+            controller: controller,
+            child: SizedBox(
+              width: viewportSize.width,
+              height: viewportSize.height,
+              child: Stack(
+                key: _stackKey,
+                children: [
+                  Image.network(
+                    widget.template['base_image_url'],
+                    fit: BoxFit.contain,
                   ),
-                );
-              })(),
-            ],
+                  ...(() {
+                    final sortedElements =
+                        List<TemplateElement>.from(editorState.elements);
+                    sortedElements.sort((a, b) => a.zIndex.compareTo(b.zIndex));
+                    return sortedElements.map(
+                      (element) => EditorElement(
+                        key: ValueKey(element),
+                        element: element,
+                      ),
+                    );
+                  })(),
+                ],
+              ),
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required bool isSelected,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.secondary100 : Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 24,
+              color: isSelected ? AppColors.primary100 : AppColors.secondary100,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: isSelected
+                ? AppTextStyles.labelSmMedium.copyWith(
+                    color: AppColors.secondary100,
+                  )
+                : AppTextStyles.labelSmRegular.copyWith(
+                    color: AppColors.tertiary100,
+                  ),
+          ),
+        ],
       ),
     );
   }
@@ -1547,6 +2665,171 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
     RawKeyboard.instance.removeListener(_handleKeyEvent);
     transformationController.dispose();
     super.dispose();
+  }
+}
+
+class MobileBottomContentArea extends StatefulWidget {
+  const MobileBottomContentArea({super.key, required this.childrens});
+  final List<Widget> childrens;
+
+  @override
+  State<MobileBottomContentArea> createState() =>
+      _MobileBottomContentAreaState();
+}
+
+class _MobileBottomContentAreaState extends State<MobileBottomContentArea> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+          color: AppColors.primary100,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(12), topRight: Radius.circular(12))),
+      child: Column(
+        children: widget.childrens,
+      ),
+    );
+  }
+}
+
+class ImageDisplayScreen extends StatefulWidget {
+  const ImageDisplayScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ImageDisplayScreen> createState() => _ImageDisplayScreenState();
+}
+
+class _ImageDisplayScreenState extends State<ImageDisplayScreen> {
+  // For handling the selected image
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+  bool hasImage = false;
+
+  // Function to pick image from gallery
+  Future<void> _getImageFromGallery() async {
+    try {
+      final XFile? pickedFile =
+          await _picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile.path);
+          hasImage = true;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error picking image: $e')),
+        );
+      }
+    }
+  }
+
+  void _deleteImage() {
+    setState(() {
+      _image = null;
+      hasImage = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: AppColors.primary100,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              width: 300,
+              height: 200,
+              decoration: BoxDecoration(
+                color: AppColors.tertiary100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: hasImage && _image != null
+                  ? Image.file(
+                      _image!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Text(
+                            'Error loading image',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.red,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : const Center(
+                      child: Text(
+                        'No Image',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Action buttons row - Wrapped with LayoutBuilder to handle overflow
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Delete button
+              OutlinedButton.icon(
+                onPressed: hasImage ? _deleteImage : null,
+                icon: const Icon(Icons.delete_outline,
+                    size: 18, color: AppColors.secondary100),
+                label: Text('Delete',
+                    style: AppTextStyles.labelSmMedium
+                        .copyWith(color: AppColors.secondary100)),
+                style: OutlinedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+                  side: const BorderSide(color: AppColors.secondary100),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              // Upload button
+              ElevatedButton.icon(
+                onPressed: _getImageFromGallery,
+                icon: const Icon(Icons.upload,
+                    size: 18, color: AppColors.primary100),
+                label: Text('Upload',
+                    style: AppTextStyles.labelSmMedium
+                        .copyWith(color: AppColors.primary100)),
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+                  backgroundColor: AppColors.secondary100,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }
 
@@ -1756,6 +3039,46 @@ class ElementCreationSidebar extends StatelessWidget {
                   onTap: () =>
                       onCreateElement(TemplateElement.createLeaderStrip()),
                 ),
+
+                if (isExpanded) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    'User Elements',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 8),
+                ],
+                _buildElementButton(
+                  context: context,
+                  icon: Icons.person,
+                  label: 'User Name',
+                  onTap: () =>
+                      onCreateElement(TemplateElement.createUserName()),
+                ),
+                const SizedBox(height: 8),
+                _buildElementButton(
+                  context: context,
+                  icon: Icons.work,
+                  label: 'User Designation',
+                  onTap: () =>
+                      onCreateElement(TemplateElement.createUserDesignation()),
+                ),
+                const SizedBox(height: 8),
+                _buildElementButton(
+                  context: context,
+                  icon: Icons.group,
+                  label: 'User Party',
+                  onTap: () =>
+                      onCreateElement(TemplateElement.createUserParty()),
+                ),
+                const SizedBox(height: 8),
+                _buildElementButton(
+                  context: context,
+                  icon: Icons.account_circle,
+                  label: 'User Picture',
+                  onTap: () =>
+                      onCreateElement(TemplateElement.createUserPicture()),
+                ),
               ],
             ),
           ),
@@ -1795,6 +3118,162 @@ class ElementCreationSidebar extends StatelessWidget {
 
 
 
+--- File: ./lib/widgets/nested_content_widget.dart ---
+
+import 'package:core_image_editor/models/shape_types.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../models/template_types.dart';
+import 'shape_painter.dart';
+
+class NestedContentWidget extends StatelessWidget {
+  final TemplateElement element;
+  final Size elementSize;
+
+  const NestedContentWidget({
+    super.key,
+    required this.element,
+    required this.elementSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!element.canContainNestedContent ||
+        element.nestedContent?.content == null) {
+      return _buildShape();
+    }
+
+    return Stack(
+      children: [
+        _buildShape(),
+        ClipPath(
+          clipper: ShapeClipper(
+            shapeType: ShapeType.values.firstWhere(
+              (type) => type.toString() == element.content['shapeType'],
+            ),
+            points: element.content['points'],
+            innerRadiusRatio: element.content['innerRadiusRatio'],
+          ),
+          child: Container(
+            width: elementSize.width,
+            height: elementSize.height,
+            alignment: element.nestedContent!.contentAlignment,
+            child: _buildNestedContent(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShape() {
+    return CustomPaint(
+      painter: ShapePainter(
+        shapeType: ShapeType.values.firstWhere(
+          (type) => type.toString() == element.content['shapeType'],
+        ),
+        fillColor: Color(
+          int.parse(
+            (element.content['fillColor'] ?? '#FFFFFF')
+                .replaceFirst('#', '0xff'),
+          ),
+        ),
+        strokeColor: Color(
+          int.parse(
+            (element.content['strokeColor'] ?? '#000000')
+                .replaceFirst('#', '0xff'),
+          ),
+        ),
+        strokeWidth: element.content['strokeWidth']?.toDouble() ?? 2.0,
+        isStrokeDashed: element.content['isStrokeDashed'] ?? false,
+      ),
+      size: elementSize,
+    );
+  }
+
+  Widget _buildNestedContent() {
+    final nestedElement = element.nestedContent!.content!;
+
+    switch (nestedElement.type) {
+      case 'image':
+        return Image.network(
+          nestedElement.content['url'] ?? '',
+          width: elementSize.width,
+          height: elementSize.height,
+          fit: element.nestedContent!.contentFit,
+        );
+
+      case 'text':
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FittedBox(
+            fit: element.nestedContent!.contentFit,
+            alignment: element.nestedContent!.contentAlignment,
+            child: Text(
+              nestedElement.content['text'] ?? '',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.getFont(
+                nestedElement.style.fontFamily,
+                fontSize:
+                    nestedElement.style.fontSizeVw * elementSize.width / 100,
+                color: Color(
+                  int.parse(
+                      nestedElement.style.color.replaceFirst('#', '0xff')),
+                ),
+                fontWeight: nestedElement.style.fontWeight,
+                fontStyle: nestedElement.style.isItalic
+                    ? FontStyle.italic
+                    : FontStyle.normal,
+                decoration: nestedElement.style.isUnderlined
+                    ? TextDecoration.underline
+                    : null,
+              ),
+            ),
+          ),
+        );
+
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+}
+
+class ShapeClipper extends CustomClipper<Path> {
+  final ShapeType shapeType;
+  final int? points;
+  final double? innerRadiusRatio;
+
+  ShapeClipper({
+    required this.shapeType,
+    this.points,
+    this.innerRadiusRatio,
+  });
+
+  @override
+  Path getClip(Size size) {
+    final painter = ShapePainter(
+      shapeType: shapeType,
+      fillColor: Colors.transparent,
+      strokeColor: Colors.transparent,
+      points: points,
+      innerRadiusRatio: innerRadiusRatio,
+    );
+
+    return painter.getClipPath(size);
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    if (oldClipper is ShapeClipper) {
+      return oldClipper.shapeType != shapeType ||
+          oldClipper.points != points ||
+          oldClipper.innerRadiusRatio != innerRadiusRatio;
+    }
+    return true;
+  }
+}
+
+
+
 --- File: ./lib/widgets/responsive_builder.dart ---
 
 import 'package:flutter/widgets.dart';
@@ -1827,6 +3306,7 @@ class ResponsiveLayoutBuilder extends StatelessWidget {
 --- File: ./lib/widgets/editor_element.dart ---
 
 import 'package:core_image_editor/models/editor_config.dart';
+import 'package:core_image_editor/widgets/nested_content_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/template_types.dart';
@@ -2026,27 +3506,9 @@ class EditorElement extends StatelessWidget {
     Widget content;
     switch (element.type) {
       case 'shape':
-        content = CustomPaint(
-          painter: ShapePainter(
-            shapeType: ShapeType.values.firstWhere(
-              (type) => type.toString() == element.content['shapeType'],
-            ),
-            fillColor: Color(
-              int.parse(
-                (element.content['fillColor'] ?? '#FFFFFF')
-                    .replaceFirst('#', '0xff'),
-              ),
-            ),
-            strokeColor: Color(
-              int.parse(
-                (element.content['strokeColor'] ?? '#000000')
-                    .replaceFirst('#', '0xff'),
-              ),
-            ),
-            strokeWidth: element.content['strokeWidth']?.toDouble() ?? 2.0,
-            isStrokeDashed: element.content['isStrokeDashed'] ?? false,
-          ),
-          size: elementSize,
+        content = NestedContentWidget(
+          element: element,
+          elementSize: elementSize,
         );
         break;
       case 'image':
@@ -2169,73 +3631,74 @@ class EditorElement extends StatelessWidget {
   // }
 
   Widget _buildLeaderStrip(TemplateElement element, Size elementSize) {
-  final leaders = element.getLeaders();
-  final horizontalSpacing = element.content['spacing']?.toDouble() ?? 8.0;
-  final verticalSpacing = element.content['verticalSpacing']?.toDouble() ?? 8.0;
-  final justifyContent = element.content['justifyContent'] ?? 'start';
+    final leaders = element.getLeaders();
+    final horizontalSpacing = element.content['spacing']?.toDouble() ?? 8.0;
+    final verticalSpacing =
+        element.content['verticalSpacing']?.toDouble() ?? 8.0;
+    final justifyContent = element.content['justifyContent'] ?? 'start';
 
-  if (leaders.isEmpty) {
-    return const Center(
-      child: Text(
-        'Add leader photos',
-        style: TextStyle(color: Colors.grey),
-      ),
-    );
-  }
-
-  return LayoutBuilder(
-    builder: (context, constraints) {
-      final imageSize = elementSize.height;
-      
-      // Convert justifyContent to WrapAlignment
-      WrapAlignment alignment;
-      switch (justifyContent) {
-        case 'center':
-          alignment = WrapAlignment.center;
-          break;
-        case 'end':
-          alignment = WrapAlignment.end;
-          break;
-        case 'space-between':
-          alignment = WrapAlignment.spaceBetween;
-          break;
-        case 'space-around':
-          alignment = WrapAlignment.spaceAround;
-          break;
-        case 'space-evenly':
-          alignment = WrapAlignment.spaceEvenly;
-          break;
-        default:
-          alignment = WrapAlignment.start;
-      }
-
-      return Container(
-        // decoration: borderDecoration,
-        padding: EdgeInsets.all((element.style.borderWidth ?? 0) + 4),
-        child: Wrap(
-          alignment: alignment,
-          spacing: horizontalSpacing,
-          runSpacing: verticalSpacing,
-          children: leaders.map((leader) {
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(
-                leader.style.imageShape == 'circle' ? imageSize / 2 : 0,
-              ),
-              child: SizedBox(
-                width: imageSize,
-                height: imageSize,
-                child: Image.network(
-                  leader.content['url'],
-                  fit: BoxFit.cover,
-                ),
-              ),
-            );
-          }).toList(),
+    if (leaders.isEmpty) {
+      return const Center(
+        child: Text(
+          'Add leader photos',
+          style: TextStyle(color: Colors.grey),
         ),
       );
-    },
-  );
-}
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final imageSize = elementSize.height;
+
+        // Convert justifyContent to WrapAlignment
+        WrapAlignment alignment;
+        switch (justifyContent) {
+          case 'center':
+            alignment = WrapAlignment.center;
+            break;
+          case 'end':
+            alignment = WrapAlignment.end;
+            break;
+          case 'space-between':
+            alignment = WrapAlignment.spaceBetween;
+            break;
+          case 'space-around':
+            alignment = WrapAlignment.spaceAround;
+            break;
+          case 'space-evenly':
+            alignment = WrapAlignment.spaceEvenly;
+            break;
+          default:
+            alignment = WrapAlignment.start;
+        }
+
+        return Container(
+          // decoration: borderDecoration,
+          padding: EdgeInsets.all((element.style.borderWidth ?? 0) + 4),
+          child: Wrap(
+            alignment: alignment,
+            spacing: horizontalSpacing,
+            runSpacing: verticalSpacing,
+            children: leaders.map((leader) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(
+                  leader.style.imageShape == 'circle' ? imageSize / 2 : 0,
+                ),
+                child: SizedBox(
+                  width: imageSize,
+                  height: imageSize,
+                  child: Image.network(
+                    leader.content['url'],
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
 }
 
 
@@ -2600,6 +4063,7 @@ class _ResizeHandleState extends State<ResizeHandle>
 --- File: ./lib/widgets/property_sidebar.dart ---
 
 import 'package:core_image_editor/models/editor_config.dart';
+import 'package:core_image_editor/widgets/property_controls/nested_content_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/template_types.dart';
@@ -2807,6 +4271,13 @@ class PropertySidebar extends StatelessWidget {
             element: element,
             onUpdate: pushHistory,
           ),
+          if (element.canContainNestedContent)
+            NestedContentControls(
+              element: element,
+              onSelectImage: onSelectImage,
+              onUpdate: pushHistory,
+              configuration: editorState.configuration,
+            ),
         ],
         const SectionTitle(title: 'Layer'),
         LayerControl(
@@ -3455,6 +4926,90 @@ class ShapePainter extends CustomPainter {
         _drawStar(canvas, size, paint, strokePaint);
         break;
     }
+  }
+
+  Path getClipPath(Size size) {
+    switch (shapeType) {
+      case ShapeType.rectangle:
+        return Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+
+      case ShapeType.circle:
+        return Path()..addOval(Rect.fromLTWH(0, 0, size.width, size.height));
+
+      case ShapeType.triangle:
+        return Path()
+          ..moveTo(size.width / 2, 0)
+          ..lineTo(size.width, size.height)
+          ..lineTo(0, size.height)
+          ..close();
+
+      case ShapeType.diamond:
+        return Path()
+          ..moveTo(size.width / 2, 0)
+          ..lineTo(size.width, size.height / 2)
+          ..lineTo(size.width / 2, size.height)
+          ..lineTo(0, size.height / 2)
+          ..close();
+
+      case ShapeType.pentagon:
+        return _getPolygonPath(size, 5);
+
+      case ShapeType.hexagon:
+        return _getPolygonPath(size, 6);
+
+      case ShapeType.star:
+        return _getStarPath(size);
+
+      default:
+        return Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+    }
+  }
+
+  Path _getPolygonPath(Size size, int sides) {
+    final path = Path();
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = math.min(size.width, size.height) / 2;
+
+    for (int i = 0; i < sides; i++) {
+      final angle = (i * 2 * math.pi / sides) - math.pi / 2;
+      final point = Offset(
+        center.dx + radius * math.cos(angle),
+        center.dy + radius * math.sin(angle),
+      );
+
+      if (i == 0) {
+        path.moveTo(point.dx, point.dy);
+      } else {
+        path.lineTo(point.dx, point.dy);
+      }
+    }
+
+    return path..close();
+  }
+
+  Path _getStarPath(Size size) {
+    final path = Path();
+    final center = Offset(size.width / 2, size.height / 2);
+    final outerRadius = math.min(size.width, size.height) / 2;
+    final innerRadius = outerRadius * (innerRadiusRatio ?? 0.4);
+    final numPoints = points ?? 5;
+
+    for (int i = 0; i < numPoints * 2; i++) {
+      final radius = i.isEven ? outerRadius : innerRadius;
+      final angle = (i * math.pi / numPoints) - math.pi / 2;
+      final point = Offset(
+        center.dx + radius * math.cos(angle),
+        center.dy + radius * math.sin(angle),
+      );
+
+      if (i == 0) {
+        path.moveTo(point.dx, point.dy);
+      } else {
+        path.lineTo(point.dx, point.dy);
+      }
+    }
+
+    return path..close();
   }
 
   void _drawRectangle(Canvas canvas, Size size, Paint fill, Paint stroke) {
@@ -4662,6 +6217,400 @@ class PositionControl extends StatelessWidget {
           suffix: '%',
         ),
       ],
+    );
+  }
+}
+
+
+
+--- File: ./lib/widgets/property_controls/nested_content_controls.dart ---
+
+import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import '../../models/template_types.dart';
+import '../../models/editor_config.dart';
+
+class NestedContentControls extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+  final Future<String> Function(BuildContext) onSelectImage;
+  final EditorConfiguration configuration;
+
+  const NestedContentControls({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+    required this.onSelectImage,
+    required this.configuration,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!element.canContainNestedContent) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionTitle(title: 'Nested Content'),
+        const SizedBox(height: 8),
+        _buildAddContentButton(context),
+        if (element.nestedContent?.content != null) ...[
+          const SizedBox(height: 16),
+          _buildContentFitControl(),
+          const SizedBox(height: 8),
+          _buildContentAlignmentControl(),
+          const SizedBox(height: 8),
+          if (element.nestedContent?.content?.type == 'text') ...[
+            _buildTextControls(context),
+          ],
+          const SizedBox(height: 16),
+          _buildRemoveContentButton(),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildTextControls(BuildContext context) {
+    final nestedElement = element.nestedContent!.content!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionTitle(title: 'Text Properties'),
+
+        // Text Content
+        TextField(
+          decoration: const InputDecoration(
+            labelText: 'Text Content',
+          ),
+          maxLines: null,
+          controller: TextEditingController(
+            text: nestedElement.content['text'] ?? '',
+          ),
+          onChanged: (value) {
+            nestedElement.content['text'] = value;
+            onUpdate();
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Font Size
+        Row(
+          children: [
+            const Text('Font Size (vw)'),
+            Expanded(
+              child: Slider(
+                value: nestedElement.style.fontSizeVw,
+                min: 1,
+                max: 10,
+                divisions: 90,
+                label: nestedElement.style.fontSizeVw.toStringAsFixed(1),
+                onChanged: (value) {
+                  nestedElement.style.fontSizeVw = value;
+                  onUpdate();
+                },
+              ),
+            ),
+          ],
+        ),
+
+        // Font Weight
+        Row(
+          children: [
+            const Text('Bold'),
+            Switch(
+              value: nestedElement.style.fontWeight == FontWeight.bold,
+              onChanged: (value) {
+                nestedElement.style.fontWeight =
+                    value ? FontWeight.bold : FontWeight.normal;
+                onUpdate();
+              },
+            ),
+          ],
+        ),
+
+        // Italic
+        Row(
+          children: [
+            const Text('Italic'),
+            Switch(
+              value: nestedElement.style.isItalic,
+              onChanged: (value) {
+                nestedElement.style.isItalic = value;
+                onUpdate();
+              },
+            ),
+          ],
+        ),
+
+        // Text Color
+        ColorPickerButton(
+          color: Color(
+            int.parse(nestedElement.style.color.replaceFirst('#', '0xff')),
+          ),
+          onColorChanged: (color) {
+            nestedElement.style.color =
+                '#${color.value.toRadixString(16).substring(2)}';
+            onUpdate();
+          },
+        ),
+
+        // Font Family Selection
+        if (configuration.can(EditorCapability.changeFonts)) ...[
+          const SizedBox(height: 8),
+          DropdownButton<String>(
+            value: nestedElement.style.fontFamily,
+            isExpanded: true,
+            items: configuration.availableFonts.map((font) {
+              return DropdownMenuItem(
+                value: font,
+                child: Text(font),
+              );
+            }).toList(),
+            onChanged: (newFont) {
+              if (newFont != null) {
+                nestedElement.style.fontFamily = newFont;
+                onUpdate();
+              }
+            },
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildAddContentButton(BuildContext context) {
+    if (element.nestedContent?.content != null) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ElevatedButton.icon(
+          icon: const Icon(Icons.image),
+          label: const Text('Add Image'),
+          onPressed: () => _addImage(context),
+        ),
+        const SizedBox(height: 8),
+        ElevatedButton.icon(
+          icon: const Icon(Icons.text_fields),
+          label: const Text('Add Text'),
+          onPressed: () => _addText(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContentFitControl() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Content Fit'),
+        const SizedBox(height: 4),
+        DropdownButton<BoxFit>(
+          value: element.nestedContent!.contentFit,
+          isExpanded: true,
+          items: [
+            BoxFit.contain,
+            BoxFit.cover,
+            BoxFit.fill,
+            BoxFit.fitWidth,
+            BoxFit.fitHeight,
+          ].map((fit) {
+            return DropdownMenuItem(
+              value: fit,
+              child: Text(fit.toString().split('.').last),
+            );
+          }).toList(),
+          onChanged: (newFit) {
+            if (newFit != null) {
+              element.nestedContent!.contentFit = newFit;
+              onUpdate();
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContentAlignmentControl() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Content Alignment'),
+        const SizedBox(height: 4),
+        DropdownButton<Alignment>(
+          value: element.nestedContent!.contentAlignment,
+          isExpanded: true,
+          items: [
+            Alignment.center,
+            Alignment.topLeft,
+            Alignment.topRight,
+            Alignment.bottomLeft,
+            Alignment.bottomRight,
+          ].map((alignment) {
+            return DropdownMenuItem(
+              value: alignment,
+              child: Text(alignment.toString().split('.').last),
+            );
+          }).toList(),
+          onChanged: (newAlignment) {
+            if (newAlignment != null) {
+              element.nestedContent!.contentAlignment = newAlignment;
+              onUpdate();
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRemoveContentButton() {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.delete),
+      label: const Text('Remove Content'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+      ),
+      onPressed: () {
+        element.nestedContent = null;
+        onUpdate();
+      },
+    );
+  }
+
+  Future<void> _addImage(BuildContext context) async {
+    final url = await onSelectImage(context);
+    element.nestedContent = NestedContent(
+      content: TemplateElement(
+        type: 'image',
+        box: TemplateBox(
+          xPercent: 0,
+          yPercent: 0,
+          widthPercent: 100,
+          heightPercent: 100,
+          alignment: 'center',
+        ),
+        content: {'url': url},
+        style: TemplateStyle(
+          fontSizeVw: 0,
+          color: '#000000',
+          imageFit: BoxFit.cover,
+        ),
+      ),
+      contentFit: BoxFit.cover,
+    );
+    onUpdate();
+  }
+
+  void _addText() {
+    element.nestedContent = NestedContent(
+      content: TemplateElement(
+        type: 'text',
+        box: TemplateBox(
+          xPercent: 0,
+          yPercent: 0,
+          widthPercent: 100,
+          heightPercent: 100,
+          alignment: 'center',
+        ),
+        content: {'text': 'New Text'},
+        style: TemplateStyle(
+          fontSizeVw: 4.0,
+          color: '#000000',
+          fontFamily: 'Roboto',
+        ),
+      ),
+      contentFit: BoxFit.contain,
+    );
+    onUpdate();
+  }
+}
+
+class SectionTitle extends StatelessWidget {
+  final String title;
+
+  const SectionTitle({
+    super.key,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+      ),
+    );
+  }
+}
+
+class ColorPickerButton extends StatelessWidget {
+  final Color color;
+  final ValueChanged<Color> onColorChanged;
+
+  const ColorPickerButton({
+    super.key,
+    required this.color,
+    required this.onColorChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => _showColorPicker(context),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: color,
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text('Text Color'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showColorPicker(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Pick a color'),
+        content: SingleChildScrollView(
+          child: ColorPicker(
+            pickerColor: color,
+            onColorChanged: onColorChanged,
+            pickerAreaHeightPercent: 0.8,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Done'),
+          ),
+        ],
+      ),
     );
   }
 }
