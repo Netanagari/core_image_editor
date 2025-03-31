@@ -1,5 +1,6 @@
 import 'package:core_image_editor/models/editor_config.dart';
 import 'package:core_image_editor/widgets/property_controls/font_size_controls.dart';
+import 'package:core_image_editor/widgets/property_controls/group_selector.dart';
 import 'package:core_image_editor/widgets/property_controls/nested_content_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -126,6 +127,12 @@ class PropertySidebar extends StatelessWidget {
         TagSelector(
           element: element,
           onUpdate: pushHistory,
+        ),
+        const SectionTitle(title: 'Group'),
+        GroupSelector(
+          element: element,
+          onUpdate: pushHistory,
+          availableGroups: editorState.availableGroups,
         ),
         const SectionTitle(title: 'Position & Size'),
         if (editorState.configuration.can(EditorCapability.repositionElements))

@@ -1,3 +1,4 @@
+import 'package:core_image_editor/widgets/groups_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:core_image_editor/models/shape_types.dart';
 import '../models/template_types.dart';
@@ -118,131 +119,278 @@ class ElementCreationSidebar extends StatelessWidget {
             ),
           ),
           const Divider(),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.all(isExpanded ? 16 : 8),
-              children: [
-                if (isExpanded) ...[
-                  Text(
-                    'Text Elements',
-                    style: Theme.of(context).textTheme.titleSmall,
+          if (isExpanded)
+            DefaultTabController(
+              length: 2,
+              child: Expanded(
+                child: Column(
+                  children: [
+                    TabBar(
+                      tabs: [
+                        Tab(text: 'Elements', icon: Icon(Icons.widgets)),
+                        Tab(text: 'Groups', icon: Icon(Icons.folder)),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          // Elements Tab
+                          ListView(
+                            padding: EdgeInsets.all(16),
+                            children: [
+                              if (isExpanded) ...[
+                                Text(
+                                  'Text Elements',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.title,
+                                label: 'Heading',
+                                onTap: () => onCreateElement(_createTextElement(
+                                  text: 'New Heading',
+                                  fontSizeVw: 6.0,
+                                  type: 'heading',
+                                )),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.text_fields,
+                                label: 'Body Text',
+                                onTap: () => onCreateElement(_createTextElement(
+                                  text: 'New Text Block',
+                                  fontSizeVw: 4.0,
+                                  type: 'body',
+                                )),
+                              ),
+                              if (isExpanded) ...[
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Shapes',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: ShapeType.values.map((shapeType) {
+                                  return _buildElementButton(
+                                    context: context,
+                                    icon: shapeType.icon,
+                                    label: shapeType.displayName,
+                                    onTap: () => onCreateElement(
+                                        _createShapeElement(shapeType)),
+                                  );
+                                }).toList(),
+                              ),
+                              if (isExpanded) ...[
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Media Elements',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.image,
+                                label: 'Image',
+                                onTap: () async {
+                                  final url = await onUploadImage(context);
+                                  if (url != null) {
+                                    final element = _createImageElement();
+                                    element.content['url'] = url;
+                                    onCreateElement(element);
+                                  }
+                                },
+                              ),
+                              const SizedBox(height: 8),
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.people,
+                                label: 'Leader Strip',
+                                onTap: () => onCreateElement(
+                                    TemplateElement.createLeaderStrip()),
+                              ),
+                              if (isExpanded) ...[
+                                const SizedBox(height: 16),
+                                Text(
+                                  'User Elements',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.person,
+                                label: 'User Name',
+                                onTap: () => onCreateElement(
+                                    TemplateElement.createUserName()),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.work,
+                                label: 'User Designation',
+                                onTap: () => onCreateElement(
+                                    TemplateElement.createUserDesignation()),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.group,
+                                label: 'User Party',
+                                onTap: () => onCreateElement(
+                                    TemplateElement.createUserParty()),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.account_circle,
+                                label: 'User Picture',
+                                onTap: () => onCreateElement(
+                                    TemplateElement.createUserPicture()),
+                              ),
+                            ],
+                          ),
+                          // Groups Tab
+                          GroupsManager(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.all(isExpanded ? 16 : 8),
+                children: [
+                  if (isExpanded) ...[
+                    Text(
+                      'Text Elements',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.title,
+                    label: 'Heading',
+                    onTap: () => onCreateElement(_createTextElement(
+                      text: 'New Heading',
+                      fontSizeVw: 6.0,
+                      type: 'heading',
+                    )),
                   ),
                   const SizedBox(height: 8),
-                ],
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.title,
-                  label: 'Heading',
-                  onTap: () => onCreateElement(_createTextElement(
-                    text: 'New Heading',
-                    fontSizeVw: 6.0,
-                    type: 'heading',
-                  )),
-                ),
-                const SizedBox(height: 8),
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.text_fields,
-                  label: 'Body Text',
-                  onTap: () => onCreateElement(_createTextElement(
-                    text: 'New Text Block',
-                    fontSizeVw: 4.0,
-                    type: 'body',
-                  )),
-                ),
-                if (isExpanded) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    'Shapes',
-                    style: Theme.of(context).textTheme.titleSmall,
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.text_fields,
+                    label: 'Body Text',
+                    onTap: () => onCreateElement(_createTextElement(
+                      text: 'New Text Block',
+                      fontSizeVw: 4.0,
+                      type: 'body',
+                    )),
+                  ),
+                  if (isExpanded) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      'Shapes',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: ShapeType.values.map((shapeType) {
+                      return _buildElementButton(
+                        context: context,
+                        icon: shapeType.icon,
+                        label: shapeType.displayName,
+                        onTap: () =>
+                            onCreateElement(_createShapeElement(shapeType)),
+                      );
+                    }).toList(),
+                  ),
+                  if (isExpanded) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      'Media Elements',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.image,
+                    label: 'Image',
+                    onTap: () async {
+                      final url = await onUploadImage(context);
+                      if (url != null) {
+                        final element = _createImageElement();
+                        element.content['url'] = url;
+                        onCreateElement(element);
+                      }
+                    },
                   ),
                   const SizedBox(height: 8),
-                ],
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: ShapeType.values.map((shapeType) {
-                    return _buildElementButton(
-                      context: context,
-                      icon: shapeType.icon,
-                      label: shapeType.displayName,
-                      onTap: () =>
-                          onCreateElement(_createShapeElement(shapeType)),
-                    );
-                  }).toList(),
-                ),
-                if (isExpanded) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    'Media Elements',
-                    style: Theme.of(context).textTheme.titleSmall,
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.people,
+                    label: 'Leader Strip',
+                    onTap: () =>
+                        onCreateElement(TemplateElement.createLeaderStrip()),
+                  ),
+                  if (isExpanded) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      'User Elements',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.person,
+                    label: 'User Name',
+                    onTap: () =>
+                        onCreateElement(TemplateElement.createUserName()),
                   ),
                   const SizedBox(height: 8),
-                ],
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.image,
-                  label: 'Image',
-                  onTap: () async {
-                    final url = await onUploadImage(context);
-                    if (url != null) {
-                      final element = _createImageElement();
-                      element.content['url'] = url;
-                      onCreateElement(element);
-                    }
-                  },
-                ),
-                const SizedBox(height: 8),
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.people,
-                  label: 'Leader Strip',
-                  onTap: () =>
-                      onCreateElement(TemplateElement.createLeaderStrip()),
-                ),
-
-                if (isExpanded) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    'User Elements',
-                    style: Theme.of(context).textTheme.titleSmall,
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.work,
+                    label: 'User Designation',
+                    onTap: () => onCreateElement(
+                        TemplateElement.createUserDesignation()),
                   ),
                   const SizedBox(height: 8),
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.group,
+                    label: 'User Party',
+                    onTap: () =>
+                        onCreateElement(TemplateElement.createUserParty()),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.account_circle,
+                    label: 'User Picture',
+                    onTap: () =>
+                        onCreateElement(TemplateElement.createUserPicture()),
+                  ),
                 ],
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.person,
-                  label: 'User Name',
-                  onTap: () =>
-                      onCreateElement(TemplateElement.createUserName()),
-                ),
-                const SizedBox(height: 8),
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.work,
-                  label: 'User Designation',
-                  onTap: () =>
-                      onCreateElement(TemplateElement.createUserDesignation()),
-                ),
-                const SizedBox(height: 8),
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.group,
-                  label: 'User Party',
-                  onTap: () =>
-                      onCreateElement(TemplateElement.createUserParty()),
-                ),
-                const SizedBox(height: 8),
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.account_circle,
-                  label: 'User Picture',
-                  onTap: () =>
-                      onCreateElement(TemplateElement.createUserPicture()),
-                ),
-              ],
+              ),
             ),
-          ),
         ],
       ),
     );

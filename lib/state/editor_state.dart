@@ -29,6 +29,96 @@ class EditorState extends ChangeNotifier {
   Size get viewportSize => _viewportSize;
   double get canvasAspectRatio => _canvasAspectRatio;
 
+  List<String> get availableGroups {
+    Set<String> groups = {};
+    for (var element in _elements) {
+      if (element.group != null && element.group!.isNotEmpty) {
+        groups.add(element.group!);
+      }
+    }
+    return groups.toList()..sort();
+  }
+
+  List<TemplateElement> getElementsByGroup(String? group) {
+    if (group == null) {
+      return _elements.where((e) => e.group == null).toList();
+    }
+    return _elements.where((e) => e.group == group).toList();
+  }
+
+  // Helper method to select all elements in a group
+  void selectGroup(String group) {
+    // Note: This method doesn't select multiple elements yet,
+    // just sets the first element in the group as selected
+    final groupElements = getElementsByGroup(group);
+    if (groupElements.isNotEmpty) {
+      _selectedElement = groupElements.first;
+      notifyListeners();
+    }
+  }
+
+  void bringGroupToFront(String group) {
+    final groupElements = getElementsByGroup(group);
+    if (groupElements.isEmpty) return;
+
+    // Find the highest z-index in the document
+    int highestZIndex =
+        _elements.fold(0, (max, e) => e.zIndex > max ? e.zIndex : max);
+
+    // Move all elements in the group above that
+    for (var element in groupElements) {
+      element.zIndex = ++highestZIndex;
+    }
+
+    notifyListeners();
+  }
+
+  void sendGroupToBack(String group) {
+    final groupElements = getElementsByGroup(group);
+    if (groupElements.isEmpty) return;
+
+    // Find the lowest z-index in the document
+    int lowestZIndex =
+        _elements.fold(0, (min, e) => e.zIndex < min ? e.zIndex : min);
+
+    // Move all elements in the group below that
+    for (var element in groupElements) {
+      element.zIndex = --lowestZIndex;
+    }
+
+    notifyListeners();
+  }
+
+// Method to align all elements in a group
+  void alignGroup(String group, String alignment) {
+    final groupElements = getElementsByGroup(group);
+    if (groupElements.isEmpty) return;
+
+    for (var element in groupElements) {
+      element.box.alignment = alignment;
+    }
+
+    notifyListeners();
+  }
+
+// Method to remove a group (not the elements, just ungroup them)
+  void removeGroup(String group) {
+    final groupElements = getElementsByGroup(group);
+    for (var element in groupElements) {
+      element.group = null;
+    }
+
+    notifyListeners();
+  }
+
+// Method to create a new group from selected elements
+  void createGroupFromSelected(String groupName) {
+    if (_selectedElement != null) {
+      _selectedElement!.group = groupName;
+      notifyListeners();
+    }
+  }
+
   void setElements(List<TemplateElement> elements) {
     _elements = elements;
     notifyListeners();

@@ -327,6 +327,7 @@ class TemplateElement {
   int zIndex;
   TemplateElementTag tag;
   NestedContent? nestedContent;
+   String? group;
 
   TemplateElement({
     required this.type,
@@ -335,6 +336,7 @@ class TemplateElement {
     required this.style,
     this.zIndex = 0,
     this.nestedContent,
+    this.group,
     this.tag = TemplateElementTag.defaulty,
   });
 
@@ -495,6 +497,7 @@ class TemplateElement {
           ? NestedContent.fromJson(json['nested_content'])
           : null,
       tag: _parseTag(json['tag']),
+      group: json['group'],
     );
   }
 
@@ -519,6 +522,7 @@ class TemplateElement {
       'z_index': zIndex,
       'tag': tag.toString(),
       'nested_content': nestedContent?.toJson(),
+      'group': group,
     };
   }
 
