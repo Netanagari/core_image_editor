@@ -1,439 +1,5 @@
 
---- File: ./example/test/widget_test.dart ---
-
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import 'package:example/main.dart';
-
-void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
-
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
-  });
-}
-
-
-
---- File: ./example/lib/main.dart ---
-
-import 'dart:convert';
-
-import 'package:core_image_editor/models/editor_config.dart';
-import 'package:core_image_editor/screens/template_editor_widget.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:universal_html/html.dart' as html;
-
-void main() {
-  runApp(const MyApp());
-}
-
-final exampleJson = {
-  "id": 1,
-  "poster": 1,
-  "base_image_url":
-      "https://plus.unsplash.com/premium_photo-1661616016088-1964194c7728?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cG9zdGVyfGVufDB8fDB8fHww",
-  "thumbnail_url":
-      "https://plus.unsplash.com/premium_photo-1661616016088-1964194c7728?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cG9zdGVyfGVufDB8fDB8fHww",
-  "original_width": 739,
-  "original_height": 1600,
-  "aspect_ratio": 0.461875,
-  "content_json": [
-    {
-      "type": "text",
-      "box": {
-        "x_percent": 10.139908398428515,
-        "y_percent": 5.2751196426138485,
-        "width_percent": 80,
-        "height_percent": 12.504201680672269,
-        "alignment": "center",
-        "rotation": 0
-      },
-      "content": {"text": "Sample image"},
-      "style": {
-        "font_size": 7,
-        "color": "#000000",
-        "font_family": "Poppins",
-        "font_weight": "FontWeight.w700",
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null
-      },
-      "z_index": 0
-    },
-    {
-      "type": "shape",
-      "box": {
-        "x_percent": 0,
-        "y_percent": 80,
-        "width_percent": 20,
-        "height_percent": 20,
-        "alignment": "center",
-        "rotation": 0
-      },
-      "content": {
-        "shapeType": "ShapeType.diamond",
-        "fillColor": "#FFFFFF",
-        "strokeColor": "#000000",
-        "strokeWidth": 2,
-        "isStrokeDashed": false
-      },
-      "style": {
-        "font_size": 0,
-        "color": "#000000",
-        "font_family": "Roboto",
-        "font_weight": "FontWeight.w400",
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null
-      },
-      "z_index": 0
-    },
-    {
-      "type": "shape",
-      "box": {
-        "x_percent": 80,
-        "y_percent": 80,
-        "width_percent": 20,
-        "height_percent": 20,
-        "alignment": "center",
-        "rotation": 0
-      },
-      "content": {
-        "shapeType": "ShapeType.hexagon",
-        "fillColor": "#FFFFFF",
-        "strokeColor": "#000000",
-        "strokeWidth": 2,
-        "isStrokeDashed": false
-      },
-      "style": {
-        "font_size": 0,
-        "color": "#000000",
-        "font_family": "Roboto",
-        "font_weight": "FontWeight.w400",
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null
-      },
-      "z_index": 0
-    },
-    {
-      "type": "shape",
-      "box": {
-        "x_percent": 35.05549096039877,
-        "y_percent": 26.6280674315289,
-        "width_percent": 23.509597602409134,
-        "height_percent": 22.59333475779894,
-        "alignment": "center",
-        "rotation": 0
-      },
-      "content": {
-        "shapeType": "ShapeType.star",
-        "fillColor": "#FFFFFF",
-        "strokeColor": "#000000",
-        "strokeWidth": 2,
-        "isStrokeDashed": false
-      },
-      "style": {
-        "font_size": 0,
-        "color": "#000000",
-        "font_family": "Roboto",
-        "font_weight": "FontWeight.w400",
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null
-      },
-      "z_index": 0
-    }
-  ]
-};
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return CoreImageEditor(
-      onSave: (json, imageBytes) async {
-        final base64Data = base64Encode(imageBytes ?? Uint8List.fromList([]));
-        final anchor =
-            html.AnchorElement(href: 'data:image/png;base64,$base64Data');
-        anchor.download = 'image.png';
-        anchor.click();
-      },
-      template: exampleJson,
-      configuration: EditorConfiguration.admin,
-      onSelectImage: (image) async {
-        final img = await showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Select Image'),
-              content: const Text('Select an image from gallery or camera'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop("https://picsum.photos/200");
-                  },
-                  child: const Text('Random image 1'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop('https://picsum.photos/200/300');
-                  },
-                  child: const Text('Random image 2'),
-                ),
-              ],
-            );
-          },
-        );
-        print(img);
-        return img;
-      },
-    );
-  }
-}
-
-
-
---- File: ./example/.dart_tool/flutter_build/dart_plugin_registrant.dart ---
-
-//
-// Generated file. Do not edit.
-// This file is generated from template in file `flutter_tools/lib/src/flutter_plugins.dart`.
-//
-
-// @dart = 3.6
-
-import 'dart:io'; // flutter_ignore: dart_io_import.
-import 'package:image_picker_android/image_picker_android.dart';
-import 'package:path_provider_android/path_provider_android.dart';
-import 'package:image_picker_ios/image_picker_ios.dart';
-import 'package:path_provider_foundation/path_provider_foundation.dart';
-import 'package:file_selector_linux/file_selector_linux.dart';
-import 'package:image_picker_linux/image_picker_linux.dart';
-import 'package:path_provider_linux/path_provider_linux.dart';
-import 'package:file_selector_macos/file_selector_macos.dart';
-import 'package:image_picker_macos/image_picker_macos.dart';
-import 'package:path_provider_foundation/path_provider_foundation.dart';
-import 'package:file_selector_windows/file_selector_windows.dart';
-import 'package:image_picker_windows/image_picker_windows.dart';
-import 'package:path_provider_windows/path_provider_windows.dart';
-
-@pragma('vm:entry-point')
-class _PluginRegistrant {
-
-  @pragma('vm:entry-point')
-  static void register() {
-    if (Platform.isAndroid) {
-      try {
-        ImagePickerAndroid.registerWith();
-      } catch (err) {
-        print(
-          '`image_picker_android` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-      try {
-        PathProviderAndroid.registerWith();
-      } catch (err) {
-        print(
-          '`path_provider_android` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-    } else if (Platform.isIOS) {
-      try {
-        ImagePickerIOS.registerWith();
-      } catch (err) {
-        print(
-          '`image_picker_ios` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-      try {
-        PathProviderFoundation.registerWith();
-      } catch (err) {
-        print(
-          '`path_provider_foundation` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-    } else if (Platform.isLinux) {
-      try {
-        FileSelectorLinux.registerWith();
-      } catch (err) {
-        print(
-          '`file_selector_linux` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-      try {
-        ImagePickerLinux.registerWith();
-      } catch (err) {
-        print(
-          '`image_picker_linux` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-      try {
-        PathProviderLinux.registerWith();
-      } catch (err) {
-        print(
-          '`path_provider_linux` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-    } else if (Platform.isMacOS) {
-      try {
-        FileSelectorMacOS.registerWith();
-      } catch (err) {
-        print(
-          '`file_selector_macos` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-      try {
-        ImagePickerMacOS.registerWith();
-      } catch (err) {
-        print(
-          '`image_picker_macos` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-      try {
-        PathProviderFoundation.registerWith();
-      } catch (err) {
-        print(
-          '`path_provider_foundation` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-    } else if (Platform.isWindows) {
-      try {
-        FileSelectorWindows.registerWith();
-      } catch (err) {
-        print(
-          '`file_selector_windows` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-      try {
-        ImagePickerWindows.registerWith();
-      } catch (err) {
-        print(
-          '`image_picker_windows` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-      try {
-        PathProviderWindows.registerWith();
-      } catch (err) {
-        print(
-          '`path_provider_windows` threw an error: $err. '
-          'The app may not function as expected until you remove this plugin from pubspec.yaml'
-        );
-      }
-
-    }
-  }
-}
-
-
-
---- File: ./example/.dart_tool/dartpad/web_plugin_registrant.dart ---
-
-// Flutter web plugin registrant file.
-//
-// Generated file. Do not edit.
-//
-
-// @dart = 2.13
-// ignore_for_file: type=lint
-
-import 'package:image_picker_for_web/image_picker_for_web.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-
-void registerPlugins([final Registrar? pluginRegistrar]) {
-  final Registrar registrar = pluginRegistrar ?? webPluginRegistrar;
-  ImagePickerPlugin.registerWith(registrar);
-  registrar.registerMessageHandler();
-}
-
-
-
---- File: ./lib/utils/text_measurement.dart ---
+--- File: lib/utils/text_measurement.dart ---
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -533,7 +99,7 @@ class TextMeasurement {
 
 
 
---- File: ./lib/utils/app_text_style.dart ---
+--- File: lib/utils/app_text_style.dart ---
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -679,7 +245,7 @@ class AppTextStyles {
 
 
 
---- File: ./lib/utils/responsive_utils.dart ---
+--- File: lib/utils/responsive_utils.dart ---
 
 // lib/utils/responsive_utils.dart
 
@@ -723,7 +289,7 @@ class ResponsiveUtils {
 }
 
 
---- File: ./lib/utils/app_color.dart ---
+--- File: lib/utils/app_color.dart ---
 
 import 'dart:ui';
 
@@ -736,7 +302,7 @@ class AppColors {
 
 
 
---- File: ./lib/utils/history_manager.dart ---
+--- File: lib/utils/history_manager.dart ---
 
 import '../models/template_types.dart';
 
@@ -805,7 +371,7 @@ class HistoryManager {
 }
 
 
---- File: ./lib/models/template_types.dart ---
+--- File: lib/models/template_types.dart ---
 
 import 'package:core_image_editor/models/shape_types.dart';
 import 'package:flutter/widgets.dart';
@@ -1136,6 +702,7 @@ class TemplateElement {
   int zIndex;
   TemplateElementTag tag;
   NestedContent? nestedContent;
+   String? group;
 
   TemplateElement({
     required this.type,
@@ -1144,6 +711,7 @@ class TemplateElement {
     required this.style,
     this.zIndex = 0,
     this.nestedContent,
+    this.group,
     this.tag = TemplateElementTag.defaulty,
   });
 
@@ -1304,6 +872,7 @@ class TemplateElement {
           ? NestedContent.fromJson(json['nested_content'])
           : null,
       tag: _parseTag(json['tag']),
+      group: json['group'],
     );
   }
 
@@ -1328,6 +897,7 @@ class TemplateElement {
       'z_index': zIndex,
       'tag': tag.toString(),
       'nested_content': nestedContent?.toJson(),
+      'group': group,
     };
   }
 
@@ -1348,7 +918,7 @@ class TemplateElement {
 
 
 
---- File: ./lib/models/shape_types.dart ---
+--- File: lib/models/shape_types.dart ---
 
 import 'package:flutter/material.dart';
 
@@ -1416,7 +986,7 @@ extension ShapeTypeExtension on ShapeType {
 
 
 
---- File: ./lib/models/editor_config.dart ---
+--- File: lib/models/editor_config.dart ---
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 enum EditorCapability {
@@ -1469,6 +1039,14 @@ class EditorConfiguration {
     'Ubuntu',
     'Playfair Display',
     'Merriweather',
+    'Tiro Devanagari Hindi',
+    'Hind',
+    'Kalam',
+    'Yatra One',
+    'Khand',
+    'Modak',
+    'Bakbak One',
+    'Gajraj One',
   ];
 
   // Predefined configurations
@@ -1520,7 +1098,7 @@ class EditorConfiguration {
 
 
 
---- File: ./lib/state/history_state.dart ---
+--- File: lib/state/history_state.dart ---
 
 import 'package:flutter/foundation.dart';
 import '../models/template_types.dart';
@@ -1583,7 +1161,7 @@ class HistoryStateSnapshot {
 
 
 
---- File: ./lib/state/editor_state.dart ---
+--- File: lib/state/editor_state.dart ---
 
 import 'package:flutter/material.dart';
 import '../models/template_types.dart';
@@ -1615,6 +1193,96 @@ class EditorState extends ChangeNotifier {
   bool get isRotating => _isRotating;
   Size get viewportSize => _viewportSize;
   double get canvasAspectRatio => _canvasAspectRatio;
+
+  List<String> get availableGroups {
+    Set<String> groups = {};
+    for (var element in _elements) {
+      if (element.group != null && element.group!.isNotEmpty) {
+        groups.add(element.group!);
+      }
+    }
+    return groups.toList()..sort();
+  }
+
+  List<TemplateElement> getElementsByGroup(String? group) {
+    if (group == null) {
+      return _elements.where((e) => e.group == null).toList();
+    }
+    return _elements.where((e) => e.group == group).toList();
+  }
+
+  // Helper method to select all elements in a group
+  void selectGroup(String group) {
+    // Note: This method doesn't select multiple elements yet,
+    // just sets the first element in the group as selected
+    final groupElements = getElementsByGroup(group);
+    if (groupElements.isNotEmpty) {
+      _selectedElement = groupElements.first;
+      notifyListeners();
+    }
+  }
+
+  void bringGroupToFront(String group) {
+    final groupElements = getElementsByGroup(group);
+    if (groupElements.isEmpty) return;
+
+    // Find the highest z-index in the document
+    int highestZIndex =
+        _elements.fold(0, (max, e) => e.zIndex > max ? e.zIndex : max);
+
+    // Move all elements in the group above that
+    for (var element in groupElements) {
+      element.zIndex = ++highestZIndex;
+    }
+
+    notifyListeners();
+  }
+
+  void sendGroupToBack(String group) {
+    final groupElements = getElementsByGroup(group);
+    if (groupElements.isEmpty) return;
+
+    // Find the lowest z-index in the document
+    int lowestZIndex =
+        _elements.fold(0, (min, e) => e.zIndex < min ? e.zIndex : min);
+
+    // Move all elements in the group below that
+    for (var element in groupElements) {
+      element.zIndex = --lowestZIndex;
+    }
+
+    notifyListeners();
+  }
+
+// Method to align all elements in a group
+  void alignGroup(String group, String alignment) {
+    final groupElements = getElementsByGroup(group);
+    if (groupElements.isEmpty) return;
+
+    for (var element in groupElements) {
+      element.box.alignment = alignment;
+    }
+
+    notifyListeners();
+  }
+
+// Method to remove a group (not the elements, just ungroup them)
+  void removeGroup(String group) {
+    final groupElements = getElementsByGroup(group);
+    for (var element in groupElements) {
+      element.group = null;
+    }
+
+    notifyListeners();
+  }
+
+// Method to create a new group from selected elements
+  void createGroupFromSelected(String groupName) {
+    if (_selectedElement != null) {
+      _selectedElement!.group = groupName;
+      notifyListeners();
+    }
+  }
 
   void setElements(List<TemplateElement> elements) {
     _elements = elements;
@@ -1664,7 +1332,7 @@ class EditorState extends ChangeNotifier {
 
 
 
---- File: ./lib/extensions/color_extensions.dart ---
+--- File: lib/extensions/color_extensions.dart ---
 
 import 'package:flutter/widgets.dart';
 
@@ -1676,7 +1344,7 @@ extension XColor on Color {
 
 
 
---- File: ./lib/screens/mobile_textEdit_bottomsheet.dart ---
+--- File: lib/screens/mobile_textEdit_bottomsheet.dart ---
 
 import 'package:core_image_editor/utils/app_color.dart';
 import 'package:core_image_editor/utils/app_text_style.dart';
@@ -1968,7 +1636,7 @@ class TextEditorView extends StatelessWidget {
 
 
 
---- File: ./lib/screens/profile_editor_view.dart ---
+--- File: lib/screens/profile_editor_view.dart ---
 
 import 'package:core_image_editor/screens/mobile_textEdit_bottomsheet.dart';
 import 'package:core_image_editor/utils/app_color.dart';
@@ -2222,7 +1890,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
 
 
 
---- File: ./lib/screens/template_editor_widget.dart ---
+--- File: lib/screens/template_editor_widget.dart ---
 
 import 'dart:io';
 
@@ -2835,8 +2503,9 @@ class _ImageDisplayScreenState extends State<ImageDisplayScreen> {
 
 
 
---- File: ./lib/widgets/element_creation_sidebar.dart ---
+--- File: lib/widgets/element_creation_sidebar.dart ---
 
+import 'package:core_image_editor/widgets/groups_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:core_image_editor/models/shape_types.dart';
 import '../models/template_types.dart';
@@ -2957,131 +2626,278 @@ class ElementCreationSidebar extends StatelessWidget {
             ),
           ),
           const Divider(),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.all(isExpanded ? 16 : 8),
-              children: [
-                if (isExpanded) ...[
-                  Text(
-                    'Text Elements',
-                    style: Theme.of(context).textTheme.titleSmall,
+          if (isExpanded)
+            DefaultTabController(
+              length: 2,
+              child: Expanded(
+                child: Column(
+                  children: [
+                    TabBar(
+                      tabs: [
+                        Tab(text: 'Elements', icon: Icon(Icons.widgets)),
+                        Tab(text: 'Groups', icon: Icon(Icons.folder)),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          // Elements Tab
+                          ListView(
+                            padding: EdgeInsets.all(16),
+                            children: [
+                              if (isExpanded) ...[
+                                Text(
+                                  'Text Elements',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.title,
+                                label: 'Heading',
+                                onTap: () => onCreateElement(_createTextElement(
+                                  text: 'New Heading',
+                                  fontSizeVw: 6.0,
+                                  type: 'heading',
+                                )),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.text_fields,
+                                label: 'Body Text',
+                                onTap: () => onCreateElement(_createTextElement(
+                                  text: 'New Text Block',
+                                  fontSizeVw: 4.0,
+                                  type: 'body',
+                                )),
+                              ),
+                              if (isExpanded) ...[
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Shapes',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: ShapeType.values.map((shapeType) {
+                                  return _buildElementButton(
+                                    context: context,
+                                    icon: shapeType.icon,
+                                    label: shapeType.displayName,
+                                    onTap: () => onCreateElement(
+                                        _createShapeElement(shapeType)),
+                                  );
+                                }).toList(),
+                              ),
+                              if (isExpanded) ...[
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Media Elements',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.image,
+                                label: 'Image',
+                                onTap: () async {
+                                  final url = await onUploadImage(context);
+                                  if (url != null) {
+                                    final element = _createImageElement();
+                                    element.content['url'] = url;
+                                    onCreateElement(element);
+                                  }
+                                },
+                              ),
+                              const SizedBox(height: 8),
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.people,
+                                label: 'Leader Strip',
+                                onTap: () => onCreateElement(
+                                    TemplateElement.createLeaderStrip()),
+                              ),
+                              if (isExpanded) ...[
+                                const SizedBox(height: 16),
+                                Text(
+                                  'User Elements',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.person,
+                                label: 'User Name',
+                                onTap: () => onCreateElement(
+                                    TemplateElement.createUserName()),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.work,
+                                label: 'User Designation',
+                                onTap: () => onCreateElement(
+                                    TemplateElement.createUserDesignation()),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.group,
+                                label: 'User Party',
+                                onTap: () => onCreateElement(
+                                    TemplateElement.createUserParty()),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildElementButton(
+                                context: context,
+                                icon: Icons.account_circle,
+                                label: 'User Picture',
+                                onTap: () => onCreateElement(
+                                    TemplateElement.createUserPicture()),
+                              ),
+                            ],
+                          ),
+                          // Groups Tab
+                          GroupsManager(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.all(isExpanded ? 16 : 8),
+                children: [
+                  if (isExpanded) ...[
+                    Text(
+                      'Text Elements',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.title,
+                    label: 'Heading',
+                    onTap: () => onCreateElement(_createTextElement(
+                      text: 'New Heading',
+                      fontSizeVw: 6.0,
+                      type: 'heading',
+                    )),
                   ),
                   const SizedBox(height: 8),
-                ],
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.title,
-                  label: 'Heading',
-                  onTap: () => onCreateElement(_createTextElement(
-                    text: 'New Heading',
-                    fontSizeVw: 6.0,
-                    type: 'heading',
-                  )),
-                ),
-                const SizedBox(height: 8),
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.text_fields,
-                  label: 'Body Text',
-                  onTap: () => onCreateElement(_createTextElement(
-                    text: 'New Text Block',
-                    fontSizeVw: 4.0,
-                    type: 'body',
-                  )),
-                ),
-                if (isExpanded) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    'Shapes',
-                    style: Theme.of(context).textTheme.titleSmall,
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.text_fields,
+                    label: 'Body Text',
+                    onTap: () => onCreateElement(_createTextElement(
+                      text: 'New Text Block',
+                      fontSizeVw: 4.0,
+                      type: 'body',
+                    )),
+                  ),
+                  if (isExpanded) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      'Shapes',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: ShapeType.values.map((shapeType) {
+                      return _buildElementButton(
+                        context: context,
+                        icon: shapeType.icon,
+                        label: shapeType.displayName,
+                        onTap: () =>
+                            onCreateElement(_createShapeElement(shapeType)),
+                      );
+                    }).toList(),
+                  ),
+                  if (isExpanded) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      'Media Elements',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.image,
+                    label: 'Image',
+                    onTap: () async {
+                      final url = await onUploadImage(context);
+                      if (url != null) {
+                        final element = _createImageElement();
+                        element.content['url'] = url;
+                        onCreateElement(element);
+                      }
+                    },
                   ),
                   const SizedBox(height: 8),
-                ],
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: ShapeType.values.map((shapeType) {
-                    return _buildElementButton(
-                      context: context,
-                      icon: shapeType.icon,
-                      label: shapeType.displayName,
-                      onTap: () =>
-                          onCreateElement(_createShapeElement(shapeType)),
-                    );
-                  }).toList(),
-                ),
-                if (isExpanded) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    'Media Elements',
-                    style: Theme.of(context).textTheme.titleSmall,
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.people,
+                    label: 'Leader Strip',
+                    onTap: () =>
+                        onCreateElement(TemplateElement.createLeaderStrip()),
+                  ),
+                  if (isExpanded) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      'User Elements',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.person,
+                    label: 'User Name',
+                    onTap: () =>
+                        onCreateElement(TemplateElement.createUserName()),
                   ),
                   const SizedBox(height: 8),
-                ],
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.image,
-                  label: 'Image',
-                  onTap: () async {
-                    final url = await onUploadImage(context);
-                    if (url != null) {
-                      final element = _createImageElement();
-                      element.content['url'] = url;
-                      onCreateElement(element);
-                    }
-                  },
-                ),
-                const SizedBox(height: 8),
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.people,
-                  label: 'Leader Strip',
-                  onTap: () =>
-                      onCreateElement(TemplateElement.createLeaderStrip()),
-                ),
-
-                if (isExpanded) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    'User Elements',
-                    style: Theme.of(context).textTheme.titleSmall,
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.work,
+                    label: 'User Designation',
+                    onTap: () => onCreateElement(
+                        TemplateElement.createUserDesignation()),
                   ),
                   const SizedBox(height: 8),
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.group,
+                    label: 'User Party',
+                    onTap: () =>
+                        onCreateElement(TemplateElement.createUserParty()),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildElementButton(
+                    context: context,
+                    icon: Icons.account_circle,
+                    label: 'User Picture',
+                    onTap: () =>
+                        onCreateElement(TemplateElement.createUserPicture()),
+                  ),
                 ],
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.person,
-                  label: 'User Name',
-                  onTap: () =>
-                      onCreateElement(TemplateElement.createUserName()),
-                ),
-                const SizedBox(height: 8),
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.work,
-                  label: 'User Designation',
-                  onTap: () =>
-                      onCreateElement(TemplateElement.createUserDesignation()),
-                ),
-                const SizedBox(height: 8),
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.group,
-                  label: 'User Party',
-                  onTap: () =>
-                      onCreateElement(TemplateElement.createUserParty()),
-                ),
-                const SizedBox(height: 8),
-                _buildElementButton(
-                  context: context,
-                  icon: Icons.account_circle,
-                  label: 'User Picture',
-                  onTap: () =>
-                      onCreateElement(TemplateElement.createUserPicture()),
-                ),
-              ],
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -3118,7 +2934,7 @@ class ElementCreationSidebar extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/nested_content_widget.dart ---
+--- File: lib/widgets/nested_content_widget.dart ---
 
 import 'package:core_image_editor/models/shape_types.dart';
 import 'package:flutter/material.dart';
@@ -3274,7 +3090,7 @@ class ShapeClipper extends CustomClipper<Path> {
 
 
 
---- File: ./lib/widgets/responsive_builder.dart ---
+--- File: lib/widgets/responsive_builder.dart ---
 
 import 'package:flutter/widgets.dart';
 
@@ -3303,7 +3119,7 @@ class ResponsiveLayoutBuilder extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/editor_element.dart ---
+--- File: lib/widgets/editor_element.dart ---
 
 import 'package:core_image_editor/models/editor_config.dart';
 import 'package:core_image_editor/widgets/nested_content_widget.dart';
@@ -3703,7 +3519,7 @@ class EditorElement extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/dashed_border_painter.dart ---
+--- File: lib/widgets/dashed_border_painter.dart ---
 
 import 'dart:ui';
 
@@ -3758,7 +3574,7 @@ class DashedBorderPainter extends CustomPainter {
 
 
 
---- File: ./lib/widgets/mobile_property_sheet.dart ---
+--- File: lib/widgets/mobile_property_sheet.dart ---
 
 import 'package:core_image_editor/models/editor_config.dart';
 import 'package:core_image_editor/models/template_types.dart';
@@ -3816,7 +3632,7 @@ class MobilePropertySheet extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/resize_handle.dart ---
+--- File: lib/widgets/resize_handle.dart ---
 
 import 'package:core_image_editor/models/shape_types.dart';
 import 'package:core_image_editor/models/template_types.dart';
@@ -4060,9 +3876,11 @@ class _ResizeHandleState extends State<ResizeHandle>
 
 
 
---- File: ./lib/widgets/property_sidebar.dart ---
+--- File: lib/widgets/property_sidebar.dart ---
 
 import 'package:core_image_editor/models/editor_config.dart';
+import 'package:core_image_editor/widgets/property_controls/font_size_controls.dart';
+import 'package:core_image_editor/widgets/property_controls/group_selector.dart';
 import 'package:core_image_editor/widgets/property_controls/nested_content_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -4190,6 +4008,12 @@ class PropertySidebar extends StatelessWidget {
           element: element,
           onUpdate: pushHistory,
         ),
+        const SectionTitle(title: 'Group'),
+        GroupSelector(
+          element: element,
+          onUpdate: pushHistory,
+          availableGroups: editorState.availableGroups,
+        ),
         const SectionTitle(title: 'Position & Size'),
         if (editorState.configuration.can(EditorCapability.repositionElements))
           PositionControl(
@@ -4226,8 +4050,12 @@ class PropertySidebar extends StatelessWidget {
           element: element,
           onUpdate: pushHistory,
         ),
+        const SectionTitle(title: 'Text Style'),
         if (element.type == 'text') ...[
-          const SectionTitle(title: 'Text Style'),
+          FontSizeControl(
+            element: element,
+            onUpdate: pushHistory,
+          ),
           if (editorState.configuration.can(EditorCapability.changeFonts)) ...[
             FontFamilyControl(
               element: element,
@@ -4313,7 +4141,7 @@ class SectionTitle extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/leader_thumnail.dart ---
+--- File: lib/widgets/leader_thumnail.dart ---
 
 import 'package:core_image_editor/models/template_types.dart';
 import 'package:flutter/material.dart';
@@ -4414,7 +4242,7 @@ class _LeaderThumbnailState extends State<LeaderThumbnail> {
 
 
 
---- File: ./lib/widgets/mobile_element_creation_sheet.dart ---
+--- File: lib/widgets/mobile_element_creation_sheet.dart ---
 
 import 'package:flutter/material.dart';
 import 'package:core_image_editor/models/shape_types.dart';
@@ -4627,7 +4455,129 @@ class MobileElementCreationSheet extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/rotation_handle.dart ---
+--- File: lib/widgets/groups_manager.dart ---
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/template_types.dart';
+import '../state/editor_state.dart';
+
+class GroupsManager extends StatelessWidget {
+  const GroupsManager({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final editorState = context.watch<EditorState>();
+    final groups = editorState.availableGroups;
+
+    if (groups.isEmpty) {
+      return const Center(
+        child: Text('No groups created yet'),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: groups.length,
+      itemBuilder: (context, index) {
+        final group = groups[index];
+        final elementsInGroup = editorState.getElementsByGroup(group);
+        
+        return ExpansionTile(
+          title: Row(
+            children: [
+              Icon(Icons.folder, color: Theme.of(context).primaryColor),
+              const SizedBox(width: 8),
+              Text(group),
+              const SizedBox(width: 8),
+              Text(
+                '(${elementsInGroup.length})',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          children: [
+            ...elementsInGroup.map((element) => ListTile(
+                  leading: _getIconForElementType(element.type),
+                  title: Text(
+                    _getElementDisplayName(element),
+                    style: TextStyle(
+                      fontWeight: element == editorState.selectedElement
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                  ),
+                  selected: element == editorState.selectedElement,
+                  onTap: () {
+                    editorState.setSelectedElement(element);
+                  },
+                )),
+            ButtonBar(
+              alignment: MainAxisAlignment.start,
+              children: [
+                TextButton.icon(
+                  icon: const Icon(Icons.select_all),
+                  label: const Text('Select All'),
+                  onPressed: () {
+                    // Set the first element as selected
+                    // In the future, this could be expanded to handle multi-selection
+                    if (elementsInGroup.isNotEmpty) {
+                      editorState.setSelectedElement(elementsInGroup.first);
+                    }
+                  },
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.visibility),
+                  label: const Text('Show/Hide'),
+                  onPressed: () {
+                    // This is a placeholder for toggle visibility feature
+                    // Would require additional properties in TemplateElement
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Icon _getIconForElementType(String type) {
+    switch (type) {
+      case 'text':
+        return const Icon(Icons.text_fields);
+      case 'image':
+        return const Icon(Icons.image);
+      case 'shape':
+        return const Icon(Icons.shape_line);
+      case 'leader_strip':
+        return const Icon(Icons.people);
+      default:
+        return const Icon(Icons.widgets);
+    }
+  }
+
+  String _getElementDisplayName(TemplateElement element) {
+    if (element.type == 'text' && element.content.containsKey('text')) {
+      final text = element.content['text'] as String? ?? '';
+      if (text.isNotEmpty) {
+        // Return the first 20 chars of text or first line
+        final displayText = text.contains('\n') 
+            ? text.split('\n').first 
+            : (text.length > 20 ? text.substring(0, 20) + '...' : text);
+        return displayText;
+      }
+    }
+    
+    // For other element types
+    return '${element.tag.displayName} (${element.type})';
+  }
+}
+
+
+--- File: lib/widgets/rotation_handle.dart ---
 
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -4792,7 +4742,7 @@ class _RotationHandleState extends State<RotationHandle>
 
 
 
---- File: ./lib/widgets/re_orderable_leader_strip.dart ---
+--- File: lib/widgets/re_orderable_leader_strip.dart ---
 
 import 'dart:ui';
 
@@ -4853,7 +4803,7 @@ class ReorderableLeaderStrip extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/shape_painter.dart ---
+--- File: lib/widgets/shape_painter.dart ---
 
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -5155,7 +5105,7 @@ class ShapePainter extends CustomPainter {
 
 
 
---- File: ./lib/widgets/property_controls/index.dart ---
+--- File: lib/widgets/property_controls/index.dart ---
 
 export 'alignment_control.dart';
 export 'border_control.dart';
@@ -5175,7 +5125,104 @@ export 'tag_selector.dart';
 export 'text_content_control.dart';
 
 
---- File: ./lib/widgets/property_controls/shape_controls.dart ---
+--- File: lib/widgets/property_controls/font_size_controls.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+import 'number_input.dart';
+
+class FontSizeControl extends StatelessWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+
+  const FontSizeControl({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Font Size'),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: NumberInput(
+                label: 'Size (vw)',
+                value: element.style.fontSizeVw,
+                onChanged: (value) {
+                  element.style.fontSizeVw = value;
+                  onUpdate();
+                },
+                min: 0.5,
+                max: 20,
+                decimalPlaces: 1,
+                stepSize: 0.5,
+                suffix: 'vw',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        // Font size quick presets
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _buildSizePresetButton(context, 'XS', 2.0),
+            _buildSizePresetButton(context, 'S', 3.0),
+            _buildSizePresetButton(context, 'M', 4.0),
+            _buildSizePresetButton(context, 'L', 5.0),
+            _buildSizePresetButton(context, 'XL', 6.0),
+            _buildSizePresetButton(context, '2XL', 7.0),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSizePresetButton(
+      BuildContext context, String label, double size) {
+    final isSelected = (element.style.fontSizeVw - size).abs() < 0.1;
+
+    return InkWell(
+      onTap: () {
+        element.style.fontSizeVw = size;
+        onUpdate();
+      },
+      borderRadius: BorderRadius.circular(4),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Theme.of(context).primaryColor.withOpacity(0.2)
+              : Colors.grey[100],
+          border: Border.all(
+            color:
+                isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? Theme.of(context).primaryColor : Colors.black87,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+--- File: lib/widgets/property_controls/shape_controls.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/shape_types.dart';
@@ -5308,7 +5355,7 @@ class ShapeControls extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/tag_selector.dart ---
+--- File: lib/widgets/property_controls/tag_selector.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';
@@ -5365,7 +5412,7 @@ class TagSelector extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/size_control.dart ---
+--- File: lib/widgets/property_controls/size_control.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';
@@ -5414,7 +5461,7 @@ class SizeControl extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/alignment_control.dart ---
+--- File: lib/widgets/property_controls/alignment_control.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';
@@ -5465,7 +5512,7 @@ class AlignmentControl extends StatelessWidget {
 }
 
 
---- File: ./lib/widgets/property_controls/number_input.dart ---
+--- File: lib/widgets/property_controls/number_input.dart ---
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5722,7 +5769,7 @@ class _StepperButtonState extends State<_StepperButton> {
 
 
 
---- File: ./lib/widgets/property_controls/text_content_control.dart ---
+--- File: lib/widgets/property_controls/text_content_control.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';
@@ -6027,7 +6074,7 @@ class _QuickTextButtonState extends State<_QuickTextButton> {
 
 
 
---- File: ./lib/widgets/property_controls/layer_control.dart ---
+--- File: lib/widgets/property_controls/layer_control.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';
@@ -6060,7 +6107,7 @@ class LayerControl extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/leader_edit_dialog.dart ---
+--- File: lib/widgets/property_controls/leader_edit_dialog.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/editor_config.dart';
@@ -6140,7 +6187,7 @@ class LeaderEditDialog extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/readonly_control.dart ---
+--- File: lib/widgets/property_controls/readonly_control.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';
@@ -6174,7 +6221,7 @@ class ReadOnlyControl extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/position_control.dart ---
+--- File: lib/widgets/property_controls/position_control.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';
@@ -6223,7 +6270,7 @@ class PositionControl extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/nested_content_controls.dart ---
+--- File: lib/widgets/property_controls/nested_content_controls.dart ---
 
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -6297,23 +6344,50 @@ class NestedContentControls extends StatelessWidget {
         const SizedBox(height: 12),
 
         // Font Size
-        Row(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Font Size (vw)'),
-            Expanded(
-              child: Slider(
-                value: nestedElement.style.fontSizeVw,
-                min: 1,
-                max: 10,
-                divisions: 90,
-                label: nestedElement.style.fontSizeVw.toStringAsFixed(1),
-                onChanged: (value) {
-                  nestedElement.style.fontSizeVw = value;
-                  onUpdate();
-                },
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Slider(
+                    value: nestedElement.style.fontSizeVw.clamp(1.0, 10.0),
+                    min: 1,
+                    max: 10,
+                    divisions: 18,
+                    label: nestedElement.style.fontSizeVw.toStringAsFixed(1),
+                    onChanged: (value) {
+                      nestedElement.style.fontSizeVw = value;
+                      onUpdate();
+                    },
+                  ),
+                ),
+                Container(
+                  width: 64,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    '${nestedElement.style.fontSizeVw.toStringAsFixed(1)} vw',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ),
           ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildSizePresetButton(context, 'XS', 2.0, nestedElement),
+              _buildSizePresetButton(context, 'S', 3.0, nestedElement),
+              _buildSizePresetButton(context, 'M', 4.0, nestedElement),
+              _buildSizePresetButton(context, 'L', 5.0, nestedElement),
+              _buildSizePresetButton(context, 'XL', 6.0, nestedElement),
+            ],
+          ),
         ),
 
         // Font Weight
@@ -6378,6 +6452,40 @@ class NestedContentControls extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buildSizePresetButton(BuildContext context, String label, double size,
+      TemplateElement element) {
+    final isSelected = (element.style.fontSizeVw - size).abs() < 0.1;
+
+    return InkWell(
+      onTap: () {
+        element.style.fontSizeVw = size;
+        onUpdate();
+      },
+      borderRadius: BorderRadius.circular(4),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Theme.of(context).primaryColor.withOpacity(0.2)
+              : Colors.grey[100],
+          border: Border.all(
+            color:
+                isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? Theme.of(context).primaryColor : Colors.black87,
+          ),
+        ),
+      ),
     );
   }
 
@@ -6617,7 +6725,7 @@ class ColorPickerButton extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/font_controls.dart ---
+--- File: lib/widgets/property_controls/font_controls.dart ---
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6823,7 +6931,7 @@ class FontStyleControl extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/border_control.dart ---
+--- File: lib/widgets/property_controls/border_control.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';
@@ -6909,7 +7017,135 @@ class BorderControl extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/box_shadow_control.dart ---
+--- File: lib/widgets/property_controls/group_selector.dart ---
+
+import 'package:flutter/material.dart';
+import '../../models/template_types.dart';
+
+class GroupSelector extends StatefulWidget {
+  final TemplateElement element;
+  final VoidCallback onUpdate;
+  final List<String> availableGroups; // List of existing groups to select from
+
+  const GroupSelector({
+    super.key,
+    required this.element,
+    required this.onUpdate,
+    required this.availableGroups,
+  });
+
+  @override
+  State<GroupSelector> createState() => _GroupSelectorState();
+}
+
+class _GroupSelectorState extends State<GroupSelector> {
+  late TextEditingController _controller;
+  bool _isCreatingNew = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.element.group ?? '');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(GroupSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.element.group != widget.element.group) {
+      _controller.text = widget.element.group ?? '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Group',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              TextButton.icon(
+                icon: Icon(_isCreatingNew ? Icons.arrow_back : Icons.add),
+                label: Text(_isCreatingNew ? 'Back' : 'New Group'),
+                onPressed: () {
+                  setState(() {
+                    _isCreatingNew = !_isCreatingNew;
+                    if (_isCreatingNew) {
+                      _controller.text = '';
+                    } else {
+                      _controller.text = widget.element.group ?? '';
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          if (_isCreatingNew)
+            // Text field for creating a new group
+            TextField(
+              controller: _controller,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Enter new group name',
+                isDense: true,
+              ),
+              onSubmitted: (value) {
+                if (value.isNotEmpty) {
+                  widget.element.group = value;
+                  widget.onUpdate();
+                  setState(() {
+                    _isCreatingNew = false;
+                  });
+                }
+              },
+            )
+          else
+            // Dropdown for selecting from existing groups
+            DropdownButtonFormField<String?>(
+              value: widget.element.group,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                isDense: true,
+              ),
+              hint: const Text('Select a group (optional)'),
+              items: [
+                const DropdownMenuItem<String?>(
+                  value: null,
+                  child: Text('No Group'),
+                ),
+                ...widget.availableGroups
+                    .map((group) => DropdownMenuItem<String?>(
+                          value: group,
+                          child: Text(group),
+                        )),
+              ],
+              onChanged: (String? newValue) {
+                widget.element.group = newValue;
+                widget.onUpdate();
+              },
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+--- File: lib/widgets/property_controls/box_shadow_control.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';
@@ -7011,7 +7247,7 @@ class BoxShadowControl extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/color_picker.dart ---
+--- File: lib/widgets/property_controls/color_picker.dart ---
 
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -7126,7 +7362,7 @@ class NColorPicker extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/leader_controls.dart ---
+--- File: lib/widgets/property_controls/leader_controls.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';
@@ -7429,7 +7665,7 @@ class LeaderControls extends StatelessWidget {
 
 
 
---- File: ./lib/widgets/property_controls/image_controls.dart ---
+--- File: lib/widgets/property_controls/image_controls.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/editor_config.dart';
@@ -7795,7 +8031,7 @@ class _ImageControlsState extends State<ImageControls> {
 
 
 
---- File: ./lib/widgets/property_controls/opacity_control.dart ---
+--- File: lib/widgets/property_controls/opacity_control.dart ---
 
 import 'package:flutter/material.dart';
 import '../../models/template_types.dart';

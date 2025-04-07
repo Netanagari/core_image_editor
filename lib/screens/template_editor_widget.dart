@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:core_image_editor/models/language_types.dart';
 import 'package:core_image_editor/screens/mobile_textEdit_bottomsheet.dart';
 import 'package:core_image_editor/screens/profile_editor_view.dart';
 import 'package:core_image_editor/utils/app_color.dart';
 import 'package:core_image_editor/utils/app_text_style.dart';
+import 'package:core_image_editor/widgets/anguage_selector.dart';
 import 'package:core_image_editor/widgets/editor_element.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,6 +53,10 @@ class CoreImageEditor extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => HistoryState(),
         ),
+        // Add the language state provider
+        ChangeNotifierProvider.value(
+          value: AppLanguageState.instance,
+        ),
       ],
       child: _CoreImageEditorContent(
         template: template,
@@ -84,6 +90,11 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
   bool isBottomSheetVisible = false;
 
   // A list of the screens
+  List<Widget> bottomContent = [
+    MobileTextEditBottomSheet(),
+    ProfileEditorScreen(),
+    ProfileEditorScreen(),
+  ];
 
   // Method to handle index change
   void onItemTapped(int index) {
@@ -98,14 +109,25 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
     controller = WidgetsToImageController();
     transformationController = TransformationController();
     _setupKeyboardShortcuts();
+
+    // Listen to language changes and refresh editor
+    AppLanguageState.instance.addListener(_handleLanguageChange);
   }
 
-  List<Widget> bottomContent = [
-    MobileTextEditBottomSheet(),
-    ImageDisplayScreen(),
-    ProfileEditorScreen(),
-    ProfileEditorScreen(),
-  ];
+  @override
+  void dispose() {
+    RawKeyboard.instance.removeListener(_handleKeyEvent);
+    transformationController.dispose();
+    AppLanguageState.instance.removeListener(_handleLanguageChange);
+    super.dispose();
+  }
+
+  void _handleLanguageChange() {
+    final editorState = context.read<EditorState>();
+    editorState.refreshTextElementsForLanguage(
+        AppLanguageState.instance.currentLanguage);
+  }
+
   void _setupKeyboardShortcuts() {
     RawKeyboard.instance.addListener(_handleKeyEvent);
   }
@@ -171,6 +193,15 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
   void _handleNewElement(BuildContext context, TemplateElement element) {
     final editorState = context.read<EditorState>();
     final historyState = context.read<HistoryState>();
+
+    // Initialize localized text for new text elements
+    if (element.type == 'text') {
+      final initialText = element.content['text'] ?? '';
+      final currentLanguage = AppLanguageState.instance.currentLanguage;
+      final localizedText =
+          LocalizedText.fromText(initialText, currentLanguage);
+      element.setLocalizedText(localizedText);
+    }
 
     editorState.addElement(element);
     historyState.pushState(editorState.elements, element);
@@ -266,6 +297,12 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
         Center(
           child: _buildCanvas(context, viewportSize),
         ),
+        // Add floating language selector for mobile
+        Positioned(
+          top: 16,
+          right: 16,
+          child: CompactLanguageSelector(),
+        ),
         Positioned(
           bottom: 0,
           left: 0,
@@ -313,12 +350,13 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
           ),
         ),
         Positioned(
-            bottom: 80,
-            left: 0,
-            right: 0,
-            child: Container(
-              child: bottomContent[selectedIndex],
-            )),
+          bottom: 80,
+          left: 0,
+          right: 0,
+          child: Container(
+            child: bottomContent[selectedIndex],
+          ),
+        ),
       ],
     );
   }
@@ -326,25 +364,43 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
   Widget _buildDesktopLayout(BuildContext context, Size viewportSize) {
     final editorState = context.watch<EditorState>();
 
-    return Row(
+    return Column(
       children: [
-        ElementCreationSidebar(
-          isExpanded: editorState.isCreationSidebarExpanded,
-          onCreateElement: (element) => _handleNewElement(context, element),
-          onUploadImage: widget.onSelectImage,
-          viewportSize: viewportSize,
-          onToggle: () => editorState.toggleCreationSidebar(),
+        // Language selector in header
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          color: Colors.grey[50],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              LanguageSelector(),
+            ],
+          ),
         ),
         Expanded(
-          child: Center(
-            child: _buildCanvas(context, viewportSize),
+          child: Row(
+            children: [
+              ElementCreationSidebar(
+                isExpanded: editorState.isCreationSidebarExpanded,
+                onCreateElement: (element) =>
+                    _handleNewElement(context, element),
+                onUploadImage: widget.onSelectImage,
+                viewportSize: viewportSize,
+                onToggle: () => editorState.toggleCreationSidebar(),
+              ),
+              Expanded(
+                child: Center(
+                  child: _buildCanvas(context, viewportSize),
+                ),
+              ),
+              if (editorState.selectedElement != null)
+                PropertySidebar(
+                  onSelectImage: widget.onSelectImage,
+                  onClose: () => editorState.setSelectedElement(null),
+                ),
+            ],
           ),
         ),
-        if (editorState.selectedElement != null)
-          PropertySidebar(
-            onSelectImage: widget.onSelectImage,
-            onClose: () => editorState.setSelectedElement(null),
-          ),
       ],
     );
   }
@@ -429,178 +485,6 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
                     color: AppColors.tertiary100,
                   ),
           ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    RawKeyboard.instance.removeListener(_handleKeyEvent);
-    transformationController.dispose();
-    super.dispose();
-  }
-}
-
-class MobileBottomContentArea extends StatefulWidget {
-  const MobileBottomContentArea({super.key, required this.childrens});
-  final List<Widget> childrens;
-
-  @override
-  State<MobileBottomContentArea> createState() =>
-      _MobileBottomContentAreaState();
-}
-
-class _MobileBottomContentAreaState extends State<MobileBottomContentArea> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      decoration: BoxDecoration(
-          color: AppColors.primary100,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(12), topRight: Radius.circular(12))),
-      child: Column(
-        children: widget.childrens,
-      ),
-    );
-  }
-}
-
-class ImageDisplayScreen extends StatefulWidget {
-  const ImageDisplayScreen({Key? key}) : super(key: key);
-
-  @override
-  State<ImageDisplayScreen> createState() => _ImageDisplayScreenState();
-}
-
-class _ImageDisplayScreenState extends State<ImageDisplayScreen> {
-  // For handling the selected image
-  File? _image;
-  final ImagePicker _picker = ImagePicker();
-  bool hasImage = false;
-
-  // Function to pick image from gallery
-  Future<void> _getImageFromGallery() async {
-    try {
-      final XFile? pickedFile =
-          await _picker.pickImage(source: ImageSource.gallery);
-
-      if (pickedFile != null) {
-        setState(() {
-          _image = File(pickedFile.path);
-          hasImage = true;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking image: $e')),
-        );
-      }
-    }
-  }
-
-  void _deleteImage() {
-    setState(() {
-      _image = null;
-      hasImage = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: AppColors.primary100,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(12),
-          topRight: Radius.circular(12),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              width: 300,
-              height: 200,
-              decoration: BoxDecoration(
-                color: AppColors.tertiary100,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: hasImage && _image != null
-                  ? Image.file(
-                      _image!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Center(
-                          child: Text(
-                            'Error loading image',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.red,
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                  : const Center(
-                      child: Text(
-                        'No Image',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Action buttons row - Wrapped with LayoutBuilder to handle overflow
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Delete button
-              OutlinedButton.icon(
-                onPressed: hasImage ? _deleteImage : null,
-                icon: const Icon(Icons.delete_outline,
-                    size: 18, color: AppColors.secondary100),
-                label: Text('Delete',
-                    style: AppTextStyles.labelSmMedium
-                        .copyWith(color: AppColors.secondary100)),
-                style: OutlinedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
-                  side: const BorderSide(color: AppColors.secondary100),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              // Upload button
-              ElevatedButton.icon(
-                onPressed: _getImageFromGallery,
-                icon: const Icon(Icons.upload,
-                    size: 18, color: AppColors.primary100),
-                label: Text('Upload',
-                    style: AppTextStyles.labelSmMedium
-                        .copyWith(color: AppColors.primary100)),
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
-                  backgroundColor: AppColors.secondary100,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-            ],
-          )
         ],
       ),
     );

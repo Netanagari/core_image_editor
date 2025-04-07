@@ -1,3 +1,4 @@
+import 'package:core_image_editor/models/language_types.dart';
 import 'package:flutter/material.dart';
 import '../models/template_types.dart';
 import '../models/editor_config.dart';
@@ -163,4 +164,17 @@ class EditorState extends ChangeNotifier {
       notifyListeners();
     }
   }
+  void refreshTextElementsForLanguage(String languageCode) {
+  for (final element in _elements) {
+    if (element.type == 'text' && element.content['localizedText'] != null) {
+      try {
+        final localizedText = element.localizedText;
+        element.content['text'] = localizedText.get(languageCode);
+      } catch (e) {
+        // Ignore elements that don't have proper localization
+      }
+    }
+  }
+  notifyListeners();
+}
 }

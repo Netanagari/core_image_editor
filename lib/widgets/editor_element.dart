@@ -191,97 +191,101 @@ class EditorElement extends StatelessWidget {
     );
   }
 
-  Widget _buildElementContent(TemplateElement element, Size elementSize) {
-    if (element.type == 'leader_strip') {
-      return _buildLeaderStrip(element, elementSize);
-    }
-
-    Widget content;
-    switch (element.type) {
-      case 'shape':
-        content = NestedContentWidget(
-          element: element,
-          elementSize: elementSize,
-        );
-        break;
-      case 'image':
-        Widget imageWidget = Image.network(
-          element.content['url'] ?? '',
-          width: elementSize.width,
-          height: elementSize.height,
-          fit: element.style.imageFit,
-        );
-
-        if (element.style.imageShape == 'circle') {
-          content = ClipOval(child: imageWidget);
-        } else {
-          content = ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: imageWidget,
-          );
-        }
-        break;
-      default: // Text elements
-        double fontSizePixels =
-            element.style.fontSizeVw * elementSize.width / 100;
-
-        List<TextDecoration> decorations = [];
-        if (element.style.isUnderlined) {
-          decorations.add(TextDecoration.underline);
-        }
-
-        content = Text(
-          element.content['text'] ?? 'Default Text',
-          style: GoogleFonts.getFont(
-            element.style.fontFamily,
-            fontSize: fontSizePixels,
-            color:
-                Color(int.parse(element.style.color.replaceFirst('#', '0xff'))),
-            fontWeight: element.style.fontWeight,
-            fontStyle:
-                element.style.isItalic ? FontStyle.italic : FontStyle.normal,
-            decoration: decorations.isEmpty
-                ? null
-                : TextDecoration.combine(decorations),
-          ),
-        );
-    }
-
-    if (element.style.opacity != 1.0) {
-      content = Opacity(
-        opacity: element.style.opacity,
-        child: content,
-      );
-    }
-
-    if (element.style.boxShadow != null) {
-      content = Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Color(
-                int.parse(
-                  (element.style.boxShadow!['color'] ?? '#000000')
-                      .replaceFirst('#', '0xff'),
-                ),
-              ),
-              offset: Offset(
-                element.style.boxShadow!['offsetX']?.toDouble() ?? 0.0,
-                element.style.boxShadow!['offsetY']?.toDouble() ?? 2.0,
-              ),
-              blurRadius:
-                  element.style.boxShadow!['blurRadius']?.toDouble() ?? 4.0,
-              spreadRadius:
-                  element.style.boxShadow!['spreadRadius']?.toDouble() ?? 0.0,
-            ),
-          ],
-        ),
-        child: content,
-      );
-    }
-
-    return content;
+  
+Widget _buildElementContent(TemplateElement element, Size elementSize) {
+  if (element.type == 'leader_strip') {
+    return _buildLeaderStrip(element, elementSize);
   }
+
+  Widget content;
+  switch (element.type) {
+    case 'shape':
+      content = NestedContentWidget(
+        element: element,
+        elementSize: elementSize,
+      );
+      break;
+    case 'image':
+      Widget imageWidget = Image.network(
+        element.content['url'] ?? '',
+        width: elementSize.width,
+        height: elementSize.height,
+        fit: element.style.imageFit,
+      );
+
+      if (element.style.imageShape == 'circle') {
+        content = ClipOval(child: imageWidget);
+      } else {
+        content = ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: imageWidget,
+        );
+      }
+      break;
+    default: // Text elements
+      double fontSizePixels =
+          element.style.fontSizeVw * elementSize.width / 100;
+
+      List<TextDecoration> decorations = [];
+      if (element.style.isUnderlined) {
+        decorations.add(TextDecoration.underline);
+      }
+
+      // Get the text from either the localized content or fallback to standard text
+      String displayText = element.content['text'] ?? 'Default Text';
+      
+      content = Text(
+        displayText,
+        style: GoogleFonts.getFont(
+          element.style.fontFamily,
+          fontSize: fontSizePixels,
+          color:
+              Color(int.parse(element.style.color.replaceFirst('#', '0xff'))),
+          fontWeight: element.style.fontWeight,
+          fontStyle:
+              element.style.isItalic ? FontStyle.italic : FontStyle.normal,
+          decoration: decorations.isEmpty
+              ? null
+              : TextDecoration.combine(decorations),
+        ),
+      );
+  }
+
+  if (element.style.opacity != 1.0) {
+    content = Opacity(
+      opacity: element.style.opacity,
+      child: content,
+    );
+  }
+
+  if (element.style.boxShadow != null) {
+    content = Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Color(
+              int.parse(
+                (element.style.boxShadow!['color'] ?? '#000000')
+                    .replaceFirst('#', '0xff'),
+              ),
+            ),
+            offset: Offset(
+              element.style.boxShadow!['offsetX']?.toDouble() ?? 0.0,
+              element.style.boxShadow!['offsetY']?.toDouble() ?? 2.0,
+            ),
+            blurRadius:
+                element.style.boxShadow!['blurRadius']?.toDouble() ?? 4.0,
+            spreadRadius:
+                element.style.boxShadow!['spreadRadius']?.toDouble() ?? 0.0,
+          ),
+        ],
+      ),
+      child: content,
+    );
+  }
+
+  return content;
+}
 
   // Widget _buildLeaderStrip(TemplateElement element, Size elementSize) {
   //   final leaders = element.getLeaders();

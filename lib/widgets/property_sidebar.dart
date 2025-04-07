@@ -1,10 +1,7 @@
-import 'package:core_image_editor/models/editor_config.dart';
-import 'package:core_image_editor/widgets/property_controls/font_size_controls.dart';
-import 'package:core_image_editor/widgets/property_controls/group_selector.dart';
-import 'package:core_image_editor/widgets/property_controls/nested_content_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/template_types.dart';
+import '../models/editor_config.dart';
 import '../state/editor_state.dart';
 import '../state/history_state.dart';
 import '../widgets/property_controls/alignment_control.dart';
@@ -12,16 +9,19 @@ import '../widgets/property_controls/border_control.dart';
 import '../widgets/property_controls/box_shadow_control.dart';
 import '../widgets/property_controls/color_picker.dart';
 import '../widgets/property_controls/font_controls.dart';
+import '../widgets/property_controls/font_size_controls.dart';
 import '../widgets/property_controls/image_controls.dart';
 import '../widgets/property_controls/layer_control.dart';
 import '../widgets/property_controls/leader_controls.dart';
+import '../widgets/property_controls/localized_text_control.dart';
+import '../widgets/property_controls/nested_content_controls.dart';
 import '../widgets/property_controls/opacity_control.dart';
 import '../widgets/property_controls/position_control.dart';
 import '../widgets/property_controls/readonly_control.dart';
 import '../widgets/property_controls/shape_controls.dart';
 import '../widgets/property_controls/size_control.dart';
 import '../widgets/property_controls/tag_selector.dart';
-import '../widgets/property_controls/text_content_control.dart';
+import '../widgets/property_controls/group_selector.dart';
 
 class PropertySidebar extends StatelessWidget {
   final Future<String> Function(BuildContext) onSelectImage;
@@ -145,8 +145,7 @@ class PropertySidebar extends StatelessWidget {
             element: element,
             onUpdate: pushHistory,
           ),
-        if (editorState.configuration
-            .can(EditorCapability.changeAlignment)) ...[
+        if (editorState.configuration.can(EditorCapability.changeAlignment)) ...[
           const SectionTitle(title: 'Alignment'),
           AlignmentControl(
             element: element,
@@ -170,8 +169,8 @@ class PropertySidebar extends StatelessWidget {
           element: element,
           onUpdate: pushHistory,
         ),
-        const SectionTitle(title: 'Text Style'),
         if (element.type == 'text') ...[
+          const SectionTitle(title: 'Text Style'),
           FontSizeControl(
             element: element,
             onUpdate: pushHistory,
@@ -200,12 +199,14 @@ class PropertySidebar extends StatelessWidget {
                 pushHistory();
               },
             ),
-          if (editorState.configuration.can(EditorCapability.changeTextContent))
-            TextContentControl(
+          if (editorState.configuration.can(EditorCapability.changeTextContent)) ...[
+            const SectionTitle(title: 'Multilingual Content'),
+            LocalizedTextControl(
               element: element,
               viewportSize: editorState.viewportSize,
               onUpdate: pushHistory,
             ),
+          ],
         ] else if (element.type == 'image') ...[
           const SectionTitle(title: 'Image Properties'),
           ImageControls(
@@ -215,17 +216,20 @@ class PropertySidebar extends StatelessWidget {
             configuration: editorState.configuration,
           ),
         ] else if (element.type == 'shape') ...[
+          const SectionTitle(title: 'Shape Properties'),
           ShapeControls(
             element: element,
             onUpdate: pushHistory,
           ),
-          if (element.canContainNestedContent)
+          if (element.canContainNestedContent) ...[
+            const SectionTitle(title: 'Nested Content'),
             NestedContentControls(
               element: element,
               onSelectImage: onSelectImage,
               onUpdate: pushHistory,
               configuration: editorState.configuration,
             ),
+          ],
         ],
         const SectionTitle(title: 'Layer'),
         LayerControl(
