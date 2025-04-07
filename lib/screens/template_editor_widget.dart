@@ -7,6 +7,8 @@ import 'package:core_image_editor/utils/app_color.dart';
 import 'package:core_image_editor/utils/app_text_style.dart';
 import 'package:core_image_editor/widgets/anguage_selector.dart';
 import 'package:core_image_editor/widgets/editor_element.dart';
+import 'package:core_image_editor/widgets/language_content_viewer.dart';
+import 'package:core_image_editor/widgets/language_manager_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -245,6 +247,17 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
         centerTitle: true,
         automaticallyImplyLeading: true,
         actions: [
+          // Add language content manager button
+          IconButton(
+            icon: const Icon(Icons.translate),
+            tooltip: 'Manage Language Content',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => const LanguageContentViewer(),
+              );
+            },
+          ),
           if (editorState.configuration.can(EditorCapability.undoRedo)) ...[
             IconButton(
               icon: const Icon(Icons.undo),
@@ -366,14 +379,14 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
 
     return Column(
       children: [
-        // Language selector in header
+        // Language selector in header with enhanced version
         Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           color: Colors.grey[50],
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              LanguageSelector(),
+              const EnhancedLanguageSelector(), // Use the enhanced version
             ],
           ),
         ),

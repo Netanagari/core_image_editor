@@ -1,10 +1,12 @@
+// lib/state/editor_state.dart - Updated version
+
 import 'package:core_image_editor/models/language_types.dart';
 import 'package:flutter/material.dart';
 import '../models/template_types.dart';
 import '../models/editor_config.dart';
 
 class EditorState extends ChangeNotifier {
-  List<TemplateElement> _elements;
+  MultiLanguageContent _multiLanguageContent;
   TemplateElement? _selectedElement;
   bool _isCreationSidebarExpanded;
   bool _isRotating;
@@ -17,13 +19,53 @@ class EditorState extends ChangeNotifier {
     required this.configuration,
     required double canvasAspectRatio,
     required Size initialViewportSize,
-  })  : _elements = initialElements,
+    String? initialLanguage,
+  })  : _multiLanguageContent = MultiLanguageContent.fromSingleLanguage(
+          initialLanguage ?? AppLanguageState.instance.currentLanguage,
+          initialElements,
+        ),
         _isCreationSidebarExpanded = true,
         _isRotating = false,
         _canvasAspectRatio = canvasAspectRatio,
-        _viewportSize = initialViewportSize;
+        _viewportSize = initialViewportSize {
+    // Listen to language changes
+    AppLanguageState.instance.addListener(_handleLanguageChange);
+  }
 
-  List<TemplateElement> get elements => _elements;
+  @override
+  void dispose() {
+    AppLanguageState.instance.removeListener(_handleLanguageChange);
+    super.dispose();
+  }
+
+  void _handleLanguageChange() {
+    // When language changes, we need to change the current language in the multi-language content
+    final newLanguage = AppLanguageState.instance.currentLanguage;
+
+    // If the language doesn't exist yet in our content, let's create it
+    if (!_multiLanguageContent.languageContents.containsKey(newLanguage)) {
+      _multiLanguageContent.addLanguage(newLanguage);
+    }
+
+    // Set the current language
+    _multiLanguageContent.currentLanguage = newLanguage;
+
+    // Refresh all text elements for the new language
+    refreshTextElementsForLanguage(newLanguage);
+
+    notifyListeners();
+  }
+
+  // Get the elements for the current language
+  List<TemplateElement> get elements =>
+      _multiLanguageContent.getCurrentElements();
+
+  // Shorthand to get the current language
+  String get currentLanguage => _multiLanguageContent.currentLanguage;
+
+  // Get the complete multi-language content
+  MultiLanguageContent get multiLanguageContent => _multiLanguageContent;
+
   TemplateElement? get selectedElement => _selectedElement;
   bool get isCreationSidebarExpanded => _isCreationSidebarExpanded;
   bool get isRotating => _isRotating;
@@ -32,7 +74,7 @@ class EditorState extends ChangeNotifier {
 
   List<String> get availableGroups {
     Set<String> groups = {};
-    for (var element in _elements) {
+    for (var element in elements) {
       if (element.group != null && element.group!.isNotEmpty) {
         groups.add(element.group!);
       }
@@ -42,9 +84,9 @@ class EditorState extends ChangeNotifier {
 
   List<TemplateElement> getElementsByGroup(String? group) {
     if (group == null) {
-      return _elements.where((e) => e.group == null).toList();
+      return elements.where((e) => e.group == null).toList();
     }
-    return _elements.where((e) => e.group == group).toList();
+    return elements.where((e) => e.group == group).toList();
   }
 
   // Helper method to select all elements in a group
@@ -64,7 +106,7 @@ class EditorState extends ChangeNotifier {
 
     // Find the highest z-index in the document
     int highestZIndex =
-        _elements.fold(0, (max, e) => e.zIndex > max ? e.zIndex : max);
+        elements.fold(0, (max, e) => e.zIndex > max ? e.zIndex : max);
 
     // Move all elements in the group above that
     for (var element in groupElements) {
@@ -80,7 +122,7 @@ class EditorState extends ChangeNotifier {
 
     // Find the lowest z-index in the document
     int lowestZIndex =
-        _elements.fold(0, (min, e) => e.zIndex < min ? e.zIndex : min);
+        elements.fold(0, (min, e) => e.zIndex < min ? e.zIndex : min);
 
     // Move all elements in the group below that
     for (var element in groupElements) {
@@ -90,7 +132,7 @@ class EditorState extends ChangeNotifier {
     notifyListeners();
   }
 
-// Method to align all elements in a group
+  // Method to align all elements in a group
   void alignGroup(String group, String alignment) {
     final groupElements = getElementsByGroup(group);
     if (groupElements.isEmpty) return;
@@ -102,7 +144,7 @@ class EditorState extends ChangeNotifier {
     notifyListeners();
   }
 
-// Method to remove a group (not the elements, just ungroup them)
+  // Method to remove a group (not the elements, just ungroup them)
   void removeGroup(String group) {
     final groupElements = getElementsByGroup(group);
     for (var element in groupElements) {
@@ -112,7 +154,7 @@ class EditorState extends ChangeNotifier {
     notifyListeners();
   }
 
-// Method to create a new group from selected elements
+  // Method to create a new group from selected elements
   void createGroupFromSelected(String groupName) {
     if (_selectedElement != null) {
       _selectedElement!.group = groupName;
@@ -120,8 +162,27 @@ class EditorState extends ChangeNotifier {
     }
   }
 
-  void setElements(List<TemplateElement> elements) {
-    _elements = elements;
+  void setElements(List<TemplateElement> newElements) {
+    _multiLanguageContent.setCurrentElements(newElements);
+    notifyListeners();
+  }
+
+  // Method to set elements for a specific language
+  void setElementsForLanguage(
+      String languageCode, List<TemplateElement> newElements) {
+    _multiLanguageContent.setElementsForLanguage(languageCode, newElements);
+
+    // If this is the current language, notify listeners
+    if (languageCode == currentLanguage) {
+      notifyListeners();
+    }
+  }
+
+  // Method to copy elements from one language to another
+  void copyElementsBetweenLanguages(
+      String sourceLanguage, String targetLanguage) {
+    _multiLanguageContent.copyElementsFromLanguage(
+        sourceLanguage, targetLanguage);
     notifyListeners();
   }
 
@@ -146,35 +207,61 @@ class EditorState extends ChangeNotifier {
   }
 
   void addElement(TemplateElement element) {
-    _elements.add(element);
+    final currentElements = _multiLanguageContent.getCurrentElements();
+    currentElements.add(element);
+    _multiLanguageContent.setCurrentElements(currentElements);
     _selectedElement = element;
     notifyListeners();
   }
 
   void removeElement(TemplateElement element) {
-    _elements.remove(element);
+    final currentElements = _multiLanguageContent.getCurrentElements();
+    currentElements.remove(element);
+    _multiLanguageContent.setCurrentElements(currentElements);
     _selectedElement = null;
     notifyListeners();
   }
 
   void updateElement(TemplateElement element) {
-    final index = _elements.indexWhere((e) => e == element);
+    final currentElements = _multiLanguageContent.getCurrentElements();
+    final index = currentElements.indexWhere((e) => e == element);
     if (index != -1) {
-      _elements[index] = element;
+      currentElements[index] = element;
+      _multiLanguageContent.setCurrentElements(currentElements);
       notifyListeners();
     }
   }
+
   void refreshTextElementsForLanguage(String languageCode) {
-  for (final element in _elements) {
-    if (element.type == 'text' && element.content['localizedText'] != null) {
-      try {
-        final localizedText = element.localizedText;
-        element.content['text'] = localizedText.get(languageCode);
-      } catch (e) {
-        // Ignore elements that don't have proper localization
+    final currentElements = _multiLanguageContent.getCurrentElements();
+    for (final element in currentElements) {
+      if (element.type == 'text' && element.content['localizedText'] != null) {
+        try {
+          final localizedText = element.localizedText;
+          element.content['text'] = localizedText.get(languageCode);
+        } catch (e) {
+          // Ignore elements that don't have proper localization
+        }
       }
     }
+    notifyListeners();
   }
-  notifyListeners();
-}
+
+  // Method to export all content in the multi-language JSON format
+  Map<String, dynamic> exportMultiLanguageContent() {
+    return _multiLanguageContent.toJson();
+  }
+
+  // Method to import multi-language content
+  void importMultiLanguageContent(Map<String, dynamic> json) {
+    _multiLanguageContent = MultiLanguageContent.fromJson(json);
+    // Ensure the current language is set to the app's current language
+    final currentLang = AppLanguageState.instance.currentLanguage;
+    if (_multiLanguageContent.languageContents.containsKey(currentLang)) {
+      _multiLanguageContent.currentLanguage = currentLang;
+    }
+
+    refreshTextElementsForLanguage(_multiLanguageContent.currentLanguage);
+    notifyListeners();
+  }
 }
