@@ -54,10 +54,10 @@ class LanguageSwitcher extends StatelessWidget {
               value: currentLanguage,
               underline: const SizedBox(),
               icon: const Icon(Icons.arrow_drop_down),
-              items: languageManager.enabledLanguages.map((langCode) {
-                final lang = languageManager.getLanguageModel(langCode);
+              items: languageManager.enabledLanguages.map((language) {
+                final lang = languageManager.getLanguageModel(language.code);
                 return DropdownMenuItem(
-                  value: langCode,
+                  value: lang?.code,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -65,7 +65,7 @@ class LanguageSwitcher extends StatelessWidget {
                         Text(lang!.flagEmoji!),
                         const SizedBox(width: 4),
                       ],
-                      Text(lang?.name ?? langCode),
+                      Text(lang?.name ?? "English"),
                     ],
                   ),
                 );

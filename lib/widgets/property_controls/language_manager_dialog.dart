@@ -49,21 +49,22 @@ class LanguageManagerDialog extends StatelessWidget {
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  children: languageManager.enabledLanguages.map((langCode) {
-                    final lang = languageManager.getLanguageModel(langCode);
+                  children: languageManager.enabledLanguages.map((language) {
+                    final lang =
+                        languageManager.getLanguageModel(language.code);
                     final isDefault =
-                        langCode == LanguageManager.defaultLanguageCode;
+                        language == LanguageManager.defaultLanguage;
 
                     return Chip(
                       avatar: lang?.flagEmoji != null
                           ? Text(lang!.flagEmoji!)
                           : null,
-                      label: Text(lang?.name ?? langCode),
+                      label: Text(lang?.name ?? 'English'),
                       deleteIcon:
                           isDefault ? null : const Icon(Icons.close, size: 16),
                       onDeleted: isDefault
                           ? null
-                          : () => languageManager.removeLanguage(langCode),
+                          : () => languageManager.removeLanguage(lang!),
                     );
                   }).toList(),
                 ),
@@ -80,8 +81,8 @@ class LanguageManagerDialog extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: languageManager.availableLanguages.entries
-                      .where((entry) =>
-                          !languageManager.enabledLanguages.contains(entry.key))
+                      .where((entry) => !languageManager.enabledLanguages
+                          .contains(entry.value))
                       .map((entry) {
                     final lang = entry.value;
 
@@ -89,7 +90,7 @@ class LanguageManagerDialog extends StatelessWidget {
                       avatar:
                           lang.flagEmoji != null ? Text(lang.flagEmoji!) : null,
                       label: Text(lang.name),
-                      onPressed: () => languageManager.addLanguage(lang.code),
+                      onPressed: () => languageManager.addLanguage(lang),
                     );
                   }).toList(),
                 ),

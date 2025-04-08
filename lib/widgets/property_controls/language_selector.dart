@@ -24,10 +24,10 @@ class LanguageSelector extends StatelessWidget {
             isDense: true,
             border: OutlineInputBorder(),
           ),
-          items: enabledLanguages.map((langCode) {
-            final lang = languageManager.getLanguageModel(langCode);
+          items: enabledLanguages.map((language) {
+            final lang = languageManager.getLanguageModel(language.code);
             return DropdownMenuItem(
-              value: langCode,
+              value: language.code,
               child: Row(
                 children: [
                   if (lang?.flagEmoji != null) ...[
@@ -37,7 +37,7 @@ class LanguageSelector extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                   ],
-                  Text(lang?.name ?? langCode),
+                  Text(lang?.name ?? "English"),
                   const SizedBox(width: 4),
                   Text(
                     '(${lang?.nativeName})',

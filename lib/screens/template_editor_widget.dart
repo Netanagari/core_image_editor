@@ -201,8 +201,9 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
     // Add language settings to the template
     final languageManager = context.read<LanguageManager>();
     original['language_settings'] = {
-      'default_language': LanguageManager.defaultLanguageCode,
-      'enabled_languages': languageManager.enabledLanguages,
+      'default_language': LanguageManager.defaultLanguage.toMap(),
+      'enabled_languages':
+          languageManager.enabledLanguages.map((e) => e.toMap()).toList(),
       'current_language': languageManager.currentLanguage,
     };
 

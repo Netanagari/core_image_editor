@@ -124,8 +124,8 @@ class TextMeasurement {
     double maxRequiredHeight = 0;
 
     // Check height requirements for all languages
-    for (final langCode in enabledLanguages) {
-      final text = element.getTextContent(langCode);
+    for (final lang in enabledLanguages) {
+      final text = element.getTextContent(lang.code);
       double requiredHeight = calculateRequiredHeightPercent(
         text: text,
         element: element,
