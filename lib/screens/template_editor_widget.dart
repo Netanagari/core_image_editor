@@ -40,7 +40,8 @@ class CoreImageEditor extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => LanguageManager(),
+          create: (context) =>
+              LanguageManager()..updateAvailableLanguages(template),
         ),
         ChangeNotifierProvider(
           create: (context) => EditorState(

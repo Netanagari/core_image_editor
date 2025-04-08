@@ -176,4 +176,25 @@ class LanguageManager extends ChangeNotifier {
     return _availableLanguages[languageCode]?.textDirection ==
         TextDirection.rtl;
   }
+
+  void updateAvailableLanguages(Map<String, dynamic> template) {
+    if (template['language_settings'] == null ||
+        template['language_settings'] is! Map) {
+      return;
+    }
+
+    final realLanguages =
+        template['language_settings']['enabled_languages'] as List;
+
+    final models = realLanguages.map((e) => LanguageModel.fromMap(e)).toList();
+
+    _enabledLanguages.clear();
+    _enabledLanguages.addAll(models);
+
+    final Map<String, LanguageModel> modelsMap = {
+      for (var model in models) model.code: model
+    };
+
+    _availableLanguages.addAll(modelsMap);
+  }
 }
