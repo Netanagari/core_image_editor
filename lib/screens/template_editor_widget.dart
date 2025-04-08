@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:core_image_editor/models/language_support.dart';
 import 'package:core_image_editor/screens/mobile_textEdit_bottomsheet.dart';
 import 'package:core_image_editor/screens/profile_editor_view.dart';
 import 'package:core_image_editor/utils/app_color.dart';
 import 'package:core_image_editor/utils/app_text_style.dart';
 import 'package:core_image_editor/widgets/editor_element.dart';
+import 'package:core_image_editor/widgets/language_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -37,6 +39,9 @@ class CoreImageEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (context) => LanguageManager(),
+        ),
         ChangeNotifierProvider(
           create: (context) => EditorState(
             initialElements: (template['content_json'] as List? ?? [])
@@ -183,11 +188,22 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
     await Future.delayed(const Duration(milliseconds: 300));
 
     final original = widget.template;
-    original['edited_content'] =
+
+    // Save the elements with proper multilingual content
+    original['content_json'] =
         editorState.elements.map((e) => e.toJson()).toList();
+
     original['viewport'] = {
       'width': editorState.viewportSize.width,
       'height': editorState.viewportSize.height,
+    };
+
+    // Add language settings to the template
+    final languageManager = context.read<LanguageManager>();
+    original['language_settings'] = {
+      'default_language': LanguageManager.defaultLanguageCode,
+      'enabled_languages': languageManager.enabledLanguages,
+      'current_language': languageManager.currentLanguage,
     };
 
     final imgBytes = await controller.capture(
@@ -214,6 +230,7 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
         centerTitle: true,
         automaticallyImplyLeading: true,
         actions: [
+          const LanguageSwitcher(),
           if (editorState.configuration.can(EditorCapability.undoRedo)) ...[
             IconButton(
               icon: const Icon(Icons.undo),
@@ -468,7 +485,7 @@ class _MobileBottomContentAreaState extends State<MobileBottomContentArea> {
 }
 
 class ImageDisplayScreen extends StatefulWidget {
-  const ImageDisplayScreen({Key? key}) : super(key: key);
+  const ImageDisplayScreen({super.key});
 
   @override
   State<ImageDisplayScreen> createState() => _ImageDisplayScreenState();

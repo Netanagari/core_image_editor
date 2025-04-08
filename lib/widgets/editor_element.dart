@@ -1,4 +1,6 @@
 import 'package:core_image_editor/models/editor_config.dart';
+import 'package:core_image_editor/models/language_support.dart';
+import 'package:core_image_editor/widgets/language_indicator.dart';
 import 'package:core_image_editor/widgets/nested_content_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -96,9 +98,11 @@ class EditorElement extends StatelessWidget {
                     : element.box.alignment == 'right'
                         ? Alignment.centerRight
                         : Alignment.centerLeft,
-                child: _buildElementContent(element, Size(width, height)),
+                child:
+                    _buildElementContent(context, element, Size(width, height)),
               ),
             ),
+            LanguageIndicator(element: element),
           ],
         ),
       ),
@@ -191,7 +195,11 @@ class EditorElement extends StatelessWidget {
     );
   }
 
-  Widget _buildElementContent(TemplateElement element, Size elementSize) {
+  Widget _buildElementContent(
+    BuildContext context,
+    TemplateElement element,
+    Size elementSize,
+  ) {
     if (element.type == 'leader_strip') {
       return _buildLeaderStrip(element, elementSize);
     }
@@ -222,6 +230,14 @@ class EditorElement extends StatelessWidget {
         }
         break;
       default: // Text elements
+        // Get the language manager from the context
+        final languageManager =
+            Provider.of<LanguageManager>(context, listen: true);
+        final currentLanguage = languageManager.currentLanguage;
+
+        // Get the text for the current language using the extension method
+        final displayText = element.getTextContent(currentLanguage);
+
         double fontSizePixels =
             element.style.fontSizeVw * elementSize.width / 100;
 
@@ -230,8 +246,13 @@ class EditorElement extends StatelessWidget {
           decorations.add(TextDecoration.underline);
         }
 
+        // Check text direction
+        final textDirection = languageManager.isRtl(currentLanguage)
+            ? TextDirection.rtl
+            : TextDirection.ltr;
+
         content = Text(
-          element.content['text'] ?? 'Default Text',
+          displayText,
           style: GoogleFonts.getFont(
             element.style.fontFamily,
             fontSize: fontSizePixels,
@@ -244,7 +265,9 @@ class EditorElement extends StatelessWidget {
                 ? null
                 : TextDecoration.combine(decorations),
           ),
+          textDirection: textDirection,
         );
+        break;
     }
 
     if (element.style.opacity != 1.0) {

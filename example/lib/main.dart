@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:core_image_editor/models/editor_config.dart';
 import 'package:core_image_editor/screens/template_editor_widget.dart';
@@ -176,6 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return CoreImageEditor(
       onSave: (json, imageBytes) async {
+        log(json.toString());
         final base64Data = base64Encode(imageBytes ?? Uint8List.fromList([]));
         final anchor =
             html.AnchorElement(href: 'data:image/png;base64,$base64Data');

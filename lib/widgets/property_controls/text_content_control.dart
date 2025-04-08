@@ -1,4 +1,9 @@
+import 'package:core_image_editor/widgets/property_controls/copy_translations_tool.dart';
+import 'package:core_image_editor/widgets/property_controls/language_manager_dialog.dart';
+import 'package:core_image_editor/widgets/property_controls/language_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../models/language_support.dart';
 import '../../models/template_types.dart';
 import '../../utils/text_measurement.dart';
 
@@ -27,9 +32,22 @@ class _TextContentControlState extends State<TextContentControl> {
   @override
   void initState() {
     super.initState();
+
+    // Ensure the element has multilingual content structure
+    if (!widget.element.hasMultilingualContent) {
+      widget.element.convertToMultilingual();
+    }
+
+    // Get the language manager
+    final languageManager =
+        Provider.of<LanguageManager>(context, listen: false);
+    final currentLanguage = languageManager.currentLanguage;
+
+    // Initialize controller with the text for current language
     _controller = TextEditingController(
-      text: widget.element.content['text'] ?? '',
+      text: widget.element.getTextContent(currentLanguage),
     );
+
     _focusNode = FocusNode();
     _focusNode.addListener(_onFocusChange);
 
@@ -48,9 +66,15 @@ class _TextContentControlState extends State<TextContentControl> {
   @override
   void didUpdateWidget(TextContentControl oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.element.content['text'] != widget.element.content['text'] &&
-        !_focusNode.hasFocus) {
-      _controller.text = widget.element.content['text'] ?? '';
+
+    // Get the language manager
+    final languageManager =
+        Provider.of<LanguageManager>(context, listen: false);
+    final currentLanguage = languageManager.currentLanguage;
+
+    // If the element or language changed, update the controller
+    if (oldWidget.element != widget.element || _focusNode.hasFocus == false) {
+      _controller.text = widget.element.getTextContent(currentLanguage);
       _isMultiline = _controller.text.contains('\n');
     }
   }
@@ -62,14 +86,26 @@ class _TextContentControlState extends State<TextContentControl> {
   }
 
   void _updateContent(String newText) {
-    if (widget.element.content['text'] != newText) {
-      widget.element.content['text'] = newText;
+    // Get the language manager
+    final languageManager =
+        Provider.of<LanguageManager>(context, listen: false);
+    final currentLanguage = languageManager.currentLanguage;
+
+    // Get the current text for comparison
+    final currentText = widget.element.getTextContent(currentLanguage);
+
+    if (currentText != newText) {
+      // Update the text for the current language
+      widget.element.setTextContent(currentLanguage, newText);
+
+      // Adjust the box height if needed
       TextMeasurement.adjustBoxHeight(
         element: widget.element,
         newText: newText,
         viewportSize: widget.viewportSize,
         context: context,
       );
+
       widget.onUpdate();
     }
   }
@@ -86,9 +122,28 @@ class _TextContentControlState extends State<TextContentControl> {
     });
   }
 
+  void _showLanguageManager() {
+    showDialog(
+      context: context,
+      builder: (context) => const LanguageManagerDialog(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    // Get the language manager
+    final languageManager = Provider.of<LanguageManager>(context);
+    final currentLanguage = languageManager.currentLanguage;
+    final currentLanguageModel =
+        languageManager.getLanguageModel(currentLanguage);
+
+    // Update the controller if language changes
+    if (widget.element.getTextContent(currentLanguage) != _controller.text &&
+        !_focusNode.hasFocus) {
+      _controller.text = widget.element.getTextContent(currentLanguage);
+    }
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
@@ -105,28 +160,77 @@ class _TextContentControlState extends State<TextContentControl> {
                   'Text Content',
                   style: theme.textTheme.bodyMedium,
                 ),
-                IconButton(
-                  icon: Icon(
-                    _isMultiline ? Icons.wrap_text : Icons.short_text,
-                    size: 20,
-                    color: _isHovered || _isMultiline
-                        ? theme.primaryColor
-                        : theme.iconTheme.color,
-                  ),
-                  tooltip: _isMultiline
-                      ? 'Switch to Single Line'
-                      : 'Switch to Multiline',
-                  onPressed: _toggleMultiline,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 32,
-                    minHeight: 32,
-                  ),
-                  splashRadius: 20,
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        _isMultiline ? Icons.wrap_text : Icons.short_text,
+                        size: 20,
+                        color: _isHovered || _isMultiline
+                            ? theme.primaryColor
+                            : theme.iconTheme.color,
+                      ),
+                      tooltip: _isMultiline
+                          ? 'Switch to Single Line'
+                          : 'Switch to Multiline',
+                      onPressed: _toggleMultiline,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
+                      splashRadius: 20,
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+
+            // Add language selector
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: LanguageSelector(),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.language),
+                  tooltip: 'Manage Languages',
+                  onPressed: _showLanguageManager,
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 8),
+            CopyTranslationsTool(
+              currentElement: widget.element,
+              onUpdate: widget.onUpdate,
+            ),
+
+            // Display current language info
+            if (currentLanguageModel != null) ...[
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  if (currentLanguageModel.flagEmoji != null) ...[
+                    Text(
+                      currentLanguageModel.flagEmoji!,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  Text(
+                    'Editing ${currentLanguageModel.name} (${currentLanguageModel.nativeName})',
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            const SizedBox(height: 8),
             TextFormField(
               controller: _controller,
               focusNode: _focusNode,
@@ -147,6 +251,9 @@ class _TextContentControlState extends State<TextContentControl> {
                 ),
                 hintText: 'Enter text...',
               ),
+              textDirection: languageManager.isRtl(currentLanguage)
+                  ? TextDirection.rtl
+                  : TextDirection.ltr,
               onChanged: (value) {
                 // Update the element's content immediately
                 _isMultiline = value.contains('\n');

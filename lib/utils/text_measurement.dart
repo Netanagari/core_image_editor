@@ -1,6 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../models/template_types.dart';
+import '../models/language_support.dart';
 import 'responsive_utils.dart';
 
 class TextMeasurement {
@@ -22,6 +26,17 @@ class TextMeasurement {
       viewportSize.width,
     );
 
+    // Get text direction
+    TextDirection textDirection = TextDirection.ltr;
+    if (context.mounted) {
+      final languageManager =
+          Provider.of<LanguageManager>(context, listen: false);
+      final currentLanguage = languageManager.currentLanguage;
+      textDirection = languageManager.isRtl(currentLanguage)
+          ? TextDirection.rtl
+          : TextDirection.ltr;
+    }
+
     // Create text painter with the same style as the element
     final textStyle = GoogleFonts.getFont(
       element.style.fontFamily,
@@ -39,7 +54,7 @@ class TextMeasurement {
 
     final textPainter = TextPainter(
       text: textSpan,
-      textDirection: TextDirection.ltr,
+      textDirection: textDirection,
       maxLines: null, // Allow unlimited lines for height measurement
     );
 
@@ -90,6 +105,40 @@ class TextMeasurement {
     // Update height if required height is greater than current height
     if (requiredHeight > element.box.heightPercent) {
       element.box.heightPercent = requiredHeight.clamp(0.0, 100.0);
+    }
+  }
+
+  // New method to check and adjust element height for all languages
+  static void adjustBoxHeightForAllLanguages({
+    required TemplateElement element,
+    required Size viewportSize,
+    required BuildContext context,
+  }) {
+    if (element.type != 'text' || !element.hasMultilingualContent) return;
+
+    // Get the language manager
+    final languageManager =
+        Provider.of<LanguageManager>(context, listen: false);
+    final enabledLanguages = languageManager.enabledLanguages;
+
+    double maxRequiredHeight = 0;
+
+    // Check height requirements for all languages
+    for (final langCode in enabledLanguages) {
+      final text = element.getTextContent(langCode);
+      double requiredHeight = calculateRequiredHeightPercent(
+        text: text,
+        element: element,
+        viewportSize: viewportSize,
+        context: context,
+      );
+
+      maxRequiredHeight = max(maxRequiredHeight, requiredHeight);
+    }
+
+    // Update height if any language requires more height
+    if (maxRequiredHeight > element.box.heightPercent) {
+      element.box.heightPercent = maxRequiredHeight.clamp(0.0, 100.0);
     }
   }
 }

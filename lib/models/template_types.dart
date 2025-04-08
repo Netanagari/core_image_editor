@@ -327,7 +327,7 @@ class TemplateElement {
   int zIndex;
   TemplateElementTag tag;
   NestedContent? nestedContent;
-   String? group;
+  String? group;
 
   TemplateElement({
     required this.type,
@@ -351,7 +351,10 @@ class TemplateElement {
         heightPercent: 10,
         alignment: 'center',
       ),
-      content: {'text': 'Candidate Name'},
+      content: {
+        'fallback': 'Candidate Name',
+        'en': {'text': 'Candidate Name'},
+      },
       style: TemplateStyle(
         fontSizeVw: 5.0,
         color: '#000000',
@@ -372,7 +375,10 @@ class TemplateElement {
         heightPercent: 6,
         alignment: 'center',
       ),
-      content: {'text': 'Candidate Designation'},
+      content: {
+        'fallback': 'Candidate Designation',
+        'en': {'text': 'Candidate Designation'},
+      },
       style: TemplateStyle(
         fontSizeVw: 3.5,
         color: '#444444',
@@ -393,7 +399,10 @@ class TemplateElement {
         heightPercent: 6,
         alignment: 'center',
       ),
-      content: {'text': 'Political Party'},
+      content: {
+        'fallback': 'Political party',
+        'en': {'text': 'Political party'},
+      },
       style: TemplateStyle(
         fontSizeVw: 3.5,
         color: '#333333',
@@ -538,5 +547,78 @@ class TemplateElement {
   @override
   String toString() {
     return 'TemplateElement(type: $type, box: $box, content: $content, style: $style, zIndex: $zIndex)';
+  }
+}
+
+extension MultilingualContent on TemplateElement {
+  // Get text content for a specific language, fallback to default if not available
+  String getTextContent(String languageCode) {
+    if (type != 'text') return '';
+
+    // Handle the new multilingual content structure
+    if (content.containsKey('fallback')) {
+      // Check if we have content for the requested language
+      if (content.containsKey(languageCode) &&
+          content[languageCode] is Map &&
+          content[languageCode]['text'] != null) {
+        return content[languageCode]['text'] as String;
+      }
+
+      // Fallback to the default text
+      return content['fallback'] as String;
+    }
+
+    // Handle legacy single-language format
+    return content['text'] as String? ?? '';
+  }
+
+  // Set text content for a specific language
+  void setTextContent(String languageCode, String text) {
+    if (type != 'text') return;
+
+    // If we're updating to the multilingual format for the first time
+    if (!content.containsKey('fallback')) {
+      // Save the existing text as the fallback
+      final fallbackText = content['text'] as String? ?? '';
+
+      // Convert simple format to multilingual format
+      final Map<String, dynamic> newContent = {
+        'fallback': fallbackText,
+      };
+
+      // Replace the content
+      content = newContent;
+    }
+
+    // Create language map if it doesn't exist
+    if (!content.containsKey(languageCode)) {
+      content[languageCode] = {};
+    } else if (content[languageCode] is! Map) {
+      content[languageCode] = {};
+    }
+
+    // Set the text for this language
+    (content[languageCode] as Map)['text'] = text;
+  }
+
+  // Check if element has multilingual content
+  bool get hasMultilingualContent {
+    return type == 'text' && content.containsKey('fallback');
+  }
+
+  // Convert legacy content to multilingual format
+  void convertToMultilingual() {
+    if (type != 'text' || hasMultilingualContent) return;
+
+    final fallbackText = content['text'] as String? ?? '';
+
+    // Create new multilingual content structure
+    final Map<String, dynamic> newContent = {
+      'fallback': fallbackText,
+      'en': {'text': fallbackText},
+    };
+
+    // Replace the content
+    content = newContent;
   }
 }
