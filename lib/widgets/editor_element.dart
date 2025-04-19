@@ -102,7 +102,7 @@ class EditorElement extends StatelessWidget {
                     _buildElementContent(context, element, Size(width, height)),
               ),
             ),
-            LanguageIndicator(element: element),
+            // LanguageIndicator(element: element),
           ],
         ),
       ),

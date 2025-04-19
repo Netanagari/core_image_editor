@@ -12,139 +12,440 @@ void main() {
 }
 
 final exampleJson = {
-  "id": 1,
-  "poster": 1,
+  "id": 5,
+  "poster": 5,
   "base_image_url":
-      "https://plus.unsplash.com/premium_photo-1661616016088-1964194c7728?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cG9zdGVyfGVufDB8fDB8fHww",
+      "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/gradient.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250419%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250419T064529Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=5a343caad37dbe9406112423ed0a9c956749b18b88378b5a75512118b44ea735",
   "thumbnail_url":
-      "https://plus.unsplash.com/premium_photo-1661616016088-1964194c7728?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cG9zdGVyfGVufDB8fDB8fHww",
-  "original_width": 739,
-  "original_height": 1600,
-  "aspect_ratio": 0.461875,
+      "https://netanagri-bucket.s3.amazonaws.com/https%3A//netanagri-bucket.s3.amazonaws.com/poster/5/content/1745044989025?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250419%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250419T064529Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=555c0cce49a36ff1802ca395c709d9e7bc16a27bbacd76448f26b7722d334893",
+  "original_width": 1200,
+  "original_height": 1200,
+  "aspect_ratio": 1.0,
   "content_json": [
     {
-      "type": "text",
       "box": {
-        "x_percent": 10.139908398428515,
-        "y_percent": 5.2751196426138485,
-        "width_percent": 80,
-        "height_percent": 12.504201680672269,
+        "rotation": 0,
         "alignment": "center",
-        "rotation": 0
+        "x_percent": 10,
+        "y_percent": 10,
+        "width_percent": 80,
+        "height_percent": 10
       },
-      "content": {"text": "Sample image"},
+      "tag": "TemplateElementTag.title",
+      "type": "text",
+      "group": null,
       "style": {
-        "font_size": 7,
         "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 6,
+        "is_italic": false,
+        "box_shadow": null,
+        "decorations": null,
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "be": {"text": "শুভ হোলি!"},
+        "en": {"text": "Happy Holi!"},
+        "hi": {"text": "होली मुबारक!"},
+        "fallback": "New Heading"
+      },
+      "z_index": 0,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "rotation": 0,
+        "alignment": "center",
+        "x_percent": 8.154342156105104,
+        "y_percent": 16.99381761978362,
+        "width_percent": 80,
+        "height_percent": 10
+      },
+      "tag": "TemplateElementTag.subtitle",
+      "type": "text",
+      "group": null,
+      "style": {
+        "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 4,
+        "is_italic": false,
+        "box_shadow": null,
+        "decorations": null,
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "be": {"text": "আনন্দ আর ঐক্যের রঙে রাঙিয়ে তুলুন দিনটা!"},
+        "en": {"text": "Celebrate the colors of joy and togetherness!"},
+        "hi": {"text": "खुशियों और मिलन के रंगों का जश्न मनाएं!"},
+        "fallback": "New Text Block"
+      },
+      "z_index": 0,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "rotation": 0,
+        "alignment": "center",
+        "x_percent": 82.68479061447812,
+        "y_percent": 0,
+        "width_percent": 17.31520938552189,
+        "height_percent": 13.921638257575758
+      },
+      "tag": "TemplateElementTag.leaderPhotoStrip",
+      "type": "leader_strip",
+      "group": null,
+      "style": {
+        "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 0,
+        "is_italic": false,
+        "box_shadow": null,
+        "decorations": null,
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "leaders": [
+          {
+            "box": {
+              "rotation": 0,
+              "alignment": "center",
+              "x_percent": 0,
+              "y_percent": 0,
+              "width_percent": 100,
+              "height_percent": 100
+            },
+            "tag": "TemplateElementTag.leader",
+            "type": "image",
+            "group": null,
+            "style": {
+              "color": "#000000",
+              "opacity": 1,
+              "imageFit": "BoxFit.contain",
+              "font_size": 0,
+              "is_italic": false,
+              "box_shadow": null,
+              "decorations": null,
+              "font_family": "Roboto",
+              "font_weight": "FontWeight.w400",
+              "image_shape": "circle",
+              "border_color": null,
+              "border_style": null,
+              "border_width": null,
+              "is_read_only": false,
+              "border_radius": null,
+              "is_underlined": false
+            },
+            "content": {
+              "url":
+                  "https://netanagri-bucket.s3.amazonaws.com/poster/5/content/1744220679313"
+            },
+            "z_index": 0,
+            "nested_content": null
+          }
+        ],
+        "spacing": 0,
+        "stripSize": "medium",
+        "justifyContent": "end",
+        "verticalSpacing": 10
+      },
+      "z_index": 0,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "rotation": 0,
+        "alignment": "center",
+        "x_percent": 52.88936215795684,
+        "y_percent": 87.18174139530579,
+        "width_percent": 25.92881949283663,
+        "height_percent": 8.400433833084508
+      },
+      "tag": "TemplateElementTag.userName",
+      "type": "text",
+      "group": "user_strip",
+      "style": {
+        "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 12,
+        "is_italic": false,
+        "box_shadow": null,
+        "decorations": null,
         "font_family": "Poppins",
         "font_weight": "FontWeight.w700",
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
+        "image_shape": null,
         "border_color": null,
-        "border_width": null
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
       },
-      "z_index": 0
+      "content": {
+        "en": {"text": "Deepak"},
+        "fallback": "Candidate Name"
+      },
+      "z_index": 0,
+      "nested_content": null
     },
     {
-      "type": "shape",
       "box": {
+        "rotation": 0,
+        "alignment": "center",
+        "x_percent": 72.28541246540945,
+        "y_percent": 73.9731055739256,
+        "width_percent": 26.770428297577297,
+        "height_percent": 25.213548349681098
+      },
+      "tag": "TemplateElementTag.userPicture",
+      "type": "shape",
+      "group": null,
+      "style": {
+        "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 0,
+        "is_italic": false,
+        "box_shadow": null,
+        "decorations": null,
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "border_color": null,
+        "border_style": "none",
+        "border_width": 0,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "fillColor": "#FFFFFF",
+        "shapeType": "ShapeType.circle",
+        "strokeColor": "#ffffff",
+        "strokeWidth": 4,
+        "isStrokeDashed": false
+      },
+      "z_index": 0,
+      "nested_content": {
+        "content": {
+          "box": {
+            "rotation": 0,
+            "alignment": "center",
+            "x_percent": 0,
+            "y_percent": 0,
+            "width_percent": 100,
+            "height_percent": 100
+          },
+          "tag": "TemplateElementTag.defaulty",
+          "type": "image",
+          "group": null,
+          "style": {
+            "color": "#000000",
+            "opacity": 1,
+            "imageFit": "BoxFit.cover",
+            "font_size": 0,
+            "is_italic": false,
+            "box_shadow": null,
+            "decorations": null,
+            "font_family": "Roboto",
+            "font_weight": "FontWeight.w400",
+            "image_shape": null,
+            "border_color": null,
+            "border_style": null,
+            "border_width": null,
+            "is_read_only": false,
+            "border_radius": null,
+            "is_underlined": false
+          },
+          "content": {
+            "url":
+                "https://netanagri-bucket.s3.amazonaws.com/poster/5/content/1744437924093"
+          },
+          "z_index": 0,
+          "nested_content": null
+        },
+        "contentFit": "BoxFit.cover",
+        "contentAlignment": "Alignment.center"
+      }
+    },
+    {
+      "box": {
+        "rotation": 0,
+        "alignment": "center",
+        "x_percent": 21.522404100529084,
+        "y_percent": 25.5077091600529,
+        "width_percent": 57.36152447089947,
+        "height_percent": 57.30985449735451
+      },
+      "tag": "TemplateElementTag.image",
+      "type": "shape",
+      "group": null,
+      "style": {
+        "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 0,
+        "is_italic": false,
+        "box_shadow": null,
+        "decorations": null,
+        "font_family": "Roboto",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "fillColor": "#FFFFFF",
+        "shapeType": "ShapeType.circle",
+        "strokeColor": "#ffffff",
+        "strokeWidth": 4,
+        "isStrokeDashed": false
+      },
+      "z_index": 0,
+      "nested_content": {
+        "content": {
+          "box": {
+            "rotation": 0,
+            "alignment": "center",
+            "x_percent": 0,
+            "y_percent": 0,
+            "width_percent": 100,
+            "height_percent": 100
+          },
+          "tag": "TemplateElementTag.defaulty",
+          "type": "image",
+          "group": null,
+          "style": {
+            "color": "#000000",
+            "opacity": 1,
+            "imageFit": "BoxFit.cover",
+            "font_size": 0,
+            "is_italic": false,
+            "box_shadow": null,
+            "decorations": null,
+            "font_family": "Roboto",
+            "font_weight": "FontWeight.w400",
+            "image_shape": null,
+            "border_color": null,
+            "border_style": null,
+            "border_width": null,
+            "is_read_only": false,
+            "border_radius": null,
+            "is_underlined": false
+          },
+          "content": {
+            "url":
+                "https://netanagri-bucket.s3.amazonaws.com/poster/5/content/1744438151656"
+          },
+          "z_index": 0,
+          "nested_content": null
+        },
+        "contentFit": "BoxFit.cover",
+        "contentAlignment": "Alignment.center"
+      }
+    },
+    {
+      "box": {
+        "rotation": 0,
+        "alignment": "center",
         "x_percent": 0,
-        "y_percent": 80,
-        "width_percent": 20,
-        "height_percent": 20,
-        "alignment": "center",
-        "rotation": 0
+        "y_percent": 86.46421519108024,
+        "width_percent": 33.56434970790945,
+        "height_percent": 9.37956959784821
+      },
+      "tag": "TemplateElementTag.userDesignation",
+      "type": "text",
+      "group": "user_strip",
+      "style": {
+        "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 8,
+        "is_italic": false,
+        "box_shadow": null,
+        "decorations": null,
+        "font_family": "Poppins",
+        "font_weight": "FontWeight.w700",
+        "image_shape": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
       },
       "content": {
-        "shapeType": "ShapeType.diamond",
-        "fillColor": "#FFFFFF",
-        "strokeColor": "#000000",
-        "strokeWidth": 2,
-        "isStrokeDashed": false
+        "en": {"text": "Some designation"},
+        "fallback": "Candidate Name"
       },
-      "style": {
-        "font_size": 0,
-        "color": "#000000",
-        "font_family": "Roboto",
-        "font_weight": "FontWeight.w400",
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null
-      },
-      "z_index": 0
-    },
-    {
-      "type": "shape",
-      "box": {
-        "x_percent": 80,
-        "y_percent": 80,
-        "width_percent": 20,
-        "height_percent": 20,
-        "alignment": "center",
-        "rotation": 0
-      },
-      "content": {
-        "shapeType": "ShapeType.hexagon",
-        "fillColor": "#FFFFFF",
-        "strokeColor": "#000000",
-        "strokeWidth": 2,
-        "isStrokeDashed": false
-      },
-      "style": {
-        "font_size": 0,
-        "color": "#000000",
-        "font_family": "Roboto",
-        "font_weight": "FontWeight.w400",
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null
-      },
-      "z_index": 0
-    },
-    {
-      "type": "shape",
-      "box": {
-        "x_percent": 35.05549096039877,
-        "y_percent": 26.6280674315289,
-        "width_percent": 23.509597602409134,
-        "height_percent": 22.59333475779894,
-        "alignment": "center",
-        "rotation": 0
-      },
-      "content": {
-        "shapeType": "ShapeType.star",
-        "fillColor": "#FFFFFF",
-        "strokeColor": "#000000",
-        "strokeWidth": 2,
-        "isStrokeDashed": false
-      },
-      "style": {
-        "font_size": 0,
-        "color": "#000000",
-        "font_family": "Roboto",
-        "font_weight": "FontWeight.w400",
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null
-      },
-      "z_index": 0
+      "z_index": 0,
+      "nested_content": null
     }
-  ]
+  ],
+  "language_settings": {
+    "current_language": "en",
+    "default_language": {
+      "code": "en",
+      "name": "English",
+      "flagEmoji": "🇬🇧",
+      "nativeName": "English",
+      "textDirection": "TextDirection.ltr"
+    },
+    "enabled_languages": [
+      {
+        "code": "en",
+        "name": "English",
+        "flagEmoji": "🇬🇧",
+        "nativeName": "English",
+        "textDirection": "TextDirection.ltr"
+      },
+      {
+        "code": "hi",
+        "name": "Hindi",
+        "flagEmoji": "🇮🇳",
+        "nativeName": "हिन्दी",
+        "textDirection": "TextDirection.ltr"
+      },
+      {
+        "code": "be",
+        "name": "Bangla",
+        "flagEmoji": null,
+        "nativeName": "Bangla",
+        "textDirection": "TextDirection.ltr"
+      }
+    ]
+  }
 };
 
 class MyApp extends StatelessWidget {
