@@ -30,6 +30,8 @@ enum TemplateElementTag {
   userParty,
   leaderPhotoStrip,
   leader,
+  facebookHandle,
+  instaHandle,
   defaulty;
 
   String get displayName {
@@ -56,6 +58,10 @@ enum TemplateElementTag {
         return 'User Designation';
       case TemplateElementTag.userParty:
         return 'User Party';
+      case TemplateElementTag.facebookHandle:
+        return 'Facebook Handle';
+      case TemplateElementTag.instaHandle:
+        return 'Instagram Handle';
       case TemplateElementTag.defaulty:
         return 'Default';
     }
@@ -85,6 +91,10 @@ enum TemplateElementTag {
         return 'Job title or position of the user/candidate';
       case TemplateElementTag.userParty:
         return 'Political party of the user/candidate';
+      case TemplateElementTag.facebookHandle:
+        return 'Facebook handle of the user/candidate';
+      case TemplateElementTag.instaHandle:
+        return 'Instagram handle of the user/candidate';
       case TemplateElementTag.defaulty:
         return 'Standard element with no special handling';
     }
