@@ -32,6 +32,7 @@ enum TemplateElementTag {
   leader,
   facebookHandle,
   instaHandle,
+  twitterHandle,
   defaulty;
 
   String get displayName {
@@ -62,6 +63,8 @@ enum TemplateElementTag {
         return 'Facebook Handle';
       case TemplateElementTag.instaHandle:
         return 'Instagram Handle';
+      case TemplateElementTag.twitterHandle:
+        return 'Twitter Handle';
       case TemplateElementTag.defaulty:
         return 'Default';
     }
@@ -95,6 +98,8 @@ enum TemplateElementTag {
         return 'Facebook handle of the user/candidate';
       case TemplateElementTag.instaHandle:
         return 'Instagram handle of the user/candidate';
+      case TemplateElementTag.twitterHandle:
+        return 'Twitter handle of the user/candidate';
       case TemplateElementTag.defaulty:
         return 'Standard element with no special handling';
     }
