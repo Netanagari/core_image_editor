@@ -23,6 +23,7 @@ enum TemplateElementTag {
   image,
   title,
   subtitle,
+  message,
   userPicture,
   partySymbol,
   userName,
@@ -45,6 +46,8 @@ enum TemplateElementTag {
         return 'Title';
       case TemplateElementTag.subtitle:
         return 'Subtitle';
+      case TemplateElementTag.message:
+        return 'Message';
       case TemplateElementTag.userPicture:
         return 'User Picture';
       case TemplateElementTag.partySymbol:
@@ -80,6 +83,8 @@ enum TemplateElementTag {
         return 'Main title or heading text';
       case TemplateElementTag.subtitle:
         return 'Secondary or descriptive text';
+      case TemplateElementTag.message:
+        return 'Tertiery or more descriptive text';
       case TemplateElementTag.userPicture:
         return 'Picture of the user/candidate';
       case TemplateElementTag.partySymbol:
