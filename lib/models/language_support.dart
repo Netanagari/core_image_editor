@@ -183,6 +183,11 @@ class LanguageManager extends ChangeNotifier {
       return;
     }
 
+    if (template['language_settings'] is Map &&
+        (template['language_settings'] as Map).isEmpty) {
+      return;
+    }
+
     final realLanguages =
         template['language_settings']['enabled_languages'] as List;
 
