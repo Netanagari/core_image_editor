@@ -84,7 +84,6 @@ class _ImageControlsState extends State<ImageControls> {
         throw Exception('Invalid URL format');
       }
 
-      final result = NetworkImage(url).resolve(ImageConfiguration.empty);
       if (!mounted) return;
 
       setState(() {

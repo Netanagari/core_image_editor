@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../models/template_types.dart';
 
 class FontFamilyControl extends StatelessWidget {
@@ -34,7 +33,10 @@ class FontFamilyControl extends StatelessWidget {
                 value: font,
                 child: Text(
                   font,
-                  style: GoogleFonts.getFont(font),
+                  style: TextStyle(
+                    fontFamily: element.style.fontFamily,
+                    package: 'core_image_editor',
+                  ),
                 ),
               );
             }).toList(),

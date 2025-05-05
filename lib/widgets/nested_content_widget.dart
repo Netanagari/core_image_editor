@@ -1,6 +1,5 @@
 import 'package:core_image_editor/models/shape_types.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../models/template_types.dart';
 import 'shape_painter.dart';
 
@@ -89,8 +88,9 @@ class NestedContentWidget extends StatelessWidget {
             child: Text(
               nestedElement.content['text'] ?? '',
               textAlign: TextAlign.center,
-              style: GoogleFonts.getFont(
-                nestedElement.style.fontFamily,
+              style: TextStyle(
+                fontFamily: element.style.fontFamily,
+                package: 'core_image_editor',
                 fontSize:
                     nestedElement.style.fontSizeVw * elementSize.width / 100,
                 color: Color(

@@ -40,23 +40,19 @@ class EditorConfiguration {
   });
 
   static const supportedFallbackFonts = [
-    'Roboto',
-    'Lato',
-    'Open Sans',
-    'Montserrat',
-    'Poppins',
-    'Raleway',
-    'Ubuntu',
-    'Playfair Display',
-    'Merriweather',
-    'Tiro Devanagari Hindi',
-    'Hind',
-    'Kalam',
-    'Yatra One',
-    'Khand',
-    'Modak',
-    'Bakbak One',
-    'Gajraj One',
+    'English',
+    'Lohit-Assamese',
+    'Lohit-Bengali',
+    'Lohit-Devanagari',
+    'Lohit-Gujarati',
+    'Lohit-Kannada',
+    'Lohit-Malayalam',
+    'Lohit-Marathi',
+    'Lohit-Oriya',
+    'Lohit-Punjabi',
+    'Lohit-Tamil',
+    'Lohit-Telugu',
+    'Noto-Urdu',
   ];
 
   // Predefined configurations

@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_colorpicker: ^1.1.0
-  google_fonts: ^6.2.1
   image_picker: ^1.1.2
   provider: ^6.1.2
   universal_html: ^2.2.4
@@ -24,6 +23,47 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+flutter:
+  fonts:
+    - family: English
+      fonts:
+        - asset: assets/fonts/English.ttf
+    - family: Lohit-Assamese
+      fonts:
+        - asset: assets/fonts/Lohit-Assamese.ttf
+    - family: Lohit-Bengali
+      fonts:
+        - asset: assets/fonts/Lohit-Bengali.ttf
+    - family: Lohit-Devanagari
+      fonts:
+        - asset: assets/fonts/Lohit-Devanagari.ttf
+    - family: Lohit-Gujarati
+      fonts:
+        - asset: assets/fonts/Lohit-Gujarati.ttf
+    - family: Lohit-Kannada
+      fonts:
+        - asset: assets/fonts/Lohit-Kannada.ttf
+    - family: Lohit-Malayalam
+      fonts:
+        - asset: assets/fonts/Lohit-Malayalam.ttf
+    - family: Lohit-Marathi
+      fonts:
+        - asset: assets/fonts/Lohit-Marathi.ttf
+    - family: Lohit-Oriya
+      fonts:
+        - asset: assets/fonts/Lohit-Oriya.ttf
+    - family: Lohit-Punjabi
+      fonts:
+        - asset: assets/fonts/Lohit-Punjabi.ttf
+    - family: Lohit-Tamil
+      fonts:
+        - asset: assets/fonts/Lohit-Tamil.ttf
+    - family: Lohit-Telugu
+      fonts:
+        - asset: assets/fonts/Lohit-Telugu.ttf
+    - family: Noto-Urdu
+      fonts:
+        - asset: assets/fonts/Noto-Urdu.ttf
 
 # To add assets to your package, add an assets section, like this:
 # assets:

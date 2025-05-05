@@ -1,6 +1,5 @@
 import 'package:core_image_editor/models/editor_config.dart';
 import 'package:core_image_editor/models/language_support.dart';
-import 'package:core_image_editor/widgets/language_indicator.dart';
 import 'package:core_image_editor/widgets/nested_content_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,8 +9,6 @@ import '../state/editor_state.dart';
 import '../state/history_state.dart';
 import 'rotation_handle.dart';
 import 'resize_handle.dart';
-import 'shape_painter.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class EditorElement extends StatelessWidget {
   final TemplateElement element;
@@ -253,8 +250,9 @@ class EditorElement extends StatelessWidget {
 
         content = Text(
           displayText,
-          style: GoogleFonts.getFont(
-            element.style.fontFamily,
+          style: TextStyle(
+            fontFamily: element.style.fontFamily,
+            package: 'core_image_editor',
             fontSize: fontSizePixels,
             color:
                 Color(int.parse(element.style.color.replaceFirst('#', '0xff'))),

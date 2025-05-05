@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../models/template_types.dart';
 import '../models/language_support.dart';
@@ -38,8 +37,9 @@ class TextMeasurement {
     }
 
     // Create text painter with the same style as the element
-    final textStyle = GoogleFonts.getFont(
-      element.style.fontFamily,
+    final textStyle = TextStyle(
+      fontFamily: element.style.fontFamily,
+      package: 'core_image_editor',
       fontSize: fontSizePixels,
       color: Color(int.parse(element.style.color.replaceFirst('#', '0xff'))),
       fontWeight: element.style.fontWeight,

@@ -238,7 +238,7 @@ class TemplateStyle {
   TemplateStyle({
     required this.fontSizeVw,
     required this.color,
-    this.fontFamily = 'Roboto',
+    this.fontFamily = 'English',
     this.imageFit = BoxFit.contain,
     this.fontWeight = FontWeight.normal,
     this.isItalic = false,
@@ -378,7 +378,7 @@ class TemplateElement {
       style: TemplateStyle(
         fontSizeVw: 5.0,
         color: '#000000',
-        fontFamily: 'Poppins',
+        fontFamily: 'English',
         fontWeight: FontWeight.bold,
       ),
     );
@@ -402,7 +402,7 @@ class TemplateElement {
       style: TemplateStyle(
         fontSizeVw: 3.5,
         color: '#444444',
-        fontFamily: 'Poppins',
+        fontFamily: 'English',
         fontWeight: FontWeight.normal,
       ),
     );
@@ -426,7 +426,7 @@ class TemplateElement {
       style: TemplateStyle(
         fontSizeVw: 3.5,
         color: '#333333',
-        fontFamily: 'Poppins',
+        fontFamily: 'English',
         fontWeight: FontWeight.w500,
       ),
     );
