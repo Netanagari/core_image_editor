@@ -264,6 +264,7 @@ class EditorElement extends StatelessWidget {
                 : TextDecoration.combine(decorations),
           ),
           textDirection: textDirection,
+          textAlign: _parseTextAlign(element.style.textAlign),
         );
         break;
     }
@@ -412,5 +413,19 @@ class EditorElement extends StatelessWidget {
         );
       },
     );
+  }
+
+  // Helper to parse string to TextAlign
+  TextAlign _parseTextAlign(String? align) {
+    switch (align) {
+      case 'center':
+        return TextAlign.center;
+      case 'right':
+        return TextAlign.right;
+      case 'justify':
+        return TextAlign.justify;
+      default:
+        return TextAlign.left;
+    }
   }
 }
