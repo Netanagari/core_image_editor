@@ -27,10 +27,21 @@ class EditorElement extends StatelessWidget {
 
     bool isRotating = false;
 
-    double x = element.box.xPercent * viewportSize.width / 100;
-    double y = element.box.yPercent * viewportSize.height / 100;
-    double width = element.box.widthPercent * viewportSize.width / 100;
-    double height = element.box.heightPercent * viewportSize.height / 100;
+    // Use pixel values if provided, otherwise fallback to percent-based values
+    final originalWidth = editorState.originalWidthValue;
+    final originalHeight = editorState.originalHeightValue;
+    double x = element.box.xPx != null
+        ? (element.box.xPx! / originalWidth) * viewportSize.width
+        : (element.box.xPercent * viewportSize.width / 100);
+    double y = element.box.yPx != null
+        ? (element.box.yPx! / originalHeight) * viewportSize.height
+        : (element.box.yPercent * viewportSize.height / 100);
+    double width = element.box.widthPx != null
+        ? (element.box.widthPx! / originalWidth) * viewportSize.width
+        : (element.box.widthPercent * viewportSize.width / 100);
+    double height = element.box.heightPx != null
+        ? (element.box.heightPx! / originalHeight) * viewportSize.height
+        : (element.box.heightPercent * viewportSize.height / 100);
 
     // Build border decoration based on style
     BoxDecoration? borderDecoration;
@@ -137,6 +148,25 @@ class EditorElement extends StatelessWidget {
 
                     element.box.xPercent = newX;
                     element.box.yPercent = newY;
+
+                    // Also update xPx/yPx if they are present
+                    if (element.box.xPx != null) {
+                      element.box.xPx = (newX / 100) * originalWidth;
+                    }
+                    if (element.box.yPx != null) {
+                      element.box.yPx = (newY / 100) * originalHeight;
+                    }
+
+                    // Also update widthPx/heightPx if they are present
+                    if (element.box.widthPx != null) {
+                      element.box.widthPx =
+                          (element.box.widthPercent / 100) * originalWidth;
+                    }
+                    if (element.box.heightPx != null) {
+                      element.box.heightPx =
+                          (element.box.heightPercent / 100) * originalHeight;
+                    }
+
                     editorState.updateElement(element);
                   }
                 : null,

@@ -180,6 +180,11 @@ class TemplateBox {
   double yPercent;
   double widthPercent;
   double heightPercent;
+  // New pixel-based fields
+  double? xPx;
+  double? yPx;
+  double? widthPx;
+  double? heightPx;
   String alignment;
   double rotation;
 
@@ -188,6 +193,10 @@ class TemplateBox {
     required this.yPercent,
     required this.widthPercent,
     required this.heightPercent,
+    this.xPx,
+    this.yPx,
+    this.widthPx,
+    this.heightPx,
     this.alignment = 'left',
     this.rotation = 0,
   });
@@ -198,6 +207,14 @@ class TemplateBox {
       yPercent: json['y_percent']?.toDouble() ?? 0.0,
       widthPercent: json['width_percent']?.toDouble() ?? 0.0,
       heightPercent: json['height_percent']?.toDouble() ?? 0.0,
+      xPx: json['x_px'] != null ? (json['x_px'] as num).toDouble() : null,
+      yPx: json['y_px'] != null ? (json['y_px'] as num).toDouble() : null,
+      widthPx: json['width_px'] != null
+          ? (json['width_px'] as num).toDouble()
+          : null,
+      heightPx: json['height_px'] != null
+          ? (json['height_px'] as num).toDouble()
+          : null,
       alignment: json['alignment'] ?? 'left',
       rotation: json['rotation']?.toDouble() ?? 0.0,
     );
@@ -209,6 +226,10 @@ class TemplateBox {
       'y_percent': yPercent,
       'width_percent': widthPercent,
       'height_percent': heightPercent,
+      if (xPx != null) 'x_px': xPx,
+      if (yPx != null) 'y_px': yPx,
+      if (widthPx != null) 'width_px': widthPx,
+      if (heightPx != null) 'height_px': heightPx,
       'alignment': alignment,
       'rotation': rotation,
     };

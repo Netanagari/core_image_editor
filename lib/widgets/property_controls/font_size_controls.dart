@@ -39,6 +39,44 @@ class FontSizeControl extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
+        // New: Font size in px input
+        Row(
+          children: [
+            Expanded(
+              child: Builder(
+                builder: (context) {
+                  // Try to get the element width in px from the context
+                  double? elementWidthPx;
+                  final inherited =
+                      context.findAncestorWidgetOfExactType<Container>();
+                  if (inherited != null && inherited.constraints != null) {
+                    elementWidthPx = inherited.constraints!.maxWidth;
+                  }
+                  // Fallback: use 100vw as 100% width
+                  elementWidthPx ??= 1000;
+                  return TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Font Size (px)',
+                      suffixText: 'px',
+                    ),
+                    keyboardType: TextInputType.number,
+                    initialValue:
+                        ((element.style.fontSizeVw / 100) * elementWidthPx)
+                            .toStringAsFixed(0),
+                    onChanged: (value) {
+                      final px = double.tryParse(value);
+                      if (px != null && elementWidthPx! > 0) {
+                        element.style.fontSizeVw = (px / elementWidthPx) * 100;
+                        onUpdate();
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
         // Font size quick presets
         Wrap(
           spacing: 8,

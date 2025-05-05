@@ -52,6 +52,8 @@ class CoreImageEditor extends StatelessWidget {
             canvasAspectRatio:
                 template['original_width'] / template['original_height'],
             initialViewportSize: Size.zero,
+            originalWidth: template['original_width']?.toDouble() ?? 1080.0,
+            originalHeight: template['original_height']?.toDouble() ?? 1080.0,
           ),
         ),
         ChangeNotifierProvider(

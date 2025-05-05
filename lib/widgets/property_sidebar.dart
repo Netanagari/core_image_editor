@@ -146,6 +146,76 @@ class PropertySidebar extends StatelessWidget {
             element: element,
             onUpdate: pushHistory,
           ),
+        // New: Pixel-based controls for position and size
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Position (px)',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: element.box.xPx?.toString() ?? '',
+                      decoration: const InputDecoration(labelText: 'X (px)'),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        element.box.xPx = double.tryParse(value);
+                        pushHistory();
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: element.box.yPx?.toString() ?? '',
+                      decoration: const InputDecoration(labelText: 'Y (px)'),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        element.box.yPx = double.tryParse(value);
+                        pushHistory();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              const Text('Size (px)',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: element.box.widthPx?.toString() ?? '',
+                      decoration:
+                          const InputDecoration(labelText: 'Width (px)'),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        element.box.widthPx = double.tryParse(value);
+                        pushHistory();
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: element.box.heightPx?.toString() ?? '',
+                      decoration:
+                          const InputDecoration(labelText: 'Height (px)'),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        element.box.heightPx = double.tryParse(value);
+                        pushHistory();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
         if (editorState.configuration
             .can(EditorCapability.changeAlignment)) ...[
           const SectionTitle(title: 'Alignment'),

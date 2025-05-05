@@ -1,7 +1,9 @@
 import 'package:core_image_editor/models/shape_types.dart';
 import 'package:core_image_editor/models/template_types.dart';
+import 'package:core_image_editor/state/editor_state.dart';
 import 'package:core_image_editor/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ResizeHandle extends StatefulWidget {
   final HandlePosition position;
@@ -91,6 +93,20 @@ class _ResizeHandleState extends State<ResizeHandle>
 
       // Apply constraints
       _applyConstraints();
+
+      // Update widthPx/heightPx if present
+      final editorState = context.read<EditorState>();
+      final originalWidth = editorState.originalWidthValue;
+      final originalHeight = editorState.originalHeightValue;
+      if (widget.element.box.widthPx != null) {
+        widget.element.box.widthPx =
+            (widget.element.box.widthPercent / 100) * originalWidth;
+      }
+      if (widget.element.box.heightPx != null) {
+        widget.element.box.heightPx =
+            (widget.element.box.heightPercent / 100) * originalHeight;
+      }
+
       widget.onUpdate();
     });
   }

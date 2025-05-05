@@ -10,12 +10,16 @@ class EditorState extends ChangeNotifier {
   final EditorConfiguration configuration;
   Size _viewportSize;
   final double _canvasAspectRatio;
+  final double originalWidth;
+  final double originalHeight;
 
   EditorState({
     required List<TemplateElement> initialElements,
     required this.configuration,
     required double canvasAspectRatio,
     required Size initialViewportSize,
+    required this.originalWidth,
+    required this.originalHeight,
   })  : _elements = initialElements,
         _isCreationSidebarExpanded = true,
         _isRotating = false,
@@ -28,6 +32,8 @@ class EditorState extends ChangeNotifier {
   bool get isRotating => _isRotating;
   Size get viewportSize => _viewportSize;
   double get canvasAspectRatio => _canvasAspectRatio;
+  double get originalWidthValue => originalWidth;
+  double get originalHeightValue => originalHeight;
 
   List<String> get availableGroups {
     Set<String> groups = {};
