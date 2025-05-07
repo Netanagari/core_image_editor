@@ -201,5 +201,14 @@ class LanguageManager extends ChangeNotifier {
     };
 
     _availableLanguages.addAll(modelsMap);
+
+    // Set the current language from template settings
+    final templateCurrentLang =
+        template['language_settings']['current_language'];
+    if (templateCurrentLang != null &&
+        _enabledLanguages.any((lang) => lang.code == templateCurrentLang)) {
+      _currentLanguage = templateCurrentLang;
+      notifyListeners();
+    }
   }
 }

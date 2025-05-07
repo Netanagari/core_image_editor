@@ -51,13 +51,19 @@ class LanguageSwitcher extends StatelessWidget {
             // Quick language selector for enabled languages
             const SizedBox(width: 8),
             DropdownButton<String>(
-              value: currentLanguage,
+              value: languageManager.enabledLanguages
+                      .any((lang) => lang.code == currentLanguage)
+                  ? currentLanguage
+                  : (languageManager.enabledLanguages.isNotEmpty
+                      ? languageManager.enabledLanguages.first.code
+                      : null),
               underline: const SizedBox(),
               icon: const Icon(Icons.arrow_drop_down),
               items: languageManager.enabledLanguages.map((language) {
                 final lang = languageManager.getLanguageModel(language.code);
                 return DropdownMenuItem(
-                  value: lang?.code,
+                  value: language
+                      .code, // Always use the exact code from enabledLanguages
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -71,7 +77,9 @@ class LanguageSwitcher extends StatelessWidget {
                 );
               }).toList(),
               onChanged: (value) {
-                if (value != null) {
+                if (value != null &&
+                    languageManager.enabledLanguages
+                        .any((lang) => lang.code == value)) {
                   languageManager.currentLanguage = value;
                 }
               },

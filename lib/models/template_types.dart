@@ -601,20 +601,19 @@ extension MultilingualContent on TemplateElement {
   String getTextContent(String languageCode) {
     if (type != 'text') return '';
 
-    // Handle the new multilingual content structure
-    if (content.containsKey('fallback')) {
-      // Check if we have content for the requested language
-      if (content.containsKey(languageCode) &&
-          content[languageCode] is Map &&
-          content[languageCode]['text'] != null) {
-        return content[languageCode]['text'] as String;
-      }
+    // Check if we have content for the requested language directly
+    if (content.containsKey(languageCode) &&
+        content[languageCode] is Map &&
+        content[languageCode]['text'] != null) {
+      return content[languageCode]['text'] as String;
+    }
 
-      // Fallback to the default text
+    // If not found, try fallback if available
+    if (content.containsKey('fallback')) {
       return content['fallback'] as String;
     }
 
-    // Handle legacy single-language format
+    // Finally try legacy format
     return content['text'] as String? ?? '';
   }
 
