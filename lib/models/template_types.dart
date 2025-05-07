@@ -19,17 +19,17 @@ enum LeaderStripSize {
 }
 
 enum TemplateElementTag {
-  bgImage,
-  image,
-  title,
-  subtitle,
-  message,
+  background,
+  keyVisual,
+  heading,
+  subheading,
+  messaging,
   userPicture,
   partySymbol,
   userName,
   userDesignation,
   userParty,
-  leaderPhotoStrip,
+  leaderStrip,
   leader,
   facebookHandle,
   instaHandle,
@@ -38,22 +38,22 @@ enum TemplateElementTag {
 
   String get displayName {
     switch (this) {
-      case TemplateElementTag.bgImage:
+      case TemplateElementTag.background:
         return 'Background Image';
-      case TemplateElementTag.image:
-        return 'Image';
-      case TemplateElementTag.title:
-        return 'Title';
-      case TemplateElementTag.subtitle:
-        return 'Subtitle';
-      case TemplateElementTag.message:
-        return 'Message';
+      case TemplateElementTag.keyVisual:
+        return 'Key visual';
+      case TemplateElementTag.heading:
+        return 'Heading';
+      case TemplateElementTag.subheading:
+        return 'Sub heading';
+      case TemplateElementTag.messaging:
+        return 'Messaging';
       case TemplateElementTag.userPicture:
         return 'User Picture';
       case TemplateElementTag.partySymbol:
         return 'Party Symbol';
-      case TemplateElementTag.leaderPhotoStrip:
-        return 'Leader Photo Strip';
+      case TemplateElementTag.leaderStrip:
+        return 'Leader Strip';
       case TemplateElementTag.leader:
         return 'Leader';
       case TemplateElementTag.userName:
@@ -75,21 +75,21 @@ enum TemplateElementTag {
 
   String get description {
     switch (this) {
-      case TemplateElementTag.bgImage:
+      case TemplateElementTag.background:
         return 'Main background image of the poster';
-      case TemplateElementTag.image:
+      case TemplateElementTag.keyVisual:
         return 'Relevant image related to event or content';
-      case TemplateElementTag.title:
+      case TemplateElementTag.heading:
         return 'Main title or heading text';
-      case TemplateElementTag.subtitle:
+      case TemplateElementTag.subheading:
         return 'Secondary or descriptive text';
-      case TemplateElementTag.message:
+      case TemplateElementTag.messaging:
         return 'Tertiery or more descriptive text';
       case TemplateElementTag.userPicture:
         return 'Picture of the user/candidate';
       case TemplateElementTag.partySymbol:
         return 'Political party symbol or logo';
-      case TemplateElementTag.leaderPhotoStrip:
+      case TemplateElementTag.leaderStrip:
         return 'Strip of leader photos';
       case TemplateElementTag.leader:
         return 'Leader photo';
@@ -507,7 +507,7 @@ class TemplateElement {
   factory TemplateElement.createLeaderStrip() {
     return TemplateElement(
       type: 'leader_strip',
-      tag: TemplateElementTag.leaderPhotoStrip,
+      tag: TemplateElementTag.leaderStrip,
       box: TemplateBox(
         xPercent: 10,
         yPercent: 10,

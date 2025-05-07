@@ -25,8 +25,8 @@ class ElementCreationSidebar extends StatelessWidget {
     required String type,
   }) {
     TemplateElementTag tag = type == 'heading'
-        ? TemplateElementTag.title
-        : TemplateElementTag.subtitle;
+        ? TemplateElementTag.heading
+        : TemplateElementTag.subheading;
 
     return TemplateElement(
       type: 'text',
@@ -56,7 +56,7 @@ class ElementCreationSidebar extends StatelessWidget {
         heightPercent: 30,
         alignment: 'center',
       ),
-      tag: TemplateElementTag.image,
+      tag: TemplateElementTag.keyVisual,
       content: {
         'url': 'https://via.placeholder.com/200x200',
       },

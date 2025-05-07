@@ -33,16 +33,17 @@ class _TextContentControlState extends State<TextContentControl> {
     super.initState();
     _focusNode = FocusNode();
     _focusNode.addListener(_onFocusChange);
-    
+
     // Get the language manager
-    final languageManager = Provider.of<LanguageManager>(context, listen: false);
+    final languageManager =
+        Provider.of<LanguageManager>(context, listen: false);
     final currentLanguage = languageManager.currentLanguage;
-    
+
     // Initialize controller with current language text
     _controller = TextEditingController(
       text: widget.element.getTextContent(currentLanguage),
     );
-    
+
     // Detect if the current text contains newlines
     _isMultiline = _controller.text.contains('\n');
   }
@@ -58,11 +59,12 @@ class _TextContentControlState extends State<TextContentControl> {
   @override
   void didUpdateWidget(TextContentControl oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     // Get the language manager
-    final languageManager = Provider.of<LanguageManager>(context, listen: false);
+    final languageManager =
+        Provider.of<LanguageManager>(context, listen: false);
     final currentLanguage = languageManager.currentLanguage;
-    
+
     // Only update controller text if element changed or we're not focused
     if (oldWidget.element != widget.element || !_focusNode.hasFocus) {
       final text = widget.element.getTextContent(currentLanguage);
@@ -81,23 +83,24 @@ class _TextContentControlState extends State<TextContentControl> {
 
   void _updateContent(String newText) {
     // Get the language manager
-    final languageManager = Provider.of<LanguageManager>(context, listen: false);
+    final languageManager =
+        Provider.of<LanguageManager>(context, listen: false);
     final currentLanguage = languageManager.currentLanguage;
-    
+
     // Get the current text for comparison
     final currentText = widget.element.getTextContent(currentLanguage);
-    
+
     if (currentText != newText) {
       // Update the text for the current language
       widget.element.setTextContent(currentLanguage, newText);
-      
+
       // Adjust the box height if needed
       TextMeasurement.adjustBoxHeightForAllLanguages(
         element: widget.element,
         viewportSize: widget.viewportSize,
         context: context,
       );
-      
+
       widget.onUpdate();
     }
   }
@@ -200,7 +203,8 @@ class _TextContentControlState extends State<TextContentControl> {
                     ),
                     onPressed: () {
                       setState(() {
-                        widget.element.style.isItalic = !widget.element.style.isItalic;
+                        widget.element.style.isItalic =
+                            !widget.element.style.isItalic;
                         widget.onUpdate();
                       });
                     },
@@ -214,7 +218,8 @@ class _TextContentControlState extends State<TextContentControl> {
                     ),
                     onPressed: () {
                       setState(() {
-                        widget.element.style.isUnderlined = !widget.element.style.isUnderlined;
+                        widget.element.style.isUnderlined =
+                            !widget.element.style.isUnderlined;
                         widget.onUpdate();
                       });
                     },
