@@ -139,7 +139,6 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
 
     paint = skia.Paint(AntiAlias=True)
     opacity = style.get('opacity', 1.0)
-    
     # General opacity for the layer will be applied at the end using saveLayer if needed
 
     element_rect = skia.Rect.MakeWH(el_width, el_height)
@@ -151,7 +150,6 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
                 print(f"Attempting to load image for element: {element_data.get('tag', 'N/A')}, URL: {img_url}")
                 response = requests.get(img_url, timeout=10)
                 response.raise_for_status() # Will raise an HTTPError for bad responses (4xx or 5xx)
-                # Corrected: Use skia.Data(bytes_object) constructor
                 image_data = skia.Data(response.content)
                 skia_image = skia.Image.MakeFromEncoded(image_data)
                 if skia_image:
@@ -161,7 +159,8 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
                         skia_image.width(), skia_image.height(),
                         el_width, el_height, box_fit_str
                     )
-                    paint.setAlphaf(opacity) # Apply opacity directly for simple images
+                    paint = skia.Paint(AntiAlias=True)
+                    paint.setAlphaf(opacity)
                     canvas.drawImageRect(skia_image, src_rect, dst_rect_fitted, paint)
                 else:
                     print(f"Failed to decode Skia image from URL: {img_url}")
@@ -431,7 +430,7 @@ if __name__ == '__main__':
     print(">>> PYTHON SCRIPT EXECUTION STARTED (generate_thumbnail.py) <<<") # Prominent start log
     example_json_data = { # Fully restored example_json_data
       "id": 4, "poster": 36,
-      "base_image_url": "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/BJP.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250508%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250508T072727Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=ade34e3684cfc8ff41c40606ebd3d0b2074307a5ab651fb399710e0d7d97a60c",
+      "base_image_url": "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/BJP.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250508%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250508T114120Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=cd777d5e3cc3c0a4d6bace32a4091f7ee9feba91940c81fc619ca7ef0e84ab7c",
       "thumbnail_url": None,
       "original_width": 1080,
       "original_height": 1080,
