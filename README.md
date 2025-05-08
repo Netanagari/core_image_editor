@@ -305,4 +305,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For more issues, please check the [Issues](https://github.com/yourusername/core_image_editor/issues) section.
 
 ## Command to generate poster via skia command line
-python generate_thumbnial_skia.py --json path/to/your.json --lang en-IN
+python generate_thumbnial_skia.py --json sample_content.json --lang bn-IN --base_image_url https://netanagri-bucket.s3.amazonaws.com/poster_base_images/BJP.png\?X-Amz-Algorithm\=AWS4-HMAC-SHA256\&X-Amz-Credential\=AKIAU7IC7N7V53BDVH2P%2F20250508%2Fap-southeast-1%2Fs3%2Faws4_request\&X-Amz-Date\=20250508T114655Z\&X-Amz-Expires\=3600\&X-Amz-SignedHeaders\=host\&X-Amz-Signature\=72e33ef645c473bfae5f61af5268ded6d633a60d2d252acd2d0fc221bf2bb247 --output generated_skia_image.png

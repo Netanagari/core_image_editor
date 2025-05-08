@@ -1,10 +1,4 @@
 {
-    "id": 4,
-    "poster": 36,
-    "thumbnail_url": "https://netanagri-bucket.s3.amazonaws.com/https%3A//netanagri-bucket.s3.amazonaws.com/poster/36/content/1746637918720?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250508%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250508T114655Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=3897cd1e08518fdc2fb54f2bcd2de6ae73cf4a53f025d83ff1bc89cec0ad64a8",
-    "original_width": 1080,
-    "original_height": 1080,
-    "aspect_ratio": 1.0,
     "content_json": [
         {
             "box": {
