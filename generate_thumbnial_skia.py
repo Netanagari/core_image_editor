@@ -356,16 +356,19 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
     canvas.restore()
 
 
-def create_image_from_json_skia(json_data, output_path="output_image_skia.png", font_asset_path="assets/fonts"):
-    canvas_width = json_data['original_width']
-    canvas_height = json_data['original_height']
+def create_image_from_json_skia(json_data, output_path="output_image_skia.png", font_asset_path="assets/fonts", canvas_width=None, canvas_height=None, base_image_url=None):
+    if canvas_width is None or canvas_height is None:
+        canvas_width = json_data['original_width']
+        canvas_height = json_data['original_height']
 
     surface = skia.Surface(canvas_width, canvas_height)
     canvas = surface.getCanvas()
     canvas.clear(skia.ColorTRANSPARENT) # Start with a transparent background
 
     # 1. Render base_image_url
-    base_image_url = json_data.get('base_image_url')
+    if base_image_url is None:
+        base_image_url = json_data.get('base_image_url')
+
     if base_image_url:
         try:
             print(f"Fetching base_image_url: {base_image_url}")
@@ -443,6 +446,7 @@ if __name__ == '__main__':
     parser.add_argument('--lang', required=True, help='Language key to use for text rendering (e.g., en-IN, hi-IN)')
     parser.add_argument('--output', default='generated_image_skia.png', help='Output image file path')
     parser.add_argument('--fonts', default='./assets/fonts', help='Path to font assets directory (default: ./assets/fonts)')
+    parser.add_argument('--base_image_url', default=None, help='URL of the base image to use (overrides JSON)')
     args = parser.parse_args()
 
     print(f">>> PYTHON SCRIPT EXECUTION STARTED (generate_thumbnail.py) <<<")
@@ -461,6 +465,34 @@ if __name__ == '__main__':
     if 'default_language' not in json_data['language_settings']:
         json_data['language_settings']['default_language'] = {'code': args.lang}
 
+    # Handle base_image_url override and set canvas size from image if provided
+    if args.base_image_url:
+        try:
+            print(f"Fetching base image from URL: {args.base_image_url} to determine dimensions...")
+            response = requests.get(args.base_image_url, timeout=10)
+            response.raise_for_status()
+            base_image_data = skia.Data(response.content)
+            skia_base_image = skia.Image.MakeFromEncoded(base_image_data)
+            if skia_base_image:
+                canvas_width = skia_base_image.width()
+                canvas_height = skia_base_image.height()
+                base_image_url = args.base_image_url
+                print(f"Base image dimensions: width={canvas_width}, height={canvas_height}")
+            else:
+                print(f"Failed to decode Skia base image from URL: {args.base_image_url}. Using JSON dimensions.")
+                canvas_width = json_data['original_width']
+                canvas_height = json_data['original_height']
+                base_image_url = json_data.get('base_image_url')
+        except Exception as e:
+            print(f"Error fetching or decoding base image from URL: {e}. Using JSON dimensions.")
+            canvas_width = json_data['original_width']
+            canvas_height = json_data['original_height']
+            base_image_url = json_data.get('base_image_url')
+    else:
+        canvas_width = json_data['original_width']
+        canvas_height = json_data['original_height']
+        base_image_url = json_data.get('base_image_url')
+
     # Font directory
     if args.fonts:
         font_dir = args.fonts
@@ -469,6 +501,7 @@ if __name__ == '__main__':
         font_dir = os.path.join(current_script_dir, "assets", "fonts")
     print(f"Font directory set to: {font_dir}")
 
-    create_image_from_json_skia(json_data, output_path=args.output, font_asset_path=font_dir)
+    # Call the rendering function with local canvas size and base image url
+    create_image_from_json_skia(json_data, output_path=args.output, font_asset_path=font_dir, canvas_width=canvas_width, canvas_height=canvas_height, base_image_url=base_image_url)
     print(f"Image generated at: {args.output}")
     print(">>> PYTHON SCRIPT EXECUTION FINISHED (generate_thumbnail.py) <<<")
