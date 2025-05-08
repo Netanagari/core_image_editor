@@ -139,6 +139,7 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
 
     paint = skia.Paint(AntiAlias=True)
     opacity = style.get('opacity', 1.0)
+    
     # General opacity for the layer will be applied at the end using saveLayer if needed
 
     element_rect = skia.Rect.MakeWH(el_width, el_height)
@@ -251,77 +252,96 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
             font_size_vw = style.get('font_size', 4.0) # Default to 4vw
             font_family_name = style.get('font_family', 'English')
             font_weight_str = style.get('font_weight', 'FontWeight.w400')
-            
+            is_italic = style.get('is_italic', False)
+            is_underlined = style.get('is_underlined', False)
+            text_align_style = style.get('text_align') # Can be None
+
             initial_font_size_px = max(1.0, (font_size_vw / 100.0) * parent_canvas_width)
-            
             skia_font_weight = get_skia_font_weight(font_weight_str)
-            skia_font_style = skia.FontStyle(skia_font_weight, skia.FontStyle.kNormal_Width, skia.FontStyle.kUpright_Slant)
-            
-            actual_font_path = os.path.join(font_asset_path, f"{font_family_name}.ttf")
+            skia_font_slant = skia.FontStyle.kItalic_Slant if is_italic else skia.FontStyle.kUpright_Slant
+            skia_font_style = skia.FontStyle(skia_font_weight, skia.FontStyle.kNormal_Width, skia_font_slant)
+
+            # Try to load italic font variant if needed
+            font_file = f"{font_family_name}{'-Italic' if is_italic else ''}.ttf"
+            actual_font_path = os.path.join(font_asset_path, font_file)
+            if not os.path.exists(actual_font_path):
+                actual_font_path = os.path.join(font_asset_path, f"{font_family_name}.ttf")
             try:
                 typeface = skia.Typeface.MakeFromFile(actual_font_path, 0) or skia.Typeface.MakeDefault()
             except Exception as e:
                 print(f"Warning: Could not load font '{actual_font_path}': {e}. Using default.")
                 typeface = skia.Typeface.MakeDefault()
 
-            lines = text_to_render.splitlines()
-            
-            # Iteratively adjust font size to fit width
-            current_font_size_px = initial_font_size_px
-            if lines and el_width > 0:
-                temp_font = skia.Font(typeface, current_font_size_px)
-                temp_font.setEdging(skia.Font.Edging.kAntiAlias) # Smoother text
-                temp_font.setSubpixel(True)
+            # --- Word wrapping ---
+            def wrap_text(text, font, max_width):
+                words = text.split()
+                lines = []
+                current_line = ''
+                for word in words:
+                    test_line = current_line + (' ' if current_line else '') + word
+                    if font.measureText(test_line) <= max_width:
+                        current_line = test_line
+                    else:
+                        if current_line:
+                            lines.append(current_line)
+                        current_line = word
+                if current_line:
+                    lines.append(current_line)
+                return lines
 
-                longest_line = max(lines, key=lambda line: temp_font.measureText(line))
-                while temp_font.measureText(longest_line) > el_width and current_font_size_px > 1:
-                    current_font_size_px -= 1
-                    temp_font.setSize(current_font_size_px)
-            
+            # Start with initial font size, wrap, then reduce if needed
+            current_font_size_px = initial_font_size_px
+            max_height = el_height
+            max_width = el_width
+            final_lines = []
+            while current_font_size_px > 1:
+                temp_font = skia.Font(typeface, current_font_size_px)
+                temp_font.setEdging(skia.Font.Edging.kAntiAlias)
+                temp_font.setSubpixel(True)
+                wrapped_lines = []
+                for para in text_to_render.split('\n'):
+                    wrapped_lines.extend(wrap_text(para, temp_font, max_width))
+                # Calculate total height
+                font_metrics = temp_font.getMetrics()
+                line_height = font_metrics.fDescent - font_metrics.fAscent + font_metrics.fLeading
+                total_height = line_height * len(wrapped_lines)
+                if total_height <= max_height:
+                    final_lines = wrapped_lines
+                    break
+                current_font_size_px -= 1
+            else:
+                # If nothing fits, use at least one line
+                temp_font = skia.Font(typeface, 1)
+                temp_font.setEdging(skia.Font.Edging.kAntiAlias)
+                temp_font.setSubpixel(True)
+                final_lines = wrap_text(text_to_render, temp_font, max_width)
+                line_height = temp_font.getMetrics().fDescent - temp_font.getMetrics().fAscent + temp_font.getMetrics().fLeading
+
             final_font = skia.Font(typeface, current_font_size_px)
             final_font.setEdging(skia.Font.Edging.kAntiAlias)
             final_font.setSubpixel(True)
-
             text_paint = skia.Paint(AntiAlias=True, Color=hex_to_skia_color(font_color_str, opacity))
 
-            # Calculate line heights and total block height for vertical centering
-            line_metrics = []
-            total_text_height = 0
-            font_metrics = final_font.getMetrics() # skia.FontMetrics
-            
-            for line_text in lines:
-                # Approximate line height using font metrics.
-                # Ascent is negative. Descent and leading are positive.
-                line_h = font_metrics.fDescent - font_metrics.fAscent + font_metrics.fLeading
-                line_metrics.append({'text': line_text, 'height': line_h, 'ascent': font_metrics.fAscent})
-                total_text_height += line_h
-            
-            # Vertical alignment
-            y_cursor = 0
-            if el_height > total_text_height:
-                y_cursor = (el_height - total_text_height) / 2
-            
-            # Add ascent of the first line to y_cursor to correctly position the baseline
-            if line_metrics:
-                 y_cursor -= line_metrics[0]['ascent'] # Ascent is negative, so this moves down
+            # Calculate total text block height for vertical centering
+            font_metrics = final_font.getMetrics()
+            line_height = font_metrics.fDescent - font_metrics.fAscent + font_metrics.fLeading
+            total_text_height = line_height * len(final_lines)
+            y_cursor = (el_height - total_text_height) / 2 - font_metrics.fAscent
 
-            # Horizontal alignment
-            text_align_style = style.get('text_align') # Can be None
-
-            for i, line_info in enumerate(line_metrics):
-                line_text = line_info['text']
+            for line_text in final_lines:
                 line_width = final_font.measureText(line_text)
                 x_text_offset = 0
                 if text_align_style == 'center':
                     x_text_offset = (el_width - line_width) / 2
                 elif text_align_style == 'right':
                     x_text_offset = el_width - line_width
-                # Default is left (x_text_offset = 0)
-
+                # Default is left
                 canvas.drawString(line_text, x_text_offset, y_cursor, final_font, text_paint)
-                
-                if i < len(lines) - 1: # If not the last line
-                    y_cursor += line_info['height'] # Move cursor to baseline of next line
+                # Underline
+                if is_underlined:
+                    underline_y = y_cursor + font_metrics.fDescent * 0.8
+                    canvas.drawLine(x_text_offset, underline_y, x_text_offset + line_width, underline_y, text_paint)
+                y_cursor += line_height
 
     canvas.restore()
 
