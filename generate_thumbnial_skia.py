@@ -3,6 +3,8 @@ import requests
 from io import BytesIO
 import math
 import os
+import argparse
+import json
 
 # --- Skia Helper Functions ---
 
@@ -112,7 +114,15 @@ def calculate_box_fit_rects(img_width, img_height, target_width, target_height, 
         return src_rect, skia.Rect.MakeXYWH(x_offset, 0, final_w, target_height)
 
 
-def render_template_element_skia(canvas, element_data, parent_canvas_width, parent_canvas_height, current_language, default_language_code, font_asset_path):
+def get_language_font_family(lang_settings, lang_code):
+    enabled = lang_settings.get('enabled_languages', [])
+    for lang in enabled:
+        if lang.get('code') == lang_code:
+            return lang.get('fontFamily', 'English')
+    return 'English'
+
+
+def render_template_element_skia(canvas, element_data, parent_canvas_width, parent_canvas_height, current_language, default_language_code, font_asset_path, lang_settings=None):
     """Renders a single TemplateElement onto the Skia canvas."""
     box = element_data['box']
     style = element_data.get('style', {})
@@ -216,7 +226,7 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
             # Here, we assume the nested element (if image) will be drawn to fill the clipped path
             # according to its own BoxFit, then the clip applies.
             # This simplified version passes el_width, el_height as parent dimensions for nested.
-            render_template_element_skia(canvas, nested_el_data, el_width, el_height, current_language, default_language_code, font_asset_path)
+            render_template_element_skia(canvas, nested_el_data, el_width, el_height, current_language, default_language_code, font_asset_path, lang_settings)
             
             canvas.restore() # Restore from clip
 
@@ -249,7 +259,8 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
         if text_to_render:
             font_color_str = style.get('color', '#000000')
             font_size_vw = style.get('font_size', 4.0) # Default to 4vw
-            font_family_name = style.get('font_family', 'English')
+            # Use font_family from style if present, else from language settings
+            font_family_name = font_family_name = get_language_font_family(lang_settings, current_language)
             font_weight_str = style.get('font_weight', 'FontWeight.w400')
             is_italic = style.get('is_italic', False)
             is_underlined = style.get('is_underlined', False)
@@ -398,7 +409,7 @@ def create_image_from_json_skia(json_data, output_path="output_image_skia.png", 
     if elements:
         for element in elements:
             print(f"Rendering element (Skia) type: {element['type']}, tag: {element.get('tag')}") # Moved log here
-            render_template_element_skia(canvas, element, canvas_width, canvas_height, current_language, default_lang_code, font_asset_path)
+            render_template_element_skia(canvas, element, canvas_width, canvas_height, current_language, default_lang_code, font_asset_path, lang_settings=lang_settings)
         print("All elements rendered with Skia.")
     else:
         print("No elements found in content_json or content_json was empty.")
@@ -427,143 +438,37 @@ def create_image_from_json_skia(json_data, output_path="output_image_skia.png", 
         print(f"Error during image saving process: {e}")
 
 if __name__ == '__main__':
-    print(">>> PYTHON SCRIPT EXECUTION STARTED (generate_thumbnail.py) <<<") # Prominent start log
-    example_json_data = { # Fully restored example_json_data
-      "id": 4, "poster": 36,
-      "base_image_url": "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/BJP.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250508%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250508T114120Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=cd777d5e3cc3c0a4d6bace32a4091f7ee9feba91940c81fc619ca7ef0e84ab7c",
-      "thumbnail_url": None,
-      "original_width": 1080,
-      "original_height": 1080,
-      "aspect_ratio": 1.0,
-      "content_json": [
-        {
-          "box": {
-            "rotation": 0, "alignment": "center", "x_percent": 0, "y_percent": 0, "width_percent": 100, "height_percent": 100
-          },
-          "tag": "TemplateElementTag.image", "type": "image", "group": None,
-          "style": {
-            "color": "#000000", "opacity": 0.25, "imageFit": "BoxFit.contain", "font_size": 0, "is_italic": False,
-            "box_shadow": None, "text_align": None, "decorations": None, "font_family": "English",
-            "font_weight": "FontWeight.w400", "image_shape": None, "border_color": None, "border_style": None,
-            "border_width": None, "is_read_only": False, "border_radius": None, "is_underlined": False
-          },
-          "content": {"url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549917602"},
-          "z_index": 0, 
-          "nested_content": None
-        },
-        {
-          "box": {
-            "x_px": 315, "y_px": 151, "rotation": 0, "width_px": 450, "alignment": "center", "height_px": 450,
-            "x_percent": 26.3388327383154, "y_percent": 10.270695493342368,
-            "width_percent": 47.83266415505989, "height_percent": 46.718507027803554
-          },
-          "tag": "TemplateElementTag.defaulty", "type": "shape", "group": None,
-          "style": {
-            "color": "#000000", "opacity": 1, "imageFit": "BoxFit.contain", "font_size": 0, "is_italic": False,
-            "box_shadow": None, "text_align": None, "decorations": None, "font_family": "English",
-            "font_weight": "FontWeight.w400", "image_shape": None, "border_color": None, "border_style": None,
-            "border_width": None, "is_read_only": False, "border_radius": None, "is_underlined": False
-          },
-          "content": {
-            "url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549919078",
-            "fillColor": "#FFFFFF", "shapeType": "ShapeType.circle", "strokeColor": "#00000000",
-            "strokeWidth": 2, "isStrokeDashed": False
-          },
-          "z_index": 0, 
-          "nested_content": {
-            "content": {
-              "box": {"rotation": 0, "alignment": "center", "x_percent": 0, "y_percent": 0, "width_percent": 100, "height_percent": 100},
-              "tag": "TemplateElementTag.defaulty", "type": "image", "group": None,
-              "style": {
-                "color": "#000000", "opacity": 1, "imageFit": "BoxFit.cover", "font_size": 0, "is_italic": False,
-                "box_shadow": None, "text_align": None, "decorations": None, "font_family": "English",
-                "font_weight": "FontWeight.w400", "image_shape": None, "border_color": None, "border_style": None,
-                "border_width": None, "is_read_only": False, "border_radius": None, "is_underlined": False
-              },
-              "content": {"url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549919078"},
-              "z_index": 0, "nested_content": None
-            },
-            "contentFit": "BoxFit.fill", "contentAlignment": "Alignment.center"
-          }
-        },
-        {
-          "box": {
-            "y_px": 717, "rotation": 0, "alignment": "center", "x_percent": 10.515334894853924,
-            "y_percent": 66.08904995590017, "width_percent": 80, "height_percent": 10
-          },
-          "tag": "TemplateElementTag.subtitle", "type": "text", "group": None,
-          "style": {
-            "color": "#ffffff", "opacity": 1, "imageFit": "BoxFit.contain", "font_size": 5, "is_italic": False,
-            "box_shadow": None, "text_align": None, 
-            "decorations": None, "font_family": "English", "font_weight": "FontWeight.w600",
-            "image_shape": None, "border_color": None, "border_style": None, "border_width": None,
-            "is_read_only": False, "border_radius": None, "is_underlined": False
-          },
-          "content": {
-            "bn-IN": {"text": " তাঁর জন্মদিনে শ্রদ্ধাঞ্জলি"},
-            "en-IN": {"text": " Paying Tribute on His Birth Anniversary"},
-            "hi-IN": {"text": " उनकी जयंती पर श्रद्धांजलि"}
-          },
-          "z_index": 0, 
-          "nested_content": None
-        },
-        {
-          "box": {
-            "x_px": 165, "y_px": 625, "rotation": 0, "width_px": 750, "alignment": "center", "height_px": 68,
-            "x_percent": 9.778249833123477, "y_percent": 59.2935004757599, "width_percent": 80, "height_percent": 14.444444444444445
-          },
-          "tag": "TemplateElementTag.title", "type": "text", "group": None,
-          "style": {
-            "color": "#ffffff", "opacity": 1, "imageFit": "BoxFit.contain", "font_size": 7, "is_italic": False,
-            "box_shadow": None, "text_align": None, 
-            "decorations": None, "font_family": "English", "font_weight": "FontWeight.w900",
-            "image_shape": None, "border_color": None, "border_style": None, "border_width": None,
-            "is_read_only": False, "border_radius": None, "is_underlined": False
-          },
-          "content": {
-            "bn-IN": {"text": "কেশব বলিরাম হেডগেওয়ার "},
-            "en-IN": {"text": "Keshav Baliram Hedgewar "},
-            "hi-IN": {"text": "केशव बलिরাম হেডগেওয়ার "}
-          },
-          "z_index": 0, 
-          "nested_content": None
-        },
-        {
-          "box": {
-            "x_px": 115, "y_px": 808, "rotation": 0, "width_px": 850, "alignment": "center", "height_px": 120,
-            "x_percent": 11.974513457737276, "y_percent": 71.92704907538395, "width_percent": 80, "height_percent": 19.047619047619044
-          },
-          "tag": "TemplateElementTag.message", "type": "text", "group": None,
-          "style": {
-            "color": "#ffffff", "opacity": 1, "imageFit": "BoxFit.contain", "font_size": 3, "is_italic": False,
-            "box_shadow": None, "text_align": "center", 
-            "decorations": None, "font_family": "English", "font_weight": "FontWeight.w400",
-            "image_shape": None, "border_color": None, "border_style": None, "border_width": None,
-            "is_read_only": False, "border_radius": None, "is_underlined": False
-          },
-          "content": {
-            "bn-IN": {"text": "কেশব বলিরাম হেডগেওয়ার ছিলেন ভারতীয় জাতীয়তাবাদের অন্যতম পথপ্রদর্শক। তাঁর নেতৃত্বে রাষ্ট্রীয় স্বয়ংসেবক সংঘ (RSS) গঠিত হয়, যা আজও জাতীয়তাবাদী ভাবনার ভিত্তি রক্ষা করে চলেছে।"},
-            "en-IN": {"text": "Keshav Baliram Hedgewar was a pioneering nationalist thinker who founded the Rashtriya Swayamsevak Sangh (RSS),\\nlaying the foundation for a strong cultural and nationalist movement in India."},
-            "hi-IN": {"text": "केशव बलিরाम হেডগেওয়ার भारतीय राष्ट्रवाद के एक प्रमुख विचारक थे। उनके नेतृत्व में राष्ट्रीय स्वयंसेवक संघ (RSS) की स्थापना हुई, जो आज भी राष्ट्रभक्ति और संस्कृति की रक्षा करता है।"}
-          },
-          "z_index": 0, 
-          "nested_content": None
-        }
-      ],
-      "language_settings": {
-        "current_language": "en-IN",
-        "default_language": {"code": "en-IN", "name": "English", "flagEmoji": None, "nativeName": "English", "textDirection": "TextDirection.ltr"},
-        "enabled_languages": [
-          {"code": "en-IN", "name": "English", "flagEmoji": None, "nativeName": "English", "textDirection": "TextDirection.ltr"},
-          {"code": "bn-IN", "name": "Bengali", "flagEmoji": None, "nativeName": "Bengali", "textDirection": "TextDirection.ltr"},
-          {"code": "hi-IN", "name": "Hindi", "flagEmoji": None, "nativeName": "Hindi", "textDirection": "TextDirection.ltr"}
-        ]
-      }
-    }
-    
-    current_script_dir = os.path.dirname(os.path.abspath(__file__))
-    font_dir = os.path.join(current_script_dir, "assets", "fonts")
-    
+    parser = argparse.ArgumentParser(description="Generate a poster image from a JSON template using Skia.")
+    parser.add_argument('--json', required=True, help='Path to the JSON file containing poster data')
+    parser.add_argument('--lang', required=True, help='Language key to use for text rendering (e.g., en-IN, hi-IN)')
+    parser.add_argument('--output', default='generated_image_skia.png', help='Output image file path')
+    parser.add_argument('--fonts', default='./assets/fonts', help='Path to font assets directory (default: ./assets/fonts)')
+    args = parser.parse_args()
+
+    print(f">>> PYTHON SCRIPT EXECUTION STARTED (generate_thumbnail.py) <<<")
+    # Load JSON data
+    try:
+        with open(args.json, 'r', encoding='utf-8') as f:
+            json_data = json.load(f)
+    except Exception as e:
+        print(f"Error loading JSON file: {e}")
+        exit(1)
+
+    # Set language in the data
+    if 'language_settings' not in json_data:
+        json_data['language_settings'] = {}
+    json_data['language_settings']['current_language'] = args.lang
+    if 'default_language' not in json_data['language_settings']:
+        json_data['language_settings']['default_language'] = {'code': args.lang}
+
+    # Font directory
+    if args.fonts:
+        font_dir = args.fonts
+    else:
+        current_script_dir = os.path.dirname(os.path.abspath(__file__))
+        font_dir = os.path.join(current_script_dir, "assets", "fonts")
     print(f"Font directory set to: {font_dir}")
-    create_image_from_json_skia(example_json_data, output_path="generated_image_skia.png", font_asset_path=font_dir)
-    print(">>> PYTHON SCRIPT EXECUTION FINISHED (generate_thumbnail.py) <<<") # Prominent end log
+
+    create_image_from_json_skia(json_data, output_path=args.output, font_asset_path=font_dir)
+    print(f"Image generated at: {args.output}")
+    print(">>> PYTHON SCRIPT EXECUTION FINISHED (generate_thumbnail.py) <<<")

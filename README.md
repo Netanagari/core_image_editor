@@ -303,3 +303,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 3. **No resize handles**: Ensure `resizeElements` capability is included in the configuration.
 
 For more issues, please check the [Issues](https://github.com/yourusername/core_image_editor/issues) section.
+
+## Command to generate poster via skia command line
+python generate_thumbnial_skia.py --json path/to/your.json --lang en-IN
