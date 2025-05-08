@@ -273,16 +273,16 @@
         "default_language": {
             "code": "en",
             "name": "English",
-            "flagEmoji": "🇬🇧",
             "fontFamily": "English",
+            "flagEmoji": "🇬🇧",
             "nativeName": "English",
             "textDirection": "TextDirection.ltr"
         },
         "enabled_languages": [
             {
                 "code": "en-IN",
-                "name": "English",
                 "fontFamily": "English",
+                "name": "English",
                 "flagEmoji": null,
                 "nativeName": "English",
                 "textDirection": "TextDirection.ltr"
@@ -290,7 +290,7 @@
             {
                 "code": "bn-IN",
                 "name": "Bengali",
-                "fontFamily": "Lohit-Bengali",
+                "fontFamily": "BengaliOptimized",
                 "flagEmoji": null,
                 "nativeName": "Bengali",
                 "textDirection": "TextDirection.ltr"
@@ -298,7 +298,7 @@
             {
                 "code": "hi-IN",
                 "name": "Hindi",
-                "fontFamily": "Lohit-Devanagari",
+                "fontFamily": "BengaliOptimized",
                 "flagEmoji": null,
                 "nativeName": "Hindi",
                 "textDirection": "TextDirection.ltr"

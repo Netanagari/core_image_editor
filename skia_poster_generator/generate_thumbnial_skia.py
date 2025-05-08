@@ -136,6 +136,9 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
     el_height = box.get('height_px', (box.get('height_percent', 100) / 100.0) * parent_canvas_height)
     rotation_angle = box.get('rotation', 0)
 
+    # Debug log for element position and size
+    print(f"[DEBUG] Element type: {el_type}, tag: {element_data.get('tag')}, x: {el_x}, y: {el_y}, width: {el_width}, height: {el_height}, rotation: {rotation_angle}")
+
     # Ensure non-zero dimensions for drawing
     el_width = max(1, el_width)
     el_height = max(1, el_height)
@@ -169,6 +172,7 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
                         skia_image.width(), skia_image.height(),
                         el_width, el_height, box_fit_str
                     )
+                    print(f"[DEBUG] BoxFit: {box_fit_str}, src_rect: {src_rect}, dst_rect: {dst_rect_fitted}")
                     paint = skia.Paint(AntiAlias=True)
                     paint.setAlphaf(opacity)
                     canvas.drawImageRect(skia_image, src_rect, dst_rect_fitted, paint)
@@ -184,6 +188,8 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
         fill_color_str = content.get('fillColor', '#00000000')
         stroke_color_str = content.get('strokeColor', '#00000000')
         stroke_width = float(content.get('strokeWidth', 0))
+
+        print(f"[DEBUG] Shape type: {shape_type}, fill: {fill_color_str}, stroke: {stroke_color_str}, stroke_width: {stroke_width}")
 
         # Prepare paint for fill
         fill_paint = skia.Paint(AntiAlias=True, Style=skia.Paint.kFill_Style)
@@ -260,7 +266,7 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
             font_color_str = style.get('color', '#000000')
             font_size_vw = style.get('font_size', 4.0) # Default to 4vw
             # Use font_family from style if present, else from language settings
-            font_family_name = font_family_name = get_language_font_family(lang_settings, current_language)
+            font_family_name = get_language_font_family(lang_settings, current_language)
             font_weight_str = style.get('font_weight', 'FontWeight.w400')
             is_italic = style.get('is_italic', False)
             is_underlined = style.get('is_underlined', False)
@@ -276,6 +282,7 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
             actual_font_path = os.path.join(font_asset_path, font_file)
             if not os.path.exists(actual_font_path):
                 actual_font_path = os.path.join(font_asset_path, f"{font_family_name}.ttf")
+            print(f"[DEBUG] Text element: '{text_to_render}', font: {actual_font_path}, font_size_vw: {font_size_vw}, initial_font_size_px: {initial_font_size_px}, color: {font_color_str}, align: {text_align_style}")
             try:
                 typeface = skia.Typeface.MakeFromFile(actual_font_path, 0) or skia.Typeface.MakeDefault()
             except Exception as e:
@@ -338,6 +345,8 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
             total_text_height = line_height * len(final_lines)
             y_cursor = (el_height - total_text_height) / 2 - font_metrics.fAscent
 
+            print(f"[DEBUG] Final font size px: {current_font_size_px}, lines: {len(final_lines)}, line_height: {line_height}, total_text_height: {total_text_height}")
+
             for line_text in final_lines:
                 line_width = final_font.measureText(line_text)
                 x_text_offset = 0
@@ -346,6 +355,7 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
                 elif text_align_style == 'right':
                     x_text_offset = el_width - line_width
                 # Default is left
+                print(f"[DEBUG] Drawing text line: '{line_text}', x: {x_text_offset}, y: {y_cursor}, width: {line_width}")
                 canvas.drawString(line_text, x_text_offset, y_cursor, final_font, text_paint)
                 # Underline
                 if is_underlined:
