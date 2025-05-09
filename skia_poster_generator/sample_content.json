@@ -273,16 +273,16 @@
         "default_language": {
             "code": "en",
             "name": "English",
-            "fontFamily": "English",
             "flagEmoji": "🇬🇧",
+            "fontFamily": "English",
             "nativeName": "English",
             "textDirection": "TextDirection.ltr"
         },
         "enabled_languages": [
             {
                 "code": "en-IN",
-                "fontFamily": "English",
                 "name": "English",
+                "fontFamily": "English",
                 "flagEmoji": null,
                 "nativeName": "English",
                 "textDirection": "TextDirection.ltr"
