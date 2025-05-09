@@ -27,9 +27,9 @@ class TextMeasurement {
 
     // Get text direction
     TextDirection textDirection = TextDirection.ltr;
+    late LanguageManager languageManager;
     if (context.mounted) {
-      final languageManager =
-          Provider.of<LanguageManager>(context, listen: false);
+      languageManager = Provider.of<LanguageManager>(context, listen: false);
       final currentLanguage = languageManager.currentLanguage;
       textDirection = languageManager.isRtl(currentLanguage)
           ? TextDirection.rtl
@@ -38,7 +38,7 @@ class TextMeasurement {
 
     // Create text painter with the same style as the element
     final textStyle = TextStyle(
-      fontFamily: element.style.fontFamily,
+      fontFamily: languageManager.currentLanguageModel.fontFamily,
       package: 'core_image_editor',
       fontSize: fontSizePixels,
       color: Color(int.parse(element.style.color.replaceFirst('#', '0xff'))),

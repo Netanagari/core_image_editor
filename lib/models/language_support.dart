@@ -7,6 +7,7 @@ class LanguageModel {
   final String name;
   final String nativeName;
   final String? flagEmoji;
+  final String? fontFamily;
   final TextDirection textDirection;
 
   LanguageModel({
@@ -14,6 +15,7 @@ class LanguageModel {
     required this.name,
     required this.nativeName,
     this.flagEmoji,
+    this.fontFamily = 'English',
     this.textDirection = TextDirection.ltr,
   });
 
@@ -22,12 +24,14 @@ class LanguageModel {
     String? name,
     String? nativeName,
     String? flagEmoji,
+    String? fontFamily,
     TextDirection? textDirection,
   }) {
     return LanguageModel(
       code: code ?? this.code,
       name: name ?? this.name,
       nativeName: nativeName ?? this.nativeName,
+      fontFamily: fontFamily ?? this.fontFamily,
       flagEmoji: flagEmoji ?? this.flagEmoji,
       textDirection: textDirection ?? this.textDirection,
     );
@@ -39,6 +43,7 @@ class LanguageModel {
       'name': name,
       'nativeName': nativeName,
       'flagEmoji': flagEmoji,
+      'fontFamily': fontFamily,
       'textDirection': TextDirection.ltr.toString(),
     };
   }
@@ -48,6 +53,8 @@ class LanguageModel {
       code: map['code'] as String,
       name: map['name'] as String,
       nativeName: map['nativeName'] as String,
+      fontFamily:
+          map['fontFamily'] != null ? map['fontFamily'] as String : null,
       flagEmoji: map['flagEmoji'] != null ? map['flagEmoji'] as String : null,
       textDirection: TextDirection.ltr,
     );
@@ -70,6 +77,7 @@ class LanguageModel {
     return other.code == code &&
         other.name == name &&
         other.nativeName == nativeName &&
+        (other.fontFamily ?? 'English') == (fontFamily ?? 'English') &&
         other.flagEmoji == flagEmoji &&
         other.textDirection == textDirection;
   }
@@ -79,6 +87,7 @@ class LanguageModel {
     return code.hashCode ^
         name.hashCode ^
         nativeName.hashCode ^
+        (fontFamily ?? 'English').hashCode ^
         flagEmoji.hashCode ^
         textDirection.hashCode;
   }
@@ -91,6 +100,7 @@ class LanguageManager extends ChangeNotifier {
     name: 'English',
     nativeName: 'English',
     flagEmoji: '🇬🇧',
+    fontFamily: 'English',
   );
 
   // Map of all available languages
@@ -100,6 +110,7 @@ class LanguageManager extends ChangeNotifier {
       code: 'hi',
       name: 'Hindi',
       nativeName: 'हिन्दी',
+      fontFamily: 'Lohit-Devanagari',
       flagEmoji: '🇮🇳',
     )
   };
@@ -109,6 +120,7 @@ class LanguageManager extends ChangeNotifier {
 
   // Currently selected language for editing/preview
   String _currentLanguage = defaultLanguage.code;
+  LanguageModel _currentLanguageModel = defaultLanguage;
 
   // Getter for available languages
   Map<String, LanguageModel> get availableLanguages => _availableLanguages;
@@ -119,10 +131,12 @@ class LanguageManager extends ChangeNotifier {
 
   // Getter for current language
   String get currentLanguage => _currentLanguage;
+  LanguageModel get currentLanguageModel => _currentLanguageModel;
 
   // Setter for current language - FIXED
   set currentLanguage(String languageCode) {
     if (_enabledLanguages.any((language) => language.code == languageCode)) {
+      _currentLanguageModel = _availableLanguages[languageCode]!;
       _currentLanguage = languageCode;
       notifyListeners();
     }

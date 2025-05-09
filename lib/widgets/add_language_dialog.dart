@@ -1,3 +1,4 @@
+import 'package:core_image_editor/models/editor_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/language_support.dart';
@@ -13,6 +14,7 @@ class _AddLanguageDialogState extends State<AddLanguageDialog> {
   final _formKey = GlobalKey<FormState>();
   final _codeController = TextEditingController();
   final _nameController = TextEditingController();
+  final _fontFamily = TextEditingController();
   final _nativeNameController = TextEditingController();
   final _flagEmojiController = TextEditingController();
 
@@ -23,6 +25,7 @@ class _AddLanguageDialogState extends State<AddLanguageDialog> {
   void dispose() {
     _codeController.dispose();
     _nameController.dispose();
+    _fontFamily.dispose();
     _nativeNameController.dispose();
     _flagEmojiController.dispose();
     super.dispose();
@@ -55,6 +58,8 @@ class _AddLanguageDialogState extends State<AddLanguageDialog> {
         code: _codeController.text.trim(),
         name: _nameController.text.trim(),
         nativeName: _nativeNameController.text.trim(),
+        fontFamily:
+            _fontFamily.text.trim().isEmpty ? null : _fontFamily.text.trim(),
         flagEmoji: _flagEmojiController.text.trim().isEmpty
             ? null
             : _flagEmojiController.text.trim(),
@@ -149,6 +154,24 @@ class _AddLanguageDialogState extends State<AddLanguageDialog> {
                   return null;
                 },
               ),
+              const SizedBox(height: 12),
+
+              // Font family field
+              DropdownButtonFormField<String>(
+                value: _fontFamily.text.isEmpty ? null : _fontFamily.text,
+                items: EditorConfiguration.supportedFallbackFonts
+                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    _fontFamily.text = value;
+                  }
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Font Family (optional)',
+                ),
+              ),
+
               const SizedBox(height: 12),
 
               // Flag emoji field

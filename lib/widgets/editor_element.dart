@@ -261,6 +261,7 @@ class EditorElement extends StatelessWidget {
         final languageManager =
             Provider.of<LanguageManager>(context, listen: true);
         final currentLanguage = languageManager.currentLanguage;
+        final currentLanguageModel = languageManager.currentLanguageModel;
 
         // Get the text for the current language using the extension method
         final displayText = element.getTextContent(currentLanguage);
@@ -281,7 +282,7 @@ class EditorElement extends StatelessWidget {
         content = Text(
           displayText,
           style: TextStyle(
-            fontFamily: element.style.fontFamily,
+            fontFamily: currentLanguageModel.fontFamily,
             package: 'core_image_editor',
             fontSize: fontSizePixels,
             color:

@@ -1,5 +1,7 @@
+import 'package:core_image_editor/models/language_support.dart';
 import 'package:core_image_editor/models/shape_types.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/template_types.dart';
 import 'shape_painter.dart';
 
@@ -35,7 +37,7 @@ class NestedContentWidget extends StatelessWidget {
             width: elementSize.width,
             height: elementSize.height,
             alignment: element.nestedContent!.contentAlignment,
-            child: _buildNestedContent(),
+            child: _buildNestedContent(context),
           ),
         ),
       ],
@@ -67,7 +69,7 @@ class NestedContentWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildNestedContent() {
+  Widget _buildNestedContent(BuildContext context) {
     final nestedElement = element.nestedContent!.content!;
 
     switch (nestedElement.type) {
@@ -80,6 +82,9 @@ class NestedContentWidget extends StatelessWidget {
         );
 
       case 'text':
+        final languageManager =
+            Provider.of<LanguageManager>(context, listen: false);
+        final currentLanguage = languageManager.currentLanguageModel;
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: FittedBox(
@@ -89,7 +94,7 @@ class NestedContentWidget extends StatelessWidget {
               nestedElement.content['text'] ?? '',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: element.style.fontFamily,
+                fontFamily: currentLanguage.fontFamily,
                 package: 'core_image_editor',
                 fontSize:
                     nestedElement.style.fontSizeVw * elementSize.width / 100,
