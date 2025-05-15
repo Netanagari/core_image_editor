@@ -3,7 +3,9 @@ import 'package:core_image_editor/models/shape_types.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/template_types.dart';
+import '../state/editor_state.dart';
 import 'shape_painter.dart';
+import 'curve_point_editor.dart';
 
 class NestedContentWidget extends StatelessWidget {
   final TemplateElement element;
@@ -17,6 +19,32 @@ class NestedContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final shapeType = ShapeType.values.firstWhere(
+      (type) => type.toString() == element.content['shapeType'],
+      orElse: () => ShapeType.rectangle,
+    );
+
+    // Handle curved lines specially
+    if (shapeType == ShapeType.curvedLine) {
+      return Stack(
+        children: [
+          _buildShape(),
+          Consumer<EditorState>(
+            builder: (context, editorState, child) {
+              if (editorState.selectedElement == element) {
+                return CurvePointEditor(
+                  element: element,
+                  elementSize: elementSize,
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
+      );
+    }
+
+    // Handle all other cases
     if (!element.canContainNestedContent ||
         element.nestedContent?.content == null) {
       return _buildShape();
@@ -30,7 +58,9 @@ class NestedContentWidget extends StatelessWidget {
             shapeType: ShapeType.values.firstWhere(
               (type) => type.toString() == element.content['shapeType'],
             ),
-            points: element.content['points'],
+            points: element.content['points'] != null
+                ? (element.content['points'] as List).cast<double>()
+                : null,
             innerRadiusRatio: element.content['innerRadiusRatio'],
           ),
           child: Container(
@@ -62,8 +92,29 @@ class NestedContentWidget extends StatelessWidget {
                 .replaceFirst('#', '0xff'),
           ),
         ),
+        curvature: element.content['curvature']?.toDouble(),
         strokeWidth: element.content['strokeWidth']?.toDouble() ?? 2.0,
         isStrokeDashed: element.content['isStrokeDashed'] ?? false,
+        lineShadow: element.content['lineShadow'] != null
+            ? LineShadow(
+                color: Color(
+                  int.parse(
+                    (element.content['lineShadow']['color'] ?? '#000000')
+                        .replaceFirst('#', '0xff'),
+                  ),
+                ),
+                offsetX:
+                    element.content['lineShadow']['offsetX']?.toDouble() ?? 0.0,
+                offsetY:
+                    element.content['lineShadow']['offsetY']?.toDouble() ?? 2.0,
+                blurRadius:
+                    element.content['lineShadow']['blurRadius']?.toDouble() ??
+                        4.0,
+                spreadRadius:
+                    element.content['lineShadow']['spreadRadius']?.toDouble() ??
+                        0.0,
+              )
+            : null,
       ),
       size: elementSize,
     );
@@ -122,7 +173,7 @@ class NestedContentWidget extends StatelessWidget {
 
 class ShapeClipper extends CustomClipper<Path> {
   final ShapeType shapeType;
-  final int? points;
+  final List<double>? points;
   final double? innerRadiusRatio;
 
   ShapeClipper({

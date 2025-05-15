@@ -126,10 +126,13 @@ class MobileElementCreationSheet extends StatelessWidget {
       ),
       content: {
         'shapeType': shapeType.toString(),
-        'fillColor': '#FFFFFF',
+        'fillColor':
+            shapeType == ShapeType.curvedLine ? '#00000000' : '#FFFFFF',
         'strokeColor': '#000000',
         'strokeWidth': 2.0,
         'isStrokeDashed': false,
+        'points': shapeType == ShapeType.curvedLine ? <double>[] : null,
+        'curvature': shapeType == ShapeType.line ? 0.0 : null,
       },
       style: TemplateStyle(
         fontSizeVw: 0,

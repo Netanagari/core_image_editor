@@ -121,6 +121,99 @@ class ShapeControls extends StatelessWidget {
             min: 0.1,
             max: 0.5,
           ),
+        ] else if (shapeType == ShapeType.line) ...[
+          NumberInput(
+            label: 'Curvature',
+            value: element.content['curvature']?.toDouble() ?? 0.0,
+            onChanged: (value) {
+              element.content['curvature'] = value;
+              onUpdate();
+            },
+          ),
+          // Line shadow controls
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: CheckboxListTile(
+                    title: const Text('Enable Shadow'),
+                    value: element.content['lineShadow'] != null,
+                    onChanged: (value) {
+                      if (value == true) {
+                        element.content['lineShadow'] = {
+                          'color': '#000000',
+                          'offsetX': 0.0,
+                          'offsetY': 2.0,
+                          'blurRadius': 4.0,
+                          'spreadRadius': 0.0,
+                        };
+                      } else {
+                        element.content['lineShadow'] = null;
+                      }
+                      onUpdate();
+                    },
+                    dense: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (element.content['lineShadow'] != null) ...[
+            NColorPicker(
+              label: 'Shadow Color',
+              color: element.content['lineShadow']['color'] ?? '#000000',
+              onColorChanged: (color) {
+                element.content['lineShadow']['color'] = color;
+                onUpdate();
+              },
+            ),
+            NumberInput(
+              label: 'Shadow Offset X',
+              value:
+                  element.content['lineShadow']['offsetX']?.toDouble() ?? 0.0,
+              onChanged: (value) {
+                element.content['lineShadow']['offsetX'] = value;
+                onUpdate();
+              },
+              min: -50,
+              max: 50,
+            ),
+            NumberInput(
+              label: 'Shadow Offset Y',
+              value:
+                  element.content['lineShadow']['offsetY']?.toDouble() ?? 2.0,
+              onChanged: (value) {
+                element.content['lineShadow']['offsetY'] = value;
+                onUpdate();
+              },
+              min: -50,
+              max: 50,
+            ),
+            NumberInput(
+              label: 'Shadow Blur',
+              value: element.content['lineShadow']['blurRadius']?.toDouble() ??
+                  4.0,
+              onChanged: (value) {
+                element.content['lineShadow']['blurRadius'] = value;
+                onUpdate();
+              },
+              min: 0,
+              max: 50,
+            ),
+            NumberInput(
+              label: 'Shadow Spread',
+              value:
+                  element.content['lineShadow']['spreadRadius']?.toDouble() ??
+                      0.0,
+              onChanged: (value) {
+                element.content['lineShadow']['spreadRadius'] = value;
+                onUpdate();
+              },
+              min: 0,
+              max: 50,
+            ),
+          ],
         ],
       ],
     );
