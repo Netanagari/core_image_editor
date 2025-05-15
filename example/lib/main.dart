@@ -15,7 +15,7 @@ final exampleJson = {
   "id": 4,
   "poster": 36,
   "base_image_url":
-      "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/BJP.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250507%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250507T162041Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=b246f21fab5873488d4f121a15268fe40d5ce9a893053e093c1be785ef0cad98",
+      "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/BJP.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250515%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250515T042601Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=9489a3a9fb28c2a3079ea19a069fea3614a3653ec82fa041788f0565134c5c7e",
   "thumbnail_url": null,
   "original_width": 1080,
   "original_height": 1080,
@@ -138,7 +138,7 @@ final exampleJson = {
           },
           "content": {
             "url":
-                "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549919078"
+                "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1747283178527"
           },
           "z_index": 0,
           "nested_content": null

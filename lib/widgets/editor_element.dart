@@ -248,7 +248,12 @@ class EditorElement extends StatelessWidget {
         );
 
         if (element.style.imageShape == 'circle') {
-          content = ClipOval(child: imageWidget);
+          content = ClipPath(
+            clipper: ShapeClipper(
+              shapeType: ShapeType.circle,
+            ),
+            child: imageWidget,
+          );
         } else {
           content = ClipRRect(
             borderRadius: BorderRadius.circular(4),
@@ -256,16 +261,14 @@ class EditorElement extends StatelessWidget {
           );
         }
         break;
-      default: // Text elements
+      default:
         // Get the language manager from the context
         final languageManager =
             Provider.of<LanguageManager>(context, listen: true);
         final currentLanguage = languageManager.currentLanguage;
         final currentLanguageModel = languageManager.currentLanguageModel;
 
-        // Get the text for the current language using the extension method
         final displayText = element.getTextContent(currentLanguage);
-
         double fontSizePixels =
             element.style.fontSizeVw * elementSize.width / 100;
 
@@ -274,7 +277,6 @@ class EditorElement extends StatelessWidget {
           decorations.add(TextDecoration.underline);
         }
 
-        // Check text direction
         final textDirection = languageManager.isRtl(currentLanguage)
             ? TextDirection.rtl
             : TextDirection.ltr;
@@ -307,30 +309,78 @@ class EditorElement extends StatelessWidget {
       );
     }
 
+    // Apply box shadow if specified
     if (element.style.boxShadow != null) {
-      content = Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Color(
-                int.parse(
-                  (element.style.boxShadow!['color'] ?? '#000000')
-                      .replaceFirst('#', '0xff'),
+      // Get shadow params
+      final shadowColor = Color(
+        int.parse((element.style.boxShadow!['color'] ?? '#000000')
+            .replaceFirst('#', '0xff')),
+      );
+      final offsetX = element.style.boxShadow!['offsetX']?.toDouble() ?? 0.0;
+      final offsetY = element.style.boxShadow!['offsetY']?.toDouble() ?? 2.0;
+      final blurRadius =
+          element.style.boxShadow!['blurRadius']?.toDouble() ?? 4.0;
+      final spreadRadius =
+          element.style.boxShadow!['spreadRadius']?.toDouble() ?? 0.0;
+
+      // For shapes and circular images
+      if (element.type == 'shape' ||
+          (element.type == 'image' && element.style.imageShape == 'circle')) {
+        final clipShape = element.type == 'shape'
+            ? ShapeType.values.firstWhere(
+                (type) => type.toString() == element.content['shapeType'],
+                orElse: () => ShapeType.rectangle)
+            : ShapeType.circle;
+
+        content = Container(
+          child: Stack(
+            children: [
+              // Shadow container
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: clipShape == ShapeType.circle
+                        ? BoxShape.circle
+                        : BoxShape.rectangle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: shadowColor,
+                        offset: Offset(offsetX, offsetY),
+                        blurRadius: blurRadius,
+                        spreadRadius: spreadRadius,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              offset: Offset(
-                element.style.boxShadow!['offsetX']?.toDouble() ?? 0.0,
-                element.style.boxShadow!['offsetY']?.toDouble() ?? 2.0,
+              // Content with clip
+              ClipPath(
+                clipper: ShapeClipper(
+                  shapeType: clipShape,
+                  points: element.content['points'],
+                  innerRadiusRatio: element.content['innerRadiusRatio'],
+                ),
+                child: content,
               ),
-              blurRadius:
-                  element.style.boxShadow!['blurRadius']?.toDouble() ?? 4.0,
-              spreadRadius:
-                  element.style.boxShadow!['spreadRadius']?.toDouble() ?? 0.0,
-            ),
-          ],
-        ),
-        child: content,
-      );
+            ],
+          ),
+        );
+      } else {
+        // For regular elements, use standard BoxDecoration shadow
+        content = Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: shadowColor,
+                offset: Offset(offsetX, offsetY),
+                blurRadius: blurRadius,
+                spreadRadius: spreadRadius,
+              ),
+            ],
+          ),
+          child: content,
+        );
+      }
     }
 
     return content;

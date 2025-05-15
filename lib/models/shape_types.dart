@@ -11,7 +11,8 @@ enum ShapeType {
   diamond,
   pentagon,
   hexagon,
-  star
+  star,
+  curvedLine,
 }
 
 extension ShapeTypeExtension on ShapeType {
@@ -35,6 +36,8 @@ extension ShapeTypeExtension on ShapeType {
         return 'Hexagon';
       case ShapeType.star:
         return 'Star';
+      case ShapeType.curvedLine:
+        return 'Curved Line';
     }
   }
 
@@ -58,6 +61,8 @@ extension ShapeTypeExtension on ShapeType {
         return Icons.hexagon_outlined;
       case ShapeType.star:
         return Icons.star_border;
+      case ShapeType.curvedLine:
+        return Icons.gesture; // Using gesture icon for curved line
     }
   }
 }
