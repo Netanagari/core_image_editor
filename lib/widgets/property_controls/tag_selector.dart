@@ -16,6 +16,11 @@ class TagSelector extends StatelessWidget {
     // Get valid tags for the element's group
     final validTags = TemplateElementTag.getValidTagsForGroup(element.group);
 
+    // Filter out hidden tags
+    final visibleTags = validTags
+        .where((tag) => !TemplateElementTag.hiddenTags.contains(tag))
+        .toList();
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -27,12 +32,14 @@ class TagSelector extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           DropdownButtonFormField<TemplateElementTag>(
-            value: element.tag,
+            value: TemplateElementTag.hiddenTags.contains(element.tag)
+                ? (visibleTags.isNotEmpty ? visibleTags.first : element.tag)
+                : element.tag,
             decoration: const InputDecoration(
               isDense: true,
               border: OutlineInputBorder(),
             ),
-            items: validTags.map((tag) {
+            items: visibleTags.map((tag) {
               return DropdownMenuItem(
                 value: tag,
                 child: Tooltip(

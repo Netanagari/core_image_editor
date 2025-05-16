@@ -37,6 +37,13 @@ enum TemplateElementTag {
   twitterHandle,
   defaulty;
 
+  // Static method to get tags that should be hidden from UI
+  static List<TemplateElementTag> get hiddenTags => [
+        TemplateElementTag.leader,
+        TemplateElementTag.partySymbol,
+        TemplateElementTag.defaulty,
+      ];
+
   // Method to get valid tags for a specific group
   static List<TemplateElementTag> getValidTagsForGroup(String? group) {
     if (group == null) {
