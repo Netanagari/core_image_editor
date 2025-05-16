@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:core_image_editor/models/language_support.dart';
 import 'package:core_image_editor/screens/mobile_textEdit_bottomsheet.dart';
@@ -247,6 +248,23 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
                   historyState.canRedo ? () => _handleRedo(context) : null,
             ),
           ],
+          IconButton(
+            icon: const Icon(Icons.content_copy),
+            tooltip: 'Copy editor content as JSON',
+            onPressed: () {
+              final jsonContent =
+                  editorState.elements.map((e) => e.toJson()).toList();
+              final jsonString =
+                  const JsonEncoder.withIndent('  ').convert(jsonContent);
+              Clipboard.setData(ClipboardData(text: jsonString));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Editor content copied to clipboard'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: () => _saveChanges(context),
