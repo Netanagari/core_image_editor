@@ -13,3 +13,4 @@ export 'readonly_control.dart';
 export 'size_control.dart';
 export 'tag_selector.dart';
 export 'text_content_control.dart';
+export 'text_shadow_control.dart';

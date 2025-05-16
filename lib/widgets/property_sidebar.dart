@@ -23,6 +23,7 @@ import '../widgets/property_controls/size_control.dart';
 import '../widgets/property_controls/tag_selector.dart';
 import '../widgets/property_controls/text_content_control.dart';
 import '../widgets/property_controls/text_align_control.dart';
+import '../widgets/property_controls/text_shadow_control.dart';
 
 class PropertySidebar extends StatelessWidget {
   final Future<String> Function(BuildContext) onSelectImage;
@@ -258,6 +259,10 @@ class PropertySidebar extends StatelessWidget {
               onUpdate: pushHistory,
             ),
             FontStyleControl(
+              element: element,
+              onUpdate: pushHistory,
+            ),
+            TextShadowControl(
               element: element,
               onUpdate: pushHistory,
             ),
