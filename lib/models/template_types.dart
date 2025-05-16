@@ -53,6 +53,7 @@ enum TemplateElementTag {
           facebookHandle,
           instaHandle,
           twitterHandle,
+          defaulty,
         ];
       default:
         return TemplateElementTag.values;

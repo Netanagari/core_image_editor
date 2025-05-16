@@ -22,15 +22,9 @@ class ElementCreationSidebar extends StatelessWidget {
   TemplateElement _createTextElement({
     required String text,
     required double fontSizeVw,
-    required String type,
   }) {
-    TemplateElementTag tag = type == 'heading'
-        ? TemplateElementTag.heading
-        : TemplateElementTag.subheading;
-
     return TemplateElement(
       type: 'text',
-      tag: tag,
       box: TemplateBox(
         xPercent: 10,
         yPercent: 10,
@@ -143,7 +137,7 @@ class ElementCreationSidebar extends StatelessWidget {
                             children: [
                               if (isExpanded) ...[
                                 Text(
-                                  'Text Elements',
+                                  'Text',
                                   style: Theme.of(context).textTheme.titleSmall,
                                 ),
                                 const SizedBox(height: 8),
@@ -151,22 +145,10 @@ class ElementCreationSidebar extends StatelessWidget {
                               _buildElementButton(
                                 context: context,
                                 icon: Icons.title,
-                                label: 'Heading',
+                                label: 'Text',
                                 onTap: () => onCreateElement(_createTextElement(
-                                  text: 'New Heading',
+                                  text: 'New text',
                                   fontSizeVw: 6.0,
-                                  type: 'heading',
-                                )),
-                              ),
-                              const SizedBox(height: 8),
-                              _buildElementButton(
-                                context: context,
-                                icon: Icons.text_fields,
-                                label: 'Body Text',
-                                onTap: () => onCreateElement(_createTextElement(
-                                  text: 'New Text Block',
-                                  fontSizeVw: 4.0,
-                                  type: 'body',
                                 )),
                               ),
                               if (isExpanded) ...[
@@ -288,7 +270,6 @@ class ElementCreationSidebar extends StatelessWidget {
                     onTap: () => onCreateElement(_createTextElement(
                       text: 'New Heading',
                       fontSizeVw: 6.0,
-                      type: 'heading',
                     )),
                   ),
                   const SizedBox(height: 8),
@@ -299,7 +280,6 @@ class ElementCreationSidebar extends StatelessWidget {
                     onTap: () => onCreateElement(_createTextElement(
                       text: 'New Text Block',
                       fontSizeVw: 4.0,
-                      type: 'body',
                     )),
                   ),
                   if (isExpanded) ...[
