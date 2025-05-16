@@ -16,28 +16,28 @@ class SizeControl extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        NumberInput(
-          label: 'Width',
-          value: element.box.widthPercent,
-          onChanged: (value) {
-            element.box.widthPercent = value;
-            onUpdate();
-          },
-          min: 1,
-          max: 100 - element.box.xPercent,
-          suffix: '%',
-        ),
-        NumberInput(
-          label: 'Height',
-          value: element.box.heightPercent,
-          onChanged: (value) {
-            element.box.heightPercent = value;
-            onUpdate();
-          },
-          min: 1,
-          max: 100 - element.box.yPercent,
-          suffix: '%',
-        ),
+        // NumberInput(
+        //   label: 'Width',
+        //   value: element.box.widthPercent,
+        //   onChanged: (value) {
+        //     element.box.widthPercent = value;
+        //     onUpdate();
+        //   },
+        //   min: 1,
+        //   max: 100 - element.box.xPercent,
+        //   suffix: '%',
+        // ),
+        // NumberInput(
+        //   label: 'Height',
+        //   value: element.box.heightPercent,
+        //   onChanged: (value) {
+        //     element.box.heightPercent = value;
+        //     onUpdate();
+        //   },
+        //   min: 1,
+        //   max: 100 - element.box.yPercent,
+        //   suffix: '%',
+        // ),
       ],
     );
   }

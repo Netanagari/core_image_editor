@@ -201,45 +201,6 @@ class ElementCreationSidebar extends StatelessWidget {
                                 onTap: () => onCreateElement(
                                     TemplateElement.createLeaderStrip()),
                               ),
-                              if (isExpanded) ...[
-                                const SizedBox(height: 16),
-                                Text(
-                                  'User Elements',
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                                const SizedBox(height: 8),
-                              ],
-                              _buildElementButton(
-                                context: context,
-                                icon: Icons.person,
-                                label: 'User Name',
-                                onTap: () => onCreateElement(
-                                    TemplateElement.createUserName()),
-                              ),
-                              const SizedBox(height: 8),
-                              _buildElementButton(
-                                context: context,
-                                icon: Icons.work,
-                                label: 'User Designation',
-                                onTap: () => onCreateElement(
-                                    TemplateElement.createUserDesignation()),
-                              ),
-                              const SizedBox(height: 8),
-                              _buildElementButton(
-                                context: context,
-                                icon: Icons.group,
-                                label: 'User Party',
-                                onTap: () => onCreateElement(
-                                    TemplateElement.createUserParty()),
-                              ),
-                              const SizedBox(height: 8),
-                              _buildElementButton(
-                                context: context,
-                                icon: Icons.account_circle,
-                                label: 'User Picture',
-                                onTap: () => onCreateElement(
-                                    TemplateElement.createUserPicture()),
-                              ),
                             ],
                           ),
                           // Groups Tab
@@ -331,45 +292,6 @@ class ElementCreationSidebar extends StatelessWidget {
                     label: 'Leader Strip',
                     onTap: () =>
                         onCreateElement(TemplateElement.createLeaderStrip()),
-                  ),
-                  if (isExpanded) ...[
-                    const SizedBox(height: 16),
-                    Text(
-                      'User Elements',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  _buildElementButton(
-                    context: context,
-                    icon: Icons.person,
-                    label: 'User Name',
-                    onTap: () =>
-                        onCreateElement(TemplateElement.createUserName()),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildElementButton(
-                    context: context,
-                    icon: Icons.work,
-                    label: 'User Designation',
-                    onTap: () => onCreateElement(
-                        TemplateElement.createUserDesignation()),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildElementButton(
-                    context: context,
-                    icon: Icons.group,
-                    label: 'User Party',
-                    onTap: () =>
-                        onCreateElement(TemplateElement.createUserParty()),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildElementButton(
-                    context: context,
-                    icon: Icons.account_circle,
-                    label: 'User Picture',
-                    onTap: () =>
-                        onCreateElement(TemplateElement.createUserPicture()),
                   ),
                 ],
               ),

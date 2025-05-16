@@ -143,11 +143,11 @@ class _TextContentControlState extends State<TextContentControl> {
             Expanded(
               child: LanguageSelector(),
             ),
-            IconButton(
-              icon: const Icon(Icons.language),
-              tooltip: 'Manage Languages',
-              onPressed: _showLanguageManager,
-            ),
+            // IconButton(
+            //   icon: const Icon(Icons.language),
+            //   tooltip: 'Manage Languages',
+            //   onPressed: _showLanguageManager,
+            // ),
           ],
         ),
 
@@ -194,38 +194,6 @@ class _TextContentControlState extends State<TextContentControl> {
                   onPressed: _toggleMultiline,
                   tooltip: _isMultiline ? 'Single line' : 'Multi-line',
                 ),
-                if (!_isMultiline) ...[
-                  IconButton(
-                    icon: Icon(
-                      widget.element.style.isItalic
-                          ? Icons.format_italic
-                          : Icons.format_italic_outlined,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        widget.element.style.isItalic =
-                            !widget.element.style.isItalic;
-                        widget.onUpdate();
-                      });
-                    },
-                    tooltip: 'Italic',
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      widget.element.style.isUnderlined
-                          ? Icons.format_underline
-                          : Icons.format_underline_outlined,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        widget.element.style.isUnderlined =
-                            !widget.element.style.isUnderlined;
-                        widget.onUpdate();
-                      });
-                    },
-                    tooltip: 'Underline',
-                  ),
-                ],
               ],
             ),
           ),

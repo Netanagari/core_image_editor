@@ -121,8 +121,8 @@ class _ImageControlsState extends State<ImageControls> {
         _buildImageUrlControl(theme),
         const SizedBox(height: 16),
         _buildImageFitControl(theme),
-        const SizedBox(height: 16),
-        _buildAdvancedControls(theme),
+        // const SizedBox(height: 16),
+        // _buildAdvancedControls(theme),
       ],
     );
   }

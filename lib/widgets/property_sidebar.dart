@@ -237,10 +237,10 @@ class PropertySidebar extends StatelessWidget {
           element: element,
           onUpdate: pushHistory,
         ),
-        ReadOnlyControl(
-          element: element,
-          onUpdate: pushHistory,
-        ),
+        // ReadOnlyControl(
+        //   element: element,
+        //   onUpdate: pushHistory,
+        // ),
         const SectionTitle(title: 'Text Style'),
         if (element.type == 'text') ...[
           FontSizeControl(

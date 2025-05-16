@@ -19,26 +19,26 @@ class FontSizeControl extends StatelessWidget {
       children: [
         const Text('Font Size'),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: NumberInput(
-                label: 'Size (vw)',
-                value: element.style.fontSizeVw,
-                onChanged: (value) {
-                  element.style.fontSizeVw = value;
-                  onUpdate();
-                },
-                min: 0.5,
-                max: 20,
-                decimalPlaces: 1,
-                stepSize: 0.5,
-                suffix: 'vw',
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
+        // Row(
+        //   children: [
+        //     Expanded(
+        //       child: NumberInput(
+        //         label: 'Size (vw)',
+        //         value: element.style.fontSizeVw,
+        //         onChanged: (value) {
+        //           element.style.fontSizeVw = value;
+        //           onUpdate();
+        //         },
+        //         min: 0.5,
+        //         max: 20,
+        //         decimalPlaces: 1,
+        //         stepSize: 0.5,
+        //         suffix: 'vw',
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        // const SizedBox(height: 8),
         // New: Font size in px input
         Row(
           children: [
@@ -82,12 +82,12 @@ class FontSizeControl extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            _buildSizePresetButton(context, 'XS', 2.0),
-            _buildSizePresetButton(context, 'S', 3.0),
-            _buildSizePresetButton(context, 'M', 4.0),
-            _buildSizePresetButton(context, 'L', 5.0),
-            _buildSizePresetButton(context, 'XL', 6.0),
-            _buildSizePresetButton(context, '2XL', 7.0),
+            // _buildSizePresetButton(context, 'XS', 2.0),
+            // _buildSizePresetButton(context, 'S', 3.0),
+            // _buildSizePresetButton(context, 'M', 4.0),
+            // _buildSizePresetButton(context, 'L', 5.0),
+            // _buildSizePresetButton(context, 'XL', 6.0),
+            // _buildSizePresetButton(context, '2XL', 7.0),
           ],
         ),
       ],
