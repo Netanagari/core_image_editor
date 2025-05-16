@@ -26,6 +26,7 @@ enum TemplateElementTag {
   messaging,
   userPicture,
   partySymbol,
+  partyStrip,
   userName,
   userDesignation,
   userParty,
@@ -47,6 +48,7 @@ enum TemplateElementTag {
         return [
           userPicture,
           partySymbol,
+          partyStrip,
           userName,
           userDesignation,
           userParty,
@@ -81,6 +83,8 @@ enum TemplateElementTag {
         return 'User Picture';
       case TemplateElementTag.partySymbol:
         return 'Party Symbol';
+      case TemplateElementTag.partyStrip:
+        return 'Party Strip';
       case TemplateElementTag.leaderStrip:
         return 'Leader Strip';
       case TemplateElementTag.leader:
@@ -118,6 +122,8 @@ enum TemplateElementTag {
         return 'Picture of the user/candidate';
       case TemplateElementTag.partySymbol:
         return 'Political party symbol or logo';
+      case TemplateElementTag.partyStrip:
+        return 'User strip background with party symbol';
       case TemplateElementTag.leaderStrip:
         return 'Strip of leader photos';
       case TemplateElementTag.leader:
