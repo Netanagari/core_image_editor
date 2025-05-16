@@ -303,7 +303,7 @@ class PropertySidebar extends StatelessWidget {
               configuration: editorState.configuration,
             ),
         ],
-        const SectionTitle(title: 'Layer'),
+        const SectionTitle(title: 'Layer Order'),
         LayerControl(
           element: element,
           onUpdate: pushHistory,

@@ -156,6 +156,14 @@ class EditorState extends ChangeNotifier {
   }
 
   void addElement(TemplateElement element) {
+    // Find the highest z-index in existing elements
+    int highestZIndex = _elements.isEmpty
+        ? 0
+        : _elements.fold(0, (max, e) => e.zIndex > max ? e.zIndex : max);
+
+    // Set new element's z-index to be one higher
+    element.zIndex = highestZIndex + 1;
+
     _elements.add(element);
     _selectedElement = element;
     notifyListeners();
