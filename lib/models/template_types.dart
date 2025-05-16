@@ -36,6 +36,34 @@ enum TemplateElementTag {
   twitterHandle,
   defaulty;
 
+  // Method to get valid tags for a specific group
+  static List<TemplateElementTag> getValidTagsForGroup(String? group) {
+    if (group == null) {
+      return TemplateElementTag.values;
+    }
+
+    switch (group) {
+      case 'user_strip':
+        return [
+          userPicture,
+          partySymbol,
+          userName,
+          userDesignation,
+          userParty,
+          facebookHandle,
+          instaHandle,
+          twitterHandle,
+        ];
+      default:
+        return TemplateElementTag.values;
+    }
+  }
+
+  // Check if this tag is valid for a given group
+  bool isValidForGroup(String? group) {
+    return getValidTagsForGroup(group).contains(this);
+  }
+
   String get displayName {
     switch (this) {
       case TemplateElementTag.background:

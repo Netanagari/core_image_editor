@@ -13,6 +13,9 @@ class TagSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get valid tags for the element's group
+    final validTags = TemplateElementTag.getValidTagsForGroup(element.group);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -29,7 +32,7 @@ class TagSelector extends StatelessWidget {
               isDense: true,
               border: OutlineInputBorder(),
             ),
-            items: TemplateElementTag.values.map((tag) {
+            items: validTags.map((tag) {
               return DropdownMenuItem(
                 value: tag,
                 child: Tooltip(
