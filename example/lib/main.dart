@@ -12,315 +12,315 @@ void main() {
 }
 
 final exampleJson = {
-    "id": 4,
-    "poster": 36,
-    "base_image_url": "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/BJP.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250515%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250515T115537Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=ae525710287243aace749e45c5673cee62ba9393f4bb00879b3d4e9a3603e83f",
-    "thumbnail_url": "https://netanagri-bucket.s3.amazonaws.com/https%3A//netanagri-bucket.s3.amazonaws.com/poster/36/content/1746721969990?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250515%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250515T115537Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=4d9aaf2194b2e21ee4f4b0a72a701210f4ee2ecfa1cfe20cc989c7dde2aabdbc",
-    "original_width": 1080,
-    "original_height": 1080,
-    "aspect_ratio": 1.0,
-    "content_json": [
-        {
-            "box": {
-                "rotation": 0,
-                "alignment": "center",
-                "x_percent": 0,
-                "y_percent": 0,
-                "width_percent": 100,
-                "height_percent": 100
-            },
-            "tag": "TemplateElementTag.background",
-            "type": "image",
-            "group": null,
-            "style": {
-                "color": "#000000",
-                "opacity": 0.25,
-                "imageFit": "BoxFit.contain",
-                "font_size": 0,
-                "is_italic": false,
-                "box_shadow": null,
-                "text_align": null,
-                "decorations": null,
-                "font_family": "English",
-                "font_weight": "FontWeight.w400",
-                "image_shape": null,
-                "border_color": null,
-                "border_style": null,
-                "border_width": null,
-                "is_read_only": false,
-                "border_radius": null,
-                "is_underlined": false
-            },
-            "content": {
-                "url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549917602"
-            },
-            "z_index": 0,
-            "nested_content": null
+  "id": 4,
+  "poster": 36,
+  "base_image_url":
+      "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/BJP.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250516%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250516T025507Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=9b02f7e6274b55ff073403023967163e8779194c9ac58ff161e89a5cec470505",
+  "thumbnail_url":
+      "https://netanagri-bucket.s3.amazonaws.com/https%3A//netanagri-bucket.s3.amazonaws.com/poster/36/content/1747311871151?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250516%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250516T025507Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=5e024df4fb7ac95006e1d39b2c8efc62fb9326a1fef3c664d133e91ea7146353",
+  "original_width": 1080,
+  "original_height": 1080,
+  "aspect_ratio": 1.0,
+  "content_json": [
+    {
+      "box": {
+        "rotation": 0,
+        "alignment": "center",
+        "x_percent": 0,
+        "y_percent": 0,
+        "width_percent": 100,
+        "height_percent": 100
+      },
+      "tag": "TemplateElementTag.background",
+      "type": "image",
+      "group": null,
+      "style": {
+        "color": "#000000",
+        "opacity": 0.25,
+        "imageFit": "BoxFit.contain",
+        "font_size": 0,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": null,
+        "decorations": null,
+        "font_family": "English",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "url":
+            "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549917602"
+      },
+      "z_index": 0,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 315,
+        "y_px": 151,
+        "rotation": 0,
+        "width_px": 450,
+        "alignment": "center",
+        "height_px": 450,
+        "x_percent": 26.3388327383154,
+        "y_percent": 10.270695493342368,
+        "width_percent": 47.83266415505989,
+        "height_percent": 46.718507027803554
+      },
+      "tag": "TemplateElementTag.keyVisual",
+      "type": "shape",
+      "group": null,
+      "style": {
+        "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 0,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": null,
+        "decorations": null,
+        "font_family": "English",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "url":
+            "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549919078",
+        "fillColor": "#FFFFFF",
+        "shapeType": "ShapeType.circle",
+        "strokeColor": "#00000000",
+        "strokeWidth": 2,
+        "isStrokeDashed": false
+      },
+      "z_index": 0,
+      "nested_content": {
+        "content": {
+          "box": {
+            "rotation": 0,
+            "alignment": "center",
+            "x_percent": 0,
+            "y_percent": 0,
+            "width_percent": 100,
+            "height_percent": 100
+          },
+          "tag": "TemplateElementTag.defaulty",
+          "type": "image",
+          "group": null,
+          "style": {
+            "color": "#000000",
+            "opacity": 1,
+            "imageFit": "BoxFit.cover",
+            "font_size": 0,
+            "is_italic": false,
+            "box_shadow": null,
+            "text_align": null,
+            "decorations": null,
+            "font_family": "English",
+            "font_weight": "FontWeight.w400",
+            "image_shape": null,
+            "border_color": null,
+            "border_style": null,
+            "border_width": null,
+            "is_read_only": false,
+            "border_radius": null,
+            "is_underlined": false
+          },
+          "content": {
+            "url":
+                "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549919078"
+          },
+          "z_index": 0,
+          "nested_content": null
         },
-        {
-            "box": {
-                "x_px": 315,
-                "y_px": 151,
-                "rotation": 0,
-                "width_px": 450,
-                "alignment": "center",
-                "height_px": 450,
-                "x_percent": 26.3388327383154,
-                "y_percent": 10.270695493342368,
-                "width_percent": 47.83266415505989,
-                "height_percent": 46.718507027803554
-            },
-            "tag": "TemplateElementTag.keyVisual",
-            "type": "shape",
-            "group": null,
-            "style": {
-                "color": "#000000",
-                "opacity": 1,
-                "imageFit": "BoxFit.contain",
-                "font_size": 0,
-                "is_italic": false,
-                "box_shadow": null,
-                "text_align": null,
-                "decorations": null,
-                "font_family": "English",
-                "font_weight": "FontWeight.w400",
-                "image_shape": null,
-                "border_color": null,
-                "border_style": null,
-                "border_width": null,
-                "is_read_only": false,
-                "border_radius": null,
-                "is_underlined": false
-            },
-            "content": {
-                "url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549919078",
-                "fillColor": "#FFFFFF",
-                "shapeType": "ShapeType.circle",
-                "strokeColor": "#00000000",
-                "strokeWidth": 2,
-                "isStrokeDashed": false
-            },
-            "z_index": 0,
-            "nested_content": {
-                "content": {
-                    "box": {
-                        "rotation": 0,
-                        "alignment": "center",
-                        "x_percent": 0,
-                        "y_percent": 0,
-                        "width_percent": 100,
-                        "height_percent": 100
-                    },
-                    "tag": "TemplateElementTag.defaulty",
-                    "type": "image",
-                    "group": null,
-                    "style": {
-                        "color": "#000000",
-                        "opacity": 1,
-                        "imageFit": "BoxFit.cover",
-                        "font_size": 0,
-                        "is_italic": false,
-                        "box_shadow": null,
-                        "text_align": null,
-                        "decorations": null,
-                        "font_family": "English",
-                        "font_weight": "FontWeight.w400",
-                        "image_shape": null,
-                        "border_color": null,
-                        "border_style": null,
-                        "border_width": null,
-                        "is_read_only": false,
-                        "border_radius": null,
-                        "is_underlined": false
-                    },
-                    "content": {
-                        "url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549919078"
-                    },
-                    "z_index": 0,
-                    "nested_content": null
-                },
-                "contentFit": "BoxFit.fill",
-                "contentAlignment": "Alignment.center"
-            }
+        "contentFit": "BoxFit.fill",
+        "contentAlignment": "Alignment.center"
+      }
+    },
+    {
+      "box": {
+        "y_px": 717,
+        "rotation": 0,
+        "alignment": "center",
+        "x_percent": 10.515334894853924,
+        "y_percent": 66.08904995590017,
+        "width_percent": 80,
+        "height_percent": 10
+      },
+      "tag": "TemplateElementTag.subheading",
+      "type": "text",
+      "group": null,
+      "style": {
+        "color": "#ffffff",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 5,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": "center",
+        "decorations": null,
+        "font_family": "English",
+        "font_weight": "FontWeight.w600",
+        "image_shape": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "bn-IN": {"text": " তাঁর জন্মদিনে শ্রদ্ধাঞ্জলি"},
+        "en-IN": {"text": " Paying Tribute on His Birth Anniversary"},
+        "hi-IN": {"text": " उनकी जयंती पर श्रद्धांजलि"}
+      },
+      "z_index": 0,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 165,
+        "y_px": 625,
+        "rotation": 0,
+        "width_px": 750,
+        "alignment": "center",
+        "height_px": 68,
+        "x_percent": 9.778249833123477,
+        "y_percent": 59.2935004757599,
+        "width_percent": 80,
+        "height_percent": 14.444444444444445
+      },
+      "tag": "TemplateElementTag.heading",
+      "type": "text",
+      "group": null,
+      "style": {
+        "color": "#ffffff",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 7,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": "center",
+        "decorations": null,
+        "font_family": "English",
+        "font_weight": "FontWeight.w900",
+        "image_shape": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "bn-IN": {"text": "কেশব বলিরাম হেডগেওয়ার "},
+        "en-IN": {"text": "Keshav Baliram Hedgewar "},
+        "hi-IN": {"text": "केशव बलिराम हेडगेवार "}
+      },
+      "z_index": 0,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 115,
+        "y_px": 808,
+        "rotation": 0,
+        "width_px": 850,
+        "alignment": "center",
+        "height_px": 120,
+        "x_percent": 11.974513457737276,
+        "y_percent": 71.92704907538395,
+        "width_percent": 80,
+        "height_percent": 19.047619047619044
+      },
+      "tag": "TemplateElementTag.messaging",
+      "type": "text",
+      "group": null,
+      "style": {
+        "color": "#ffffff",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 3,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": "center",
+        "decorations": null,
+        "font_family": "English",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "bn-IN": {
+          "text":
+              "কেশব বলিরাম হেডগেওয়ার ছিলেন ভারতীয় জাতীয়তাবাদের অন্যতম পথপ্রদর্শক। তাঁর নেতৃত্বে রাষ্ট্রীয় স্বয়ংসেবক সংঘ (RSS) গঠিত হয়, যা আজও জাতীয়তাবাদী ভাবনার ভিত্তি রক্ষা করে চলেছে।"
         },
-        {
-            "box": {
-                "y_px": 717,
-                "rotation": 0,
-                "alignment": "center",
-                "x_percent": 10.515334894853924,
-                "y_percent": 66.08904995590017,
-                "width_percent": 80,
-                "height_percent": 10
-            },
-            "tag": "TemplateElementTag.subheading",
-            "type": "text",
-            "group": null,
-            "style": {
-                "color": "#ffffff",
-                "opacity": 1,
-                "imageFit": "BoxFit.contain",
-                "font_size": 5,
-                "is_italic": false,
-                "box_shadow": null,
-                "text_align": "center",
-                "decorations": null,
-                "font_family": "English",
-                "font_weight": "FontWeight.w600",
-                "image_shape": null,
-                "border_color": null,
-                "border_style": null,
-                "border_width": null,
-                "is_read_only": false,
-                "border_radius": null,
-                "is_underlined": false
-            },
-            "content": {
-                "bn-IN": {
-                    "text": " তাঁর জন্মদিনে শ্রদ্ধাঞ্জলি"
-                },
-                "en-IN": {
-                    "text": " Paying Tribute on His Birth Anniversary"
-                },
-                "hi-IN": {
-                    "text": " उनकी जयंती पर श्रद्धांजलि"
-                }
-            },
-            "z_index": 0,
-            "nested_content": null
+        "en-IN": {
+          "text":
+              "Keshav Baliram Hedgewar was a pioneering nationalist thinker who founded the Rashtriya Swayamsevak Sangh (RSS), laying the foundation for a strong cultural and nationalist movement in India."
         },
-        {
-            "box": {
-                "x_px": 165,
-                "y_px": 625,
-                "rotation": 0,
-                "width_px": 750,
-                "alignment": "center",
-                "height_px": 68,
-                "x_percent": 9.778249833123477,
-                "y_percent": 59.2935004757599,
-                "width_percent": 80,
-                "height_percent": 14.444444444444445
-            },
-            "tag": "TemplateElementTag.heading",
-            "type": "text",
-            "group": null,
-            "style": {
-                "color": "#ffffff",
-                "opacity": 1,
-                "imageFit": "BoxFit.contain",
-                "font_size": 7,
-                "is_italic": false,
-                "box_shadow": null,
-                "text_align": "center",
-                "decorations": null,
-                "font_family": "English",
-                "font_weight": "FontWeight.w900",
-                "image_shape": null,
-                "border_color": null,
-                "border_style": null,
-                "border_width": null,
-                "is_read_only": false,
-                "border_radius": null,
-                "is_underlined": false
-            },
-            "content": {
-                "bn-IN": {
-                    "text": "কেশব বলিরাম হেডগেওয়ার "
-                },
-                "en-IN": {
-                    "text": "Keshav Baliram Hedgewar "
-                },
-                "hi-IN": {
-                    "text": "केशव बलिराम हेडगेवार "
-                }
-            },
-            "z_index": 0,
-            "nested_content": null
-        },
-        {
-            "box": {
-                "x_px": 115,
-                "y_px": 808,
-                "rotation": 0,
-                "width_px": 850,
-                "alignment": "center",
-                "height_px": 120,
-                "x_percent": 11.974513457737276,
-                "y_percent": 71.92704907538395,
-                "width_percent": 80,
-                "height_percent": 19.047619047619044
-            },
-            "tag": "TemplateElementTag.messaging",
-            "type": "text",
-            "group": null,
-            "style": {
-                "color": "#ffffff",
-                "opacity": 1,
-                "imageFit": "BoxFit.contain",
-                "font_size": 3,
-                "is_italic": false,
-                "box_shadow": null,
-                "text_align": "center",
-                "decorations": null,
-                "font_family": "English",
-                "font_weight": "FontWeight.w400",
-                "image_shape": null,
-                "border_color": null,
-                "border_style": null,
-                "border_width": null,
-                "is_read_only": false,
-                "border_radius": null,
-                "is_underlined": false
-            },
-            "content": {
-                "bn-IN": {
-                    "text": "কেশব বলিরাম হেডগেওয়ার ছিলেন ভারতীয় জাতীয়তাবাদের অন্যতম পথপ্রদর্শক। তাঁর নেতৃত্বে রাষ্ট্রীয় স্বয়ংসেবক সংঘ (RSS) গঠিত হয়, যা আজও জাতীয়তাবাদী ভাবনার ভিত্তি রক্ষা করে চলেছে।"
-                },
-                "en-IN": {
-                    "text": "Keshav Baliram Hedgewar was a pioneering nationalist thinker who founded the Rashtriya Swayamsevak Sangh (RSS), laying the foundation for a strong cultural and nationalist movement in India."
-                },
-                "hi-IN": {
-                    "text": "केशव बलिराम हेडगेवार भारतीय राष्ट्रवाद के एक प्रमुख विचारक थे। उनके नेतृत्व में राष्ट्रीय स्वयंसेवक संघ (RSS) की स्थापना हुई, जो आज भी राष्ट्रभक्ति और संस्कृति की रक्षा करता है।"
-                }
-            },
-            "z_index": 0,
-            "nested_content": null
+        "hi-IN": {
+          "text":
+              "केशव बलिराम हेडगेवार भारतीय राष्ट्रवाद के एक प्रमुख विचारक थे। उनके नेतृत्व में राष्ट्रीय स्वयंसेवक संघ (RSS) की स्थापना हुई, जो आज भी राष्ट्रभक्ति और संस्कृति की रक्षा करता है।"
         }
-    ],
-    "language_settings": {
-        "current_language": "en-IN",
-        "default_language": {
-            "code": "en",
-            "name": "English",
-            "flagEmoji": "🇬🇧",
-            "nativeName": "English",
-            "textDirection": "TextDirection.ltr"
-        },
-        "enabled_languages": [
-            {
-                "code": "en-IN",
-                "name": "English",
-                "flagEmoji": null,
-                "nativeName": "English",
-                "textDirection": "TextDirection.ltr"
-            },
-            {
-                "code": "bn-IN",
-                "name": "Bengali",
-                "flagEmoji": null,
-                "nativeName": "Bengali",
-                "textDirection": "TextDirection.ltr"
-            },
-            {
-                "code": "hi-IN",
-                "name": "Hindi",
-                "flagEmoji": null,
-                "nativeName": "Hindi",
-                "textDirection": "TextDirection.ltr"
-            }
-        ]
+      },
+      "z_index": 0,
+      "nested_content": null
     }
+  ],
+  "language_settings": {
+    "current_language": "en-IN",
+    "default_language": {
+      "code": "en",
+      "name": "English",
+      "flagEmoji": "🇬🇧",
+      "fontFamily": "English",
+      "nativeName": "English",
+      "textDirection": "TextDirection.ltr"
+    },
+    "enabled_languages": [
+      {
+        "code": "en-IN",
+        "name": "English",
+        "flagEmoji": null,
+        "fontFamily": null,
+        "nativeName": "English",
+        "textDirection": "TextDirection.ltr"
+      },
+      {
+        "code": "bn-IN",
+        "name": "Bengali",
+        "flagEmoji": null,
+        "fontFamily": null,
+        "nativeName": "Bengali",
+        "textDirection": "TextDirection.ltr"
+      },
+      {
+        "code": "hi-IN",
+        "name": "Hindi",
+        "flagEmoji": null,
+        "fontFamily": null,
+        "nativeName": "Hindi",
+        "textDirection": "TextDirection.ltr"
+      }
+    ]
+  }
 };
 
 // final exampleJson = {

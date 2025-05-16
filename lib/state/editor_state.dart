@@ -42,6 +42,11 @@ class EditorState extends ChangeNotifier {
         groups.add(element.group!);
       }
     }
+
+    if (groups.isEmpty) {
+      groups.add("user_strip");
+    }
+
     return groups.toList()..sort();
   }
 
