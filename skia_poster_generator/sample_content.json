@@ -1,4 +1,11 @@
 {
+    "id": 4,
+    "poster": 36,
+    "base_image_url": "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/BJP.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250515%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250515T123552Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=eed3d794789793587724747d2997b847abccc1c5fcae8e3a123685461a93719f",
+    "thumbnail_url": "https://netanagri-bucket.s3.amazonaws.com/https%3A//netanagri-bucket.s3.amazonaws.com/poster/36/content/1747311871151?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250515%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250515T123552Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=5094a98bd2377206ad1a7c02f8a99123437ccedeb0ee9db2b7d44d6faab623c1",
+    "original_width": 1080,
+    "original_height": 1080,
+    "aspect_ratio": 1.0,
     "content_json": [
         {
             "box": {
@@ -266,6 +273,80 @@
             },
             "z_index": 0,
             "nested_content": null
+        },
+        {
+            "box": {
+                "rotation": 0,
+                "alignment": "center",
+                "x_percent": 0,
+                "y_percent": 82.47851555804779,
+                "width_percent": 100,
+                "height_percent": 17.521484441952214
+            },
+            "tag": "TemplateElementTag.partySymbol",
+            "type": "image",
+            "group": "user_strip",
+            "style": {
+                "color": "#000000",
+                "opacity": 1,
+                "imageFit": "BoxFit.contain",
+                "font_size": 0,
+                "is_italic": false,
+                "box_shadow": null,
+                "text_align": null,
+                "decorations": null,
+                "font_family": "English",
+                "font_weight": "FontWeight.w400",
+                "image_shape": null,
+                "border_color": null,
+                "border_style": null,
+                "border_width": null,
+                "is_read_only": false,
+                "border_radius": null,
+                "is_underlined": false
+            },
+            "content": {
+                "url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1747311413793"
+            },
+            "z_index": 0,
+            "nested_content": null
+        },
+        {
+            "box": {
+                "rotation": 0,
+                "alignment": "center",
+                "x_percent": 69.42149132725825,
+                "y_percent": 62.970062989343035,
+                "width_percent": 28.8192083254998,
+                "height_percent": 35.26337228510437
+            },
+            "tag": "TemplateElementTag.userPicture",
+            "type": "image",
+            "group": "user_strip",
+            "style": {
+                "color": "#000000",
+                "opacity": 1,
+                "imageFit": "BoxFit.cover",
+                "font_size": 0,
+                "is_italic": false,
+                "box_shadow": null,
+                "text_align": null,
+                "decorations": null,
+                "font_family": "English",
+                "font_weight": "FontWeight.w400",
+                "image_shape": null,
+                "border_color": null,
+                "border_style": null,
+                "border_width": null,
+                "is_read_only": false,
+                "border_radius": null,
+                "is_underlined": false
+            },
+            "content": {
+                "url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1747311620296"
+            },
+            "z_index": 0,
+            "nested_content": null
         }
     ],
     "language_settings": {
@@ -282,24 +363,24 @@
             {
                 "code": "en-IN",
                 "name": "English",
-                "fontFamily": "English",
                 "flagEmoji": null,
+                "fontFamily": null,
                 "nativeName": "English",
                 "textDirection": "TextDirection.ltr"
             },
             {
                 "code": "bn-IN",
                 "name": "Bengali",
-                "fontFamily": "BengaliOptimized",
                 "flagEmoji": null,
+                "fontFamily": null,
                 "nativeName": "Bengali",
                 "textDirection": "TextDirection.ltr"
             },
             {
                 "code": "hi-IN",
                 "name": "Hindi",
-                "fontFamily": "BengaliOptimized",
                 "flagEmoji": null,
+                "fontFamily": null,
                 "nativeName": "Hindi",
                 "textDirection": "TextDirection.ltr"
             }
