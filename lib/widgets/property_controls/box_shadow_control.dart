@@ -8,10 +8,10 @@ class BoxShadowControl extends StatelessWidget {
   final VoidCallback onUpdate;
 
   const BoxShadowControl({
-    Key? key,
+    super.key,
     required this.element,
     required this.onUpdate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +57,7 @@ class BoxShadowControl extends StatelessWidget {
                 onUpdate();
               },
               min: -50,
-              max: 50,
+              // max: 50,
             ),
             NumberInput(
               label: 'Offset Y',
@@ -67,7 +67,7 @@ class BoxShadowControl extends StatelessWidget {
                 onUpdate();
               },
               min: -50,
-              max: 50,
+              // max: 50,
             ),
             NumberInput(
               label: 'Blur Radius',
@@ -77,7 +77,7 @@ class BoxShadowControl extends StatelessWidget {
                 onUpdate();
               },
               min: 0,
-              max: 50,
+              // max: 50,
             ),
             NumberInput(
               label: 'Spread Radius',
@@ -87,7 +87,7 @@ class BoxShadowControl extends StatelessWidget {
                 onUpdate();
               },
               min: -50,
-              max: 50,
+              // max: 50,
             ),
           ],
         ],
