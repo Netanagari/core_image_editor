@@ -122,6 +122,35 @@ def get_language_font_family(lang_settings, lang_code):
     return 'English'
 
 
+def apply_shadow_paint(canvas, paint, shadow_data, stroke_paint=None):
+    """Helper function to apply shadow effects."""
+    if shadow_data is None:
+        return paint
+
+    # Extract shadow parameters
+    shadow_color_str = shadow_data.get('color', '#000000')
+    shadow_offset_x = shadow_data.get('offsetX', 0.0)
+    shadow_offset_y = shadow_data.get('offsetY', 2.0)
+    shadow_blur = shadow_data.get('blurRadius', 4.0)
+    shadow_spread = shadow_data.get('spreadRadius', 0.0)
+
+    # Create shadow paint
+    shadow_paint = skia.Paint(AntiAlias=True)
+    shadow_paint.setColor(hex_to_skia_color(shadow_color_str))
+    
+    # Set blur mask filter
+    if shadow_blur > 0:
+        shadow_paint.setMaskFilter(skia.MaskFilter.MakeBlur(skia.kNormal_BlurStyle, shadow_blur/2, True))
+    
+    # For stroking effects
+    if stroke_paint is not None:
+        shadow_paint.setStyle(skia.Paint.kStroke_Style)
+        shadow_paint.setStrokeWidth(stroke_paint.getStrokeWidth() + shadow_spread*2)
+    else:
+        shadow_paint.setStyle(paint.getStyle())
+    
+    return shadow_paint, shadow_offset_x, shadow_offset_y
+
 def render_template_element_skia(canvas, element_data, parent_canvas_width, parent_canvas_height, current_language, default_language_code, font_asset_path, lang_settings=None):
     """Renders a single TemplateElement onto the Skia canvas."""
     box = element_data['box']
@@ -175,7 +204,31 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
                     print(f"[DEBUG] BoxFit: {box_fit_str}, src_rect: {src_rect}, dst_rect: {dst_rect_fitted}")
                     paint = skia.Paint(AntiAlias=True)
                     paint.setAlphaf(opacity)
-                    canvas.drawImageRect(skia_image, src_rect, dst_rect_fitted, paint)
+                    
+                    # Handle box shadow for images
+                    if style.get('box_shadow'):
+                        shadow_paint, shadow_x, shadow_y = apply_shadow_paint(canvas, paint, style['box_shadow'])
+                        # Create a temporary surface for the image with shadow
+                        surface = skia.Surface(int(el_width + abs(shadow_x) * 2), int(el_height + abs(shadow_y) * 2))
+                        shadow_canvas = surface.getCanvas()
+                        
+                        # Draw shadow
+                        shadow_canvas.translate(abs(shadow_x) if shadow_x < 0 else 0, abs(shadow_y) if shadow_y < 0 else 0)
+                        shadow_canvas.drawRect(skia.Rect.MakeXYWH(0, 0, dst_rect_fitted.width(), dst_rect_fitted.height()), shadow_paint)
+                        
+                        # Draw actual image
+                        shadow_canvas.drawImageRect(skia_image, src_rect, dst_rect_fitted, paint)
+                        
+                        # Get the image with shadow
+                        shadow_image = surface.makeImageSnapshot()
+                        
+                        # Draw the combined image+shadow
+                        canvas.drawImage(shadow_image, 
+                                      -abs(shadow_x) if shadow_x < 0 else 0, 
+                                      -abs(shadow_y) if shadow_y < 0 else 0)
+                    else:
+                        # Draw image normally if no shadow
+                        canvas.drawImageRect(skia_image, src_rect, dst_rect_fitted, paint)
                 else:
                     print(f"Failed to decode Skia image from URL: {img_url}")
             except requests.exceptions.RequestException as e:
@@ -189,67 +242,79 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
         stroke_color_str = content.get('strokeColor', '#00000000')
         stroke_width = float(content.get('strokeWidth', 0))
 
-        print(f"[DEBUG] Shape type: {shape_type}, fill: {fill_color_str}, stroke: {stroke_color_str}, stroke_width: {stroke_width}")
-
-        # Prepare paint for fill
-        fill_paint = skia.Paint(AntiAlias=True, Style=skia.Paint.kFill_Style)
-        fill_paint.setColor(hex_to_skia_color(fill_color_str, 1.0)) # Opacity applied to layer
-
-        # Prepare paint for stroke
-        stroke_paint = None
-        if stroke_width > 0:
-            stroke_paint = skia.Paint(AntiAlias=True, Style=skia.Paint.kStroke_Style, StrokeWidth=stroke_width)
-            stroke_paint.setColor(hex_to_skia_color(stroke_color_str, 1.0)) # Opacity applied to layer
-
-        # Path for the shape
+        # Create shape path
         path = skia.Path()
         if shape_type == "ShapeType.rectangle" or shape_type is None:
             path.addRect(element_rect)
         elif shape_type == "ShapeType.circle" or shape_type == "ShapeType.oval":
             path.addOval(element_rect)
         
-        # Handle nested content (masking)
+        # Create a temporary surface that includes space for shadow
+        shadow_margin = 20
+        temp_surface = skia.Surface(int(el_width + shadow_margin * 2), int(el_height + shadow_margin * 2))
+        temp_canvas = temp_surface.getCanvas()
+        temp_canvas.clear(skia.ColorTRANSPARENT)
+        
+        # Translate to account for shadow margin
+        temp_canvas.translate(shadow_margin, shadow_margin)
+        
+        # Prepare paint for fill
+        fill_paint = skia.Paint(AntiAlias=True, Style=skia.Paint.kFill_Style)
+        fill_paint.setColor(hex_to_skia_color(fill_color_str, 1.0))
+        
+        # Prepare paint for stroke
+        stroke_paint = None
+        if stroke_width > 0:
+            stroke_paint = skia.Paint(AntiAlias=True, Style=skia.Paint.kStroke_Style, StrokeWidth=stroke_width)
+            stroke_paint.setColor(hex_to_skia_color(stroke_color_str, 1.0))
+        
+        # Handle shadows
+        if style.get('box_shadow'):
+            shadow_paint, shadow_x, shadow_y = apply_shadow_paint(temp_canvas, fill_paint, style['box_shadow'])
+            # Draw shadow
+            temp_canvas.save()
+            temp_canvas.translate(shadow_x, shadow_y)
+            temp_canvas.drawPath(path, shadow_paint)
+            temp_canvas.restore()
+        
+        # Handle nested content with masking
         nested_content_data = element_data.get('nested_content')
         if nested_content_data and nested_content_data.get('content'):
             # Apply overall element opacity using a layer
             layer_paint = skia.Paint(Alphaf=opacity)
-            canvas.saveLayer(element_rect, layer_paint)
-
-            # 1. Draw parent shape's fill color (e.g., white circle background)
-            if fill_paint.getAlphaf() > 0: # Check if fill is not transparent
-                 canvas.drawPath(path, fill_paint)
-
-            # 2. Render nested content, clipped by the parent shape
-            canvas.save()
-            canvas.clipPath(path, doAntiAlias=True)
+            temp_canvas.saveLayer(element_rect, layer_paint)
+            
+            # Draw parent shape's fill
+            if fill_paint.getAlphaf() > 0:
+                temp_canvas.drawPath(path, fill_paint)
+            
+            # Render nested content within the shape's path
+            temp_canvas.save()
+            temp_canvas.clipPath(path, doAntiAlias=True)
             
             nested_el_data = nested_content_data['content']
-            # The nested element is rendered relative to the parent's 0,0
-            # Its dimensions are determined by contentFit within parent's el_width, el_height
+            render_template_element_skia(temp_canvas, nested_el_data, el_width, el_height, current_language, default_language_code, font_asset_path, lang_settings)
             
-            # For nested content, its 'canvas' is effectively the parent's element_rect
-            # BoxFit for nested content needs to be handled carefully.
-            # Here, we assume the nested element (if image) will be drawn to fill the clipped path
-            # according to its own BoxFit, then the clip applies.
-            # This simplified version passes el_width, el_height as parent dimensions for nested.
-            render_template_element_skia(canvas, nested_el_data, el_width, el_height, current_language, default_language_code, font_asset_path, lang_settings)
+            temp_canvas.restore()
             
-            canvas.restore() # Restore from clip
-
-            # 3. Draw parent shape's stroke on top (if any)
+            # Draw stroke on top if any
             if stroke_paint:
-                canvas.drawPath(path, stroke_paint)
+                temp_canvas.drawPath(path, stroke_paint)
             
-            canvas.restore() # Restore from saveLayer
+            temp_canvas.restore()
         else:
-            # No nested content, just draw the shape with its own opacity
+            # No nested content, just draw the shape
             fill_paint.setAlphaf(fill_paint.getAlphaf() * opacity)
             if fill_paint.getAlphaf() > 0:
-                canvas.drawPath(path, fill_paint)
+                temp_canvas.drawPath(path, fill_paint)
             if stroke_paint:
                 stroke_paint.setAlphaf(stroke_paint.getAlphaf() * opacity)
-                canvas.drawPath(path, stroke_paint)
-
+                temp_canvas.drawPath(path, stroke_paint)
+        
+        # Draw the final result with shadow to the main canvas
+        result_image = temp_surface.makeImageSnapshot()
+        canvas.drawImage(result_image, -shadow_margin, -shadow_margin)
+        
     elif el_type == 'text':
         text_to_render = ""
         lang_content_map = content # content is the map of languages
@@ -356,10 +421,23 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
                     x_text_offset = el_width - line_width
                 # Default is left
                 print(f"[DEBUG] Drawing text line: '{line_text}', x: {x_text_offset}, y: {y_cursor}, width: {line_width}")
+                # Handle text shadow if specified
+                if 'text_shadow' in style:
+                    shadow_paint, shadow_x, shadow_y = apply_shadow_paint(canvas, text_paint, style['text_shadow'])
+                    # Draw text shadow
+                    canvas.drawString(line_text, x_text_offset + shadow_x, y_cursor + shadow_y, final_font, shadow_paint)
+                
+                # Draw main text
                 canvas.drawString(line_text, x_text_offset, y_cursor, final_font, text_paint)
+                
                 # Underline
                 if is_underlined:
                     underline_y = y_cursor + font_metrics.fDescent * 0.8
+                    # Draw underline shadow if text shadow is enabled
+                    if 'text_shadow' in style:
+                        canvas.drawLine(x_text_offset + shadow_x, underline_y + shadow_y, 
+                                   x_text_offset + line_width + shadow_x, underline_y + shadow_y, shadow_paint)
+                    # Draw main underline
                     canvas.drawLine(x_text_offset, underline_y, x_text_offset + line_width, underline_y, text_paint)
                 y_cursor += line_height
 

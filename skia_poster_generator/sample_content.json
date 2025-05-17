@@ -1,8 +1,8 @@
 {
     "id": 4,
     "poster": 36,
-    "base_image_url": "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/BJP.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250515%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250515T123552Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=eed3d794789793587724747d2997b847abccc1c5fcae8e3a123685461a93719f",
-    "thumbnail_url": "https://netanagri-bucket.s3.amazonaws.com/https%3A//netanagri-bucket.s3.amazonaws.com/poster/36/content/1747311871151?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250515%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250515T123552Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=5094a98bd2377206ad1a7c02f8a99123437ccedeb0ee9db2b7d44d6faab623c1",
+    "base_image_url": "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/BJP.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250517%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250517T075945Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2daabf01bd74975bfdb46d88b432eac988ccf036fb546bc424b136ff47dd87b1",
+    "thumbnail_url": "https://netanagri-bucket.s3.amazonaws.com/https%3A//netanagri-bucket.s3.amazonaws.com/poster/36/content/1747468771691?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250517%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250517T075945Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=530c4b2929addec5b66f988e92ab573d660f752f47bcee6c67ed6df07970204e",
     "original_width": 1080,
     "original_height": 1080,
     "aspect_ratio": 1.0,
@@ -31,6 +31,7 @@
                 "font_family": "English",
                 "font_weight": "FontWeight.w400",
                 "image_shape": null,
+                "text_shadow": null,
                 "border_color": null,
                 "border_style": null,
                 "border_width": null,
@@ -66,12 +67,19 @@
                 "imageFit": "BoxFit.contain",
                 "font_size": 0,
                 "is_italic": false,
-                "box_shadow": null,
+                "box_shadow": {
+                    "color": "#000000",
+                    "offsetX": 0,
+                    "offsetY": 8,
+                    "blurRadius": 9,
+                    "spreadRadius": 0
+                },
                 "text_align": null,
                 "decorations": null,
                 "font_family": "English",
                 "font_weight": "FontWeight.w400",
                 "image_shape": null,
+                "text_shadow": null,
                 "border_color": null,
                 "border_style": null,
                 "border_width": null,
@@ -113,6 +121,7 @@
                         "font_family": "English",
                         "font_weight": "FontWeight.w400",
                         "image_shape": null,
+                        "text_shadow": null,
                         "border_color": null,
                         "border_style": null,
                         "border_width": null,
@@ -155,6 +164,12 @@
                 "font_family": "English",
                 "font_weight": "FontWeight.w600",
                 "image_shape": null,
+                "text_shadow": {
+                    "color": "#000000",
+                    "offsetX": 0,
+                    "offsetY": 2,
+                    "blurRadius": 4
+                },
                 "border_color": null,
                 "border_style": null,
                 "border_width": null,
@@ -204,6 +219,12 @@
                 "font_family": "English",
                 "font_weight": "FontWeight.w900",
                 "image_shape": null,
+                "text_shadow": {
+                    "color": "#000000",
+                    "offsetX": 0,
+                    "offsetY": 2,
+                    "blurRadius": 4
+                },
                 "border_color": null,
                 "border_style": null,
                 "border_width": null,
@@ -253,6 +274,12 @@
                 "font_family": "English",
                 "font_weight": "FontWeight.w400",
                 "image_shape": null,
+                "text_shadow": {
+                    "color": "#000000",
+                    "offsetX": 0,
+                    "offsetY": 2,
+                    "blurRadius": 4
+                },
                 "border_color": null,
                 "border_style": null,
                 "border_width": null,
@@ -298,6 +325,7 @@
                 "font_family": "English",
                 "font_weight": "FontWeight.w400",
                 "image_shape": null,
+                "text_shadow": null,
                 "border_color": null,
                 "border_style": null,
                 "border_width": null,
@@ -335,6 +363,7 @@
                 "font_family": "English",
                 "font_weight": "FontWeight.w400",
                 "image_shape": null,
+                "text_shadow": null,
                 "border_color": null,
                 "border_style": null,
                 "border_width": null,
@@ -350,7 +379,7 @@
         }
     ],
     "language_settings": {
-        "current_language": "en-IN",
+        "current_language": "bn-IN",
         "default_language": {
             "code": "en",
             "name": "English",
