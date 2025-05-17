@@ -295,6 +295,25 @@ class EditorElement extends StatelessWidget {
             decoration: decorations.isEmpty
                 ? null
                 : TextDecoration.combine(decorations),
+            shadows: element.style.textShadow != null
+                ? [
+                    Shadow(
+                      color: Color(
+                        int.parse(
+                          (element.style.textShadow!['color'] ?? '#000000')
+                              .replaceFirst('#', '0xff'),
+                        ),
+                      ),
+                      offset: Offset(
+                        element.style.textShadow!['offsetX']?.toDouble() ?? 0.0,
+                        element.style.textShadow!['offsetY']?.toDouble() ?? 2.0,
+                      ),
+                      blurRadius:
+                          element.style.textShadow!['blurRadius']?.toDouble() ??
+                              4.0,
+                    ),
+                  ]
+                : null,
           ),
           textDirection: textDirection,
           textAlign: _parseTextAlign(element.style.textAlign),

@@ -291,14 +291,14 @@ class TemplateStyle {
   String? borderColor;
   double? borderWidth;
   double? borderRadius;
-  // New fields
   double opacity;
-  String? imageShape; // 'rectangle' or 'circle'
+  String? imageShape;
   bool isReadOnly;
+  Map<String, dynamic>? boxShadow;
+  String? textAlign;
+  // Add text shadow properties
   Map<String, dynamic>?
-      boxShadow; // Contains color, offsetX, offsetY, blurRadius, spreadRadius
-  // Added textAlign for text-based elements
-  String? textAlign; // 'left', 'center', 'right', 'justify'
+      textShadow; // Contains color, offsetX, offsetY, blurRadius
 
   TemplateStyle({
     required this.fontSizeVw,
@@ -317,7 +317,8 @@ class TemplateStyle {
     this.imageShape,
     this.isReadOnly = false,
     this.boxShadow,
-    this.textAlign, // new
+    this.textAlign,
+    this.textShadow, // new
   });
 
   factory TemplateStyle.fromJson(Map<String, dynamic> json) {
@@ -338,7 +339,8 @@ class TemplateStyle {
       imageShape: json['image_shape'],
       isReadOnly: json['is_read_only'] ?? false,
       boxShadow: json['box_shadow'],
-      textAlign: json['text_align'], // new
+      textAlign: json['text_align'],
+      textShadow: json['text_shadow'], // new
     );
   }
 
@@ -402,7 +404,8 @@ class TemplateStyle {
       'image_shape': imageShape,
       'is_read_only': isReadOnly,
       'box_shadow': boxShadow,
-      'text_align': textAlign, // new
+      'text_align': textAlign,
+      'text_shadow': textShadow, // new
     };
   }
 }
