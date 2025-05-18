@@ -30,6 +30,7 @@ enum TemplateElementTag {
   userName,
   userDesignation,
   userParty,
+  userAddress,
   leaderStrip,
   leader,
   facebookHandle,
@@ -57,6 +58,7 @@ enum TemplateElementTag {
           partySymbol,
           partyStrip,
           userName,
+          userAddress,
           userDesignation,
           userParty,
           facebookHandle,
@@ -90,6 +92,8 @@ enum TemplateElementTag {
         return 'User Picture';
       case TemplateElementTag.partySymbol:
         return 'Party Symbol';
+      case TemplateElementTag.userAddress:
+        return 'User Address';
       case TemplateElementTag.partyStrip:
         return 'Party Strip';
       case TemplateElementTag.leaderStrip:
@@ -127,6 +131,8 @@ enum TemplateElementTag {
         return 'Tertiery or more descriptive text';
       case TemplateElementTag.userPicture:
         return 'Picture of the user/candidate';
+      case TemplateElementTag.userAddress:
+        return 'Address of the user/candidate';
       case TemplateElementTag.partySymbol:
         return 'Political party symbol or logo';
       case TemplateElementTag.partyStrip:
