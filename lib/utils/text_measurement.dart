@@ -45,6 +45,8 @@ class TextMeasurement {
       fontWeight: element.style.fontWeight,
       fontStyle: element.style.isItalic ? FontStyle.italic : FontStyle.normal,
       decoration: element.style.isUnderlined ? TextDecoration.underline : null,
+      height: element
+          .style.lineHeight, // Add line height to measurement calculations
     );
 
     final textSpan = TextSpan(

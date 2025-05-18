@@ -295,6 +295,7 @@ class EditorElement extends StatelessWidget {
             decoration: decorations.isEmpty
                 ? null
                 : TextDecoration.combine(decorations),
+            height: element.style.lineHeight, // Apply line height from style
             shadows: element.style.textShadow != null
                 ? [
                     Shadow(

@@ -15,6 +15,7 @@ import '../widgets/property_controls/font_controls.dart';
 import '../widgets/property_controls/image_controls.dart';
 import '../widgets/property_controls/layer_control.dart';
 import '../widgets/property_controls/leader_controls.dart';
+import '../widgets/property_controls/line_height_control.dart';
 import '../widgets/property_controls/opacity_control.dart';
 import '../widgets/property_controls/position_control.dart';
 import '../widgets/property_controls/readonly_control.dart';
@@ -259,6 +260,10 @@ class PropertySidebar extends StatelessWidget {
               onUpdate: pushHistory,
             ),
             FontStyleControl(
+              element: element,
+              onUpdate: pushHistory,
+            ),
+            LineHeightControl(
               element: element,
               onUpdate: pushHistory,
             ),

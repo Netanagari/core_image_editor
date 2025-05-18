@@ -305,6 +305,7 @@ class TemplateStyle {
   // Add text shadow properties
   Map<String, dynamic>?
       textShadow; // Contains color, offsetX, offsetY, blurRadius
+  double lineHeight; // Add line height property
 
   TemplateStyle({
     required this.fontSizeVw,
@@ -325,6 +326,7 @@ class TemplateStyle {
     this.boxShadow,
     this.textAlign,
     this.textShadow, // new
+    this.lineHeight = 1.2, // Default line height
   });
 
   factory TemplateStyle.fromJson(Map<String, dynamic> json) {
@@ -347,6 +349,7 @@ class TemplateStyle {
       boxShadow: json['box_shadow'],
       textAlign: json['text_align'],
       textShadow: json['text_shadow'], // new
+      lineHeight: json['line_height']?.toDouble() ?? 1.2, // Default line height
     );
   }
 
@@ -398,6 +401,7 @@ class TemplateStyle {
       'color': color,
       'font_family': fontFamily,
       'font_weight': fontWeight.toString(),
+      'line_height': lineHeight,
       'is_italic': isItalic,
       'imageFit': imageFit.toString(),
       'is_underlined': isUnderlined,
@@ -412,6 +416,7 @@ class TemplateStyle {
       'box_shadow': boxShadow,
       'text_align': textAlign,
       'text_shadow': textShadow, // new
+      'line_height': lineHeight, // new
     };
   }
 }
