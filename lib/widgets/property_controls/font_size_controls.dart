@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/template_types.dart';
+import '../../state/editor_state.dart';
 import 'number_input.dart';
 
 class FontSizeControl extends StatelessWidget {
@@ -14,70 +16,65 @@ class FontSizeControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final editorState = context.watch<EditorState>();
+    // Use originalWidthValue from EditorState for consistent calculations
+    final double elementWidthPx = element.box.widthPx ??
+        (element.box.widthPercent / 100.0) * editorState.originalWidthValue;
+
+    // Calculate current font size in px for display
+    // Ensure elementWidthPx is not zero to avoid division by zero
+    final double currentFontSizePx = elementWidthPx > 0
+        ? (element.style.fontSizeVw / 100.0) * elementWidthPx
+        : 0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Font Size'),
+        const Text('Font Size', style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         // Row(
         //   children: [
         //     Expanded(
         //       child: NumberInput(
-        //         label: 'Size (vw)',
+        //         label: 'Size',
         //         value: element.style.fontSizeVw,
         //         onChanged: (value) {
         //           element.style.fontSizeVw = value;
         //           onUpdate();
         //         },
         //         min: 0.5,
-        //         max: 20,
+        //         max: 100, // Increased max for flexibility
         //         decimalPlaces: 1,
-        //         stepSize: 0.5,
+        //         stepSize: 0.1,
         //         suffix: 'vw',
         //       ),
         //     ),
         //   ],
         // ),
         // const SizedBox(height: 8),
-        // New: Font size in px input
         Row(
           children: [
             Expanded(
-              child: Builder(
-                builder: (context) {
-                  // Try to get the element width in px from the context
-                  double? elementWidthPx;
-                  final inherited =
-                      context.findAncestorWidgetOfExactType<Container>();
-                  if (inherited != null && inherited.constraints != null) {
-                    elementWidthPx = inherited.constraints!.maxWidth;
+              child: NumberInput(
+                label: 'Size (px)',
+                value: currentFontSizePx,
+                onChanged: (pxValue) {
+                  if (elementWidthPx > 0) {
+                    element.style.fontSizeVw =
+                        (pxValue / elementWidthPx) * 100.0;
+                    onUpdate();
                   }
-                  // Fallback: use 100vw as 100% width
-                  elementWidthPx ??= 1000;
-                  return TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Font Size (px)',
-                      suffixText: 'px',
-                    ),
-                    keyboardType: TextInputType.number,
-                    initialValue:
-                        ((element.style.fontSizeVw / 100) * elementWidthPx)
-                            .toStringAsFixed(0),
-                    onChanged: (value) {
-                      final px = double.tryParse(value);
-                      if (px != null && elementWidthPx! > 0) {
-                        element.style.fontSizeVw = (px / elementWidthPx) * 100;
-                        onUpdate();
-                      }
-                    },
-                  );
                 },
+                min: 1, // Minimum 1px
+                max: 1000, // Arbitrary large max
+                decimalPlaces: 0,
+                stepSize: 1,
+                suffix: 'px',
               ),
             ),
           ],
         ),
         const SizedBox(height: 8),
-        // Font size quick presets
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -95,12 +92,13 @@ class FontSizeControl extends StatelessWidget {
   }
 
   Widget _buildSizePresetButton(
-      BuildContext context, String label, double size) {
-    final isSelected = (element.style.fontSizeVw - size).abs() < 0.1;
+      BuildContext context, String label, double sizeVw) {
+    // Check against element.style.fontSizeVw for selection
+    final isSelected = (element.style.fontSizeVw - sizeVw).abs() < 0.01;
 
     return InkWell(
       onTap: () {
-        element.style.fontSizeVw = size;
+        element.style.fontSizeVw = sizeVw;
         onUpdate();
       },
       borderRadius: BorderRadius.circular(4),

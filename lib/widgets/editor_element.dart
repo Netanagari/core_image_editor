@@ -149,22 +149,25 @@ class EditorElement extends StatelessWidget {
                     element.box.xPercent = newX;
                     element.box.yPercent = newY;
 
-                    // Also update xPx/yPx if they are present
-                    if (element.box.xPx != null) {
-                      element.box.xPx = (newX / 100) * originalWidth;
-                    }
-                    if (element.box.yPx != null) {
-                      element.box.yPx = (newY / 100) * originalHeight;
-                    }
+                    // Always update xPx/yPx based on the new percentage values
+                    element.box.xPx = (newX / 100.0) * originalWidth;
+                    element.box.yPx = (newY / 100.0) * originalHeight;
 
-                    // Also update widthPx/heightPx if they are present
-                    if (element.box.widthPx != null) {
+                    // Width and height percentages (and their corresponding pixel values)
+                    // do not change during a pan/drag operation, so no need to update them here.
+                    // However, if they were null, they should be initialized based on current percentages
+                    // to ensure the JSON output is complete.
+                    // This is more robustly handled by ResizeHandle for size changes
+                    // and by the property controls when values are manually entered.
+                    // For consistency, let's ensure they are at least calculated if null,
+                    // but primary updates for size are via ResizeHandle.
+                    if (element.box.widthPx == null && originalWidth > 0) {
                       element.box.widthPx =
-                          (element.box.widthPercent / 100) * originalWidth;
+                          (element.box.widthPercent / 100.0) * originalWidth;
                     }
-                    if (element.box.heightPx != null) {
+                    if (element.box.heightPx == null && originalHeight > 0) {
                       element.box.heightPx =
-                          (element.box.heightPercent / 100) * originalHeight;
+                          (element.box.heightPercent / 100.0) * originalHeight;
                     }
 
                     editorState.updateElement(element);

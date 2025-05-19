@@ -2,6 +2,7 @@ import 'package:core_image_editor/models/editor_config.dart';
 import 'package:core_image_editor/widgets/property_controls/font_size_controls.dart';
 import 'package:core_image_editor/widgets/property_controls/group_selector.dart';
 import 'package:core_image_editor/widgets/property_controls/nested_content_controls.dart';
+import 'package:core_image_editor/widgets/property_controls/number_input.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/template_types.dart';
@@ -18,7 +19,6 @@ import '../widgets/property_controls/leader_controls.dart';
 import '../widgets/property_controls/line_height_control.dart';
 import '../widgets/property_controls/opacity_control.dart';
 import '../widgets/property_controls/position_control.dart';
-import '../widgets/property_controls/readonly_control.dart';
 import '../widgets/property_controls/shape_controls.dart';
 import '../widgets/property_controls/size_control.dart';
 import '../widgets/property_controls/tag_selector.dart';
@@ -111,6 +111,15 @@ class PropertySidebar extends StatelessWidget {
   Widget _buildControls(BuildContext context, TemplateElement element) {
     final editorState = context.read<EditorState>();
     final historyState = context.read<HistoryState>();
+    final originalWidth = editorState.originalWidthValue;
+    final originalHeight = editorState.originalHeightValue;
+    double currentHeightPercent = element.box.heightPercent;
+    double currentWidthPercent = element.box.widthPercent;
+
+    double currentHeightPx =
+        element.box.heightPx ?? (currentHeightPercent / 100.0) * originalHeight;
+    double currentWidthPx =
+        element.box.widthPx ?? (currentWidthPercent / 100.0) * originalWidth;
 
     void pushHistory() {
       historyState.pushState(editorState.elements, element);
@@ -154,66 +163,33 @@ class PropertySidebar extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Position (px)',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: element.box.xPx?.toString() ?? '',
-                      decoration: const InputDecoration(labelText: 'X (px)'),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        element.box.xPx = double.tryParse(value);
-                        pushHistory();
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: element.box.yPx?.toString() ?? '',
-                      decoration: const InputDecoration(labelText: 'Y (px)'),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        element.box.yPx = double.tryParse(value);
-                        pushHistory();
-                      },
-                    ),
-                  ),
-                ],
+              const Text('Size', style: TextStyle(fontWeight: FontWeight.bold)),
+              NumberInput(
+                label: 'Width',
+                value: currentWidthPx,
+                onChanged: (value) {
+                  element.box.widthPx = value;
+                  pushHistory();
+                },
+                min: 0,
+                max: originalWidth -
+                    (element.box.widthPercent / 100.0 * originalWidth),
+                suffix: 'px',
+                decimalPlaces: 0,
               ),
               const SizedBox(height: 8),
-              const Text('Size (px)',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: element.box.widthPx?.toString() ?? '',
-                      decoration:
-                          const InputDecoration(labelText: 'Width (px)'),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        element.box.widthPx = double.tryParse(value);
-                        pushHistory();
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: element.box.heightPx?.toString() ?? '',
-                      decoration:
-                          const InputDecoration(labelText: 'Height (px)'),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        element.box.heightPx = double.tryParse(value);
-                        pushHistory();
-                      },
-                    ),
-                  ),
-                ],
+              NumberInput(
+                label: 'Height',
+                value: currentHeightPx,
+                onChanged: (value) {
+                  element.box.heightPx = value;
+                  pushHistory();
+                },
+                min: 0,
+                max: originalHeight -
+                    (element.box.heightPercent / 100.0 * originalHeight),
+                suffix: 'px',
+                decimalPlaces: 0,
               ),
             ],
           ),
@@ -239,39 +215,41 @@ class PropertySidebar extends StatelessWidget {
           element: element,
           onUpdate: pushHistory,
         ),
-        // ReadOnlyControl(
-        //   element: element,
-        //   onUpdate: pushHistory,
-        // ),
-        const SectionTitle(title: 'Text Style'),
         if (element.type == 'text') ...[
-          FontSizeControl(
-            element: element,
-            onUpdate: pushHistory,
+          KeyedSubtree(
+            key: ValueKey(element),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SectionTitle(title: 'Text Style'),
+                FontSizeControl(
+                  element: element,
+                  onUpdate: pushHistory,
+                ),
+                FontFamilyControl(
+                  element: element,
+                  availableFonts: editorState.configuration.availableFonts,
+                  onUpdate: pushHistory,
+                ),
+                FontWeightControl(
+                  element: element,
+                  onUpdate: pushHistory,
+                ),
+                FontStyleControl(
+                  element: element,
+                  onUpdate: pushHistory,
+                ),
+                LineHeightControl(
+                  element: element,
+                  onUpdate: pushHistory,
+                ),
+                TextShadowControl(
+                  element: element,
+                  onUpdate: pushHistory,
+                ),
+              ],
+            ),
           ),
-          if (editorState.configuration.can(EditorCapability.changeFonts)) ...[
-            FontFamilyControl(
-              element: element,
-              availableFonts: editorState.configuration.availableFonts,
-              onUpdate: pushHistory,
-            ),
-            FontWeightControl(
-              element: element,
-              onUpdate: pushHistory,
-            ),
-            FontStyleControl(
-              element: element,
-              onUpdate: pushHistory,
-            ),
-            LineHeightControl(
-              element: element,
-              onUpdate: pushHistory,
-            ),
-            TextShadowControl(
-              element: element,
-              onUpdate: pushHistory,
-            ),
-          ],
           if (editorState.configuration.can(EditorCapability.changeColors))
             NColorPicker(
               label: 'Color',

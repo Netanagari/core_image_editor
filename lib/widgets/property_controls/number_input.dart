@@ -139,12 +139,16 @@ class _NumberInputState extends State<NumberInput> {
                       ),
                       suffixText: widget.suffix,
                     ),
-                    onChanged: (text) {
-                      // Allow live typing but don't update state until focus is lost
-                      if (text.isEmpty) return;
-                      if (text == '-' || text == '.') return;
-                      _validateAndUpdateValue(text);
-                    },
+                    // onChanged: (text) {
+                    //   // Allow live typing but don't update state until focus is lost
+                    //   // if (text.isEmpty) return;
+                    //   // if (text == '-' || text == '.') return;
+                    //   // _validateAndUpdateValue(text); // This was causing focus loss
+                    // },
+                    // The value will be updated on focus loss via _onFocusChange
+                    // or on submit if onFieldSubmitted were used.
+                    onFieldSubmitted:
+                        _validateAndUpdateValue, // Update on submit (e.g. Enter key)
                   ),
                 ),
                 const SizedBox(width: 8),

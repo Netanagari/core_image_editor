@@ -31,10 +31,14 @@ class _ResizeHandleState extends State<ResizeHandle>
   late Animation<double> _scaleAnimation;
   bool _isHovered = false;
   Offset? dragStart;
-  double? initialWidth;
-  double? initialHeight;
-  double? initialX;
-  double? initialY;
+  double? initialWidth; // in percent
+  double? initialHeight; // in percent
+  double? initialX; // in percent
+  double? initialY; // in percent
+
+  // For maintaining font size in pixels during resize
+  double? dragStartFontSizeVw;
+  double? dragStartElementWidthPxForFont;
 
   @override
   void initState() {
@@ -60,6 +64,18 @@ class _ResizeHandleState extends State<ResizeHandle>
     initialHeight = widget.element.box.heightPercent;
     initialX = widget.element.box.xPercent;
     initialY = widget.element.box.yPercent;
+
+    if (widget.element.type == 'text') {
+      dragStartFontSizeVw = widget.element.style.fontSizeVw;
+      final editorState = context.read<EditorState>();
+      // Calculate the element's width in original pixels at the start of the drag
+      dragStartElementWidthPxForFont = widget.element.box.widthPx ??
+          (widget.element.box.widthPercent / 100.0) *
+              editorState.originalWidthValue;
+    } else {
+      dragStartFontSizeVw = null;
+      dragStartElementWidthPxForFont = null;
+    }
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
@@ -94,17 +110,35 @@ class _ResizeHandleState extends State<ResizeHandle>
       // Apply constraints
       _applyConstraints();
 
-      // Update widthPx/heightPx if present
+      // Always update pixel values based on the new percentage values
       final editorState = context.read<EditorState>();
       final originalWidth = editorState.originalWidthValue;
       final originalHeight = editorState.originalHeightValue;
-      if (widget.element.box.widthPx != null) {
-        widget.element.box.widthPx =
-            (widget.element.box.widthPercent / 100) * originalWidth;
-      }
-      if (widget.element.box.heightPx != null) {
-        widget.element.box.heightPx =
-            (widget.element.box.heightPercent / 100) * originalHeight;
+
+      widget.element.box.xPx =
+          (widget.element.box.xPercent / 100.0) * originalWidth;
+      widget.element.box.yPx =
+          (widget.element.box.yPercent / 100.0) * originalHeight;
+      widget.element.box.widthPx =
+          (widget.element.box.widthPercent / 100.0) * originalWidth;
+      widget.element.box.heightPx =
+          (widget.element.box.heightPercent / 100.0) * originalHeight;
+
+      // If it's a text element, adjust fontSizeVw to try and maintain the pixel font size from drag start
+      if (widget.element.type == 'text' &&
+          dragStartFontSizeVw != null &&
+          dragStartElementWidthPxForFont != null &&
+          dragStartElementWidthPxForFont! > 0) {
+        final currentActualPixelWidth =
+            widget.element.box.widthPx!; // This is the new width
+        if (currentActualPixelWidth > 0) {
+          // Calculate the font size in pixels that we want to maintain (based on drag start state)
+          double targetFontSizePx =
+              (dragStartFontSizeVw! / 100.0) * dragStartElementWidthPxForFont!;
+          // Calculate the new fontSizeVw needed to achieve targetFontSizePx with the new currentActualPixelWidth
+          widget.element.style.fontSizeVw =
+              (targetFontSizePx / currentActualPixelWidth) * 100.0;
+        }
       }
 
       widget.onUpdate();
