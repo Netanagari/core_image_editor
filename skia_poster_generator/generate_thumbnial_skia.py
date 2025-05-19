@@ -376,41 +376,105 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
             max_height = el_height
             max_width = el_width
             final_lines = []
-            while current_font_size_px > 1:
+
+            # Get the line_height multiplier from style, if available
+            json_line_height_multiplier = style.get('line_height')
+            use_custom_line_height = isinstance(json_line_height_multiplier, (int, float)) and json_line_height_multiplier > 0
+            
+            line_height_for_fit_check = 0 # Will be set inside the loop
+
+            while current_font_size_px >= 1.0: # Loop down to 1px
                 temp_font = skia.Font(typeface, current_font_size_px)
                 temp_font.setEdging(skia.Font.Edging.kAntiAlias)
                 temp_font.setSubpixel(True)
-                wrapped_lines = []
+                
+                wrapped_lines_for_current_size = []
                 for para in text_to_render.split('\n'):
-                    wrapped_lines.extend(wrap_text(para, temp_font, max_width))
-                # Calculate total height
-                font_metrics = temp_font.getMetrics()
-                line_height = font_metrics.fDescent - font_metrics.fAscent + font_metrics.fLeading
-                total_height = line_height * len(wrapped_lines)
-                if total_height <= max_height:
-                    final_lines = wrapped_lines
+                    wrapped_lines_for_current_size.extend(wrap_text(para, temp_font, max_width))
+                
+                # If text is empty, wrapped_lines_for_current_size will be empty.
+                # If text is not empty but no lines could be formed (e.g. max_width too small for any char),
+                # wrap_text might return empty or lines that are too wide.
+                # We assume wrap_text returns something if text_to_render is not empty.
+
+                if not wrapped_lines_for_current_size and text_to_render:
+                    # This case implies that even at current_font_size_px, wrap_text couldn't form lines
+                    # (e.g., max_width is excessively small). We should probably stop or handle.
+                    # For now, if it results in zero lines, the total_height will be zero.
+                    pass
+
+                font_metrics_for_current_size = temp_font.getMetrics()
+                if use_custom_line_height:
+                    line_height_for_fit_check = json_line_height_multiplier * current_font_size_px
+                else:
+                    line_height_for_fit_check = font_metrics_for_current_size.fDescent - font_metrics_for_current_size.fAscent + font_metrics_for_current_size.fLeading
+                
+                # Ensure line_height_for_fit_check is not zero if there are lines, to prevent infinite loops or division by zero.
+                if len(wrapped_lines_for_current_size) > 0 and line_height_for_fit_check <= 0:
+                    line_height_for_fit_check = current_font_size_px # Fallback to font size itself as line height
+
+                total_height_for_current_size = line_height_for_fit_check * len(wrapped_lines_for_current_size)
+                
+                # Break if it fits, or if it's the smallest font size and we have some lines
+                if total_height_for_current_size <= max_height and len(wrapped_lines_for_current_size) > 0:
+                    final_lines = wrapped_lines_for_current_size
+                    break 
+                
+                if current_font_size_px <= 1.0 and len(wrapped_lines_for_current_size) > 0: # Smallest font size, take what we have
+                    final_lines = wrapped_lines_for_current_size
                     break
+
+                if current_font_size_px <= 1.0: # Reached smallest font size and still no fit or no lines
+                    if not final_lines and text_to_render: # If text exists but couldn't be wrapped at 1px
+                         # Attempt to wrap at 1px one last time, even if it might exceed height
+                        final_lines = wrapped_lines_for_current_size if wrapped_lines_for_current_size else []
+                    break # Exit loop
+
                 current_font_size_px -= 1
-            else:
-                # If nothing fits, use at least one line
-                temp_font = skia.Font(typeface, 1)
-                temp_font.setEdging(skia.Font.Edging.kAntiAlias)
-                temp_font.setSubpixel(True)
-                final_lines = wrap_text(text_to_render, temp_font, max_width)
-                line_height = temp_font.getMetrics().fDescent - temp_font.getMetrics().fAscent + temp_font.getMetrics().fLeading
+            # --- End of Word Wrapping ---
+
+            # If after the loop, final_lines is still empty but text_to_render was not,
+            # it means even at 1px, it couldn't be wrapped (e.g. max_width too small).
+            # We'll proceed with empty final_lines, resulting in no text drawn.
+            if not final_lines and text_to_render and current_font_size_px < 1.0: # Safety net if loop exited due to font size < 1
+                current_font_size_px = 1.0 # Reset to 1px for final font
+                temp_font_fallback = skia.Font(typeface, current_font_size_px)
+                temp_font_fallback.setEdging(skia.Font.Edging.kAntiAlias)
+                temp_font_fallback.setSubpixel(True)
+                final_lines = [] # Recalculate for 1px
+                for para in text_to_render.split('\n'):
+                    final_lines.extend(wrap_text(para, temp_font_fallback, max_width))
+
 
             final_font = skia.Font(typeface, current_font_size_px)
             final_font.setEdging(skia.Font.Edging.kAntiAlias)
             final_font.setSubpixel(True)
             text_paint = skia.Paint(AntiAlias=True, Color=hex_to_skia_color(font_color_str, opacity))
 
-            # Calculate total text block height for vertical centering
             font_metrics = final_font.getMetrics()
-            line_height = font_metrics.fDescent - font_metrics.fAscent + font_metrics.fLeading
-            total_text_height = line_height * len(final_lines)
+            
+            final_render_line_height = 0
+            if use_custom_line_height:
+                final_render_line_height = json_line_height_multiplier * current_font_size_px
+            else:
+                final_render_line_height = font_metrics.fDescent - font_metrics.fAscent + font_metrics.fLeading
+
+            # Ensure line height is positive if there are lines to draw
+            if len(final_lines) > 0 and final_render_line_height <= 0:
+                final_render_line_height = current_font_size_px # Fallback
+
+            if not final_lines:
+                total_text_height = 0
+            else:
+                total_text_height = final_render_line_height * len(final_lines)
+                total_text_height = max(0, total_text_height)
+
             y_cursor = (el_height - total_text_height) / 2 - font_metrics.fAscent
 
-            print(f"[DEBUG] Final font size px: {current_font_size_px}, lines: {len(final_lines)}, line_height: {line_height}, total_text_height: {total_text_height}")
+            print(f"[DEBUG] Final font size px: {current_font_size_px}, lines: {len(final_lines)}, line_height: {final_render_line_height}, total_text_height: {total_text_height}")
+            
+            if not final_lines and text_to_render:
+                 print(f"[WARNING] Text '{text_to_render}' could not be wrapped into lines for the given constraints.")
 
             for line_text in final_lines:
                 line_width = final_font.measureText(line_text)
@@ -419,27 +483,23 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
                     x_text_offset = (el_width - line_width) / 2
                 elif text_align_style == 'right':
                     x_text_offset = el_width - line_width
-                # Default is left
+                
                 print(f"[DEBUG] Drawing text line: '{line_text}', x: {x_text_offset}, y: {y_cursor}, width: {line_width}")
-                # Handle text shadow if specified
                 if 'text_shadow' in style:
                     shadow_paint, shadow_x, shadow_y = apply_shadow_paint(canvas, text_paint, style['text_shadow'])
-                    # Draw text shadow
                     canvas.drawString(line_text, x_text_offset + shadow_x, y_cursor + shadow_y, final_font, shadow_paint)
                 
-                # Draw main text
                 canvas.drawString(line_text, x_text_offset, y_cursor, final_font, text_paint)
                 
-                # Underline
                 if is_underlined:
-                    underline_y = y_cursor + font_metrics.fDescent * 0.8
-                    # Draw underline shadow if text shadow is enabled
+                    underline_y = y_cursor + font_metrics.fDescent * 0.8 
                     if 'text_shadow' in style:
+                        # shadow_paint, shadow_x, shadow_y should be defined from above
                         canvas.drawLine(x_text_offset + shadow_x, underline_y + shadow_y, 
                                    x_text_offset + line_width + shadow_x, underline_y + shadow_y, shadow_paint)
-                    # Draw main underline
                     canvas.drawLine(x_text_offset, underline_y, x_text_offset + line_width, underline_y, text_paint)
-                y_cursor += line_height
+                
+                y_cursor += final_render_line_height
 
     canvas.restore()
 
