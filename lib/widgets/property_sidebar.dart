@@ -172,8 +172,6 @@ class PropertySidebar extends StatelessWidget {
                   pushHistory();
                 },
                 min: 0,
-                max: originalWidth -
-                    (element.box.widthPercent / 100.0 * originalWidth),
                 suffix: 'px',
                 decimalPlaces: 0,
               ),
@@ -186,8 +184,6 @@ class PropertySidebar extends StatelessWidget {
                   pushHistory();
                 },
                 min: 0,
-                max: originalHeight -
-                    (element.box.heightPercent / 100.0 * originalHeight),
                 suffix: 'px',
                 decimalPlaces: 0,
               ),
