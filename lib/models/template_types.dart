@@ -41,7 +41,6 @@ enum TemplateElementTag {
   // Static method to get tags that should be hidden from UI
   static List<TemplateElementTag> get hiddenTags => [
         TemplateElementTag.leader,
-        TemplateElementTag.partySymbol,
         TemplateElementTag.defaulty,
       ];
 
