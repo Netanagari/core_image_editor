@@ -25,6 +25,7 @@ import '../widgets/property_controls/tag_selector.dart';
 import '../widgets/property_controls/text_content_control.dart';
 import '../widgets/property_controls/text_align_control.dart';
 import '../widgets/property_controls/text_shadow_control.dart';
+import '../widgets/property_controls/text_vertical_align_control.dart';
 
 class PropertySidebar extends StatelessWidget {
   final Future<String> Function(BuildContext) onSelectImage;
@@ -255,11 +256,16 @@ class PropertySidebar extends StatelessWidget {
                 pushHistory();
               },
             ),
-          if (editorState.configuration.can(EditorCapability.changeAlignment))
+          if (editorState.configuration.can(EditorCapability.changeAlignment)) ...[  
             TextAlignControl(
               element: element,
               onUpdate: pushHistory,
             ),
+            TextVerticalAlignControl(
+              element: element,
+              onUpdate: pushHistory,
+            ),
+          ],
           if (editorState.configuration.can(EditorCapability.changeTextContent))
             TextContentControl(
               element: element,

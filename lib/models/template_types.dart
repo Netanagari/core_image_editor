@@ -301,6 +301,7 @@ class TemplateStyle {
   bool isReadOnly;
   Map<String, dynamic>? boxShadow;
   String? textAlign;
+  String? textVerticalAlign; // Add vertical alignment property
   // Add text shadow properties
   Map<String, dynamic>?
       textShadow; // Contains color, offsetX, offsetY, blurRadius
@@ -324,6 +325,7 @@ class TemplateStyle {
     this.isReadOnly = false,
     this.boxShadow,
     this.textAlign,
+    this.textVerticalAlign = 'center',
     this.textShadow, // new
     this.lineHeight = 1.2, // Default line height
   });
@@ -347,6 +349,7 @@ class TemplateStyle {
       isReadOnly: json['is_read_only'] ?? false,
       boxShadow: json['box_shadow'],
       textAlign: json['text_align'],
+      textVerticalAlign: json['text_vertical_align'] ?? 'center',
       textShadow: json['text_shadow'], // new
       lineHeight: json['line_height']?.toDouble() ?? 1.2, // Default line height
     );
@@ -414,6 +417,7 @@ class TemplateStyle {
       'is_read_only': isReadOnly,
       'box_shadow': boxShadow,
       'text_align': textAlign,
+      'text_vertical_align': textVerticalAlign,
       'text_shadow': textShadow, // new
       'line_height': lineHeight, // new
     };

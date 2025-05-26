@@ -101,11 +101,7 @@ class EditorElement extends StatelessWidget {
               ),
             Positioned.fill(
               child: Align(
-                alignment: element.box.alignment == 'center'
-                    ? Alignment.center
-                    : element.box.alignment == 'right'
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
+                alignment: _getElementAlignment(element),
                 child:
                     _buildElementContent(context, element, Size(width, height)),
               ),
@@ -531,5 +527,31 @@ class EditorElement extends StatelessWidget {
       default:
         return TextAlign.left;
     }
+  }
+
+  // Helper to get the alignment based on horizontal and vertical alignment settings
+  Alignment _getElementAlignment(TemplateElement element) {
+    // Get horizontal and vertical alignment values
+    String horizontalAlign = element.box.alignment;
+    String verticalAlign = element.style.textVerticalAlign ?? 'center';
+
+    // Map combinations to specific alignments
+    if (horizontalAlign == 'center') {
+      if (verticalAlign == 'center') return Alignment.center;
+      if (verticalAlign == 'top') return Alignment.topCenter;
+      if (verticalAlign == 'bottom') return Alignment.bottomCenter;
+    } else if (horizontalAlign == 'right') {
+      if (verticalAlign == 'center') return Alignment.centerRight;
+      if (verticalAlign == 'top') return Alignment.topRight;
+      if (verticalAlign == 'bottom') return Alignment.bottomRight;
+    } else {
+      // left
+      if (verticalAlign == 'center') return Alignment.centerLeft;
+      if (verticalAlign == 'top') return Alignment.topLeft;
+      if (verticalAlign == 'bottom') return Alignment.bottomLeft;
+    }
+
+    // Default fallback
+    return Alignment.topLeft;
   }
 }
