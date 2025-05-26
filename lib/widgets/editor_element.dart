@@ -320,7 +320,7 @@ class EditorElement extends StatelessWidget {
                 : null,
           ),
           textDirection: textDirection,
-          textAlign: element.style.textAlignment,
+          textAlign: _parseTextAlign(element.style.textAlign),
         );
         break;
     }
