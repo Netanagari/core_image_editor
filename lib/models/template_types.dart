@@ -414,9 +414,20 @@ class TemplateStyle {
       'is_read_only': isReadOnly,
       'box_shadow': boxShadow,
       'text_align': textAlign,
-      'text_shadow': textShadow, // new
-      'line_height': lineHeight, // new
+      'text_shadow': textShadow,
     };
+  }
+
+  TextAlign get textAlignment {
+    switch (textAlign) {
+      case 'center':
+        return TextAlign.center;
+      case 'right':
+        return TextAlign.right;
+      case 'left':
+      default:
+        return TextAlign.left;
+    }
   }
 }
 
