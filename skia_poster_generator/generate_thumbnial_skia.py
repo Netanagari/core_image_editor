@@ -337,7 +337,8 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
             is_underlined = style.get('is_underlined', False)
             text_align_style = style.get('text_align') # Can be None
 
-            initial_font_size_px = max(1.0, (font_size_vw / 100.0) * parent_canvas_width)
+            # Calculate font size based on the element's own width, matching Flutter implementation
+            initial_font_size_px = max(1.0, (font_size_vw / 100.0) * el_width)
             skia_font_weight = get_skia_font_weight(font_weight_str)
             skia_font_slant = skia.FontStyle.kItalic_Slant if is_italic else skia.FontStyle.kUpright_Slant
             skia_font_style = skia.FontStyle(skia_font_weight, skia.FontStyle.kNormal_Width, skia_font_slant)
@@ -371,80 +372,28 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
                     lines.append(current_line)
                 return lines
 
-            # Start with initial font size, wrap, then reduce if needed
+            # Word wrapping without font size scaling (use specified font size directly)
             current_font_size_px = initial_font_size_px
-            max_height = el_height
             max_width = el_width
             final_lines = []
 
             # Get the line_height multiplier from style, if available
             json_line_height_multiplier = style.get('line_height')
             use_custom_line_height = isinstance(json_line_height_multiplier, (int, float)) and json_line_height_multiplier > 0
-            
-            line_height_for_fit_check = 0 # Will be set inside the loop
 
-            while current_font_size_px >= 1.0: # Loop down to 1px
-                temp_font = skia.Font(typeface, current_font_size_px)
-                temp_font.setEdging(skia.Font.Edging.kAntiAlias)
-                temp_font.setSubpixel(True)
-                
-                wrapped_lines_for_current_size = []
-                for para in text_to_render.split('\n'):
-                    wrapped_lines_for_current_size.extend(wrap_text(para, temp_font, max_width))
-                
-                # If text is empty, wrapped_lines_for_current_size will be empty.
-                # If text is not empty but no lines could be formed (e.g. max_width too small for any char),
-                # wrap_text might return empty or lines that are too wide.
-                # We assume wrap_text returns something if text_to_render is not empty.
+            temp_font = skia.Font(typeface, current_font_size_px)
+            temp_font.setEdging(skia.Font.Edging.kAntiAlias)
+            temp_font.setSubpixel(True)
 
-                if not wrapped_lines_for_current_size and text_to_render:
-                    # This case implies that even at current_font_size_px, wrap_text couldn't form lines
-                    # (e.g., max_width is excessively small). We should probably stop or handle.
-                    # For now, if it results in zero lines, the total_height will be zero.
-                    pass
+            # Wrap text for each paragraph without adjusting font size
+            for para in text_to_render.split('\n'):
+                final_lines.extend(wrap_text(para, temp_font, max_width))
 
-                font_metrics_for_current_size = temp_font.getMetrics()
-                if use_custom_line_height:
-                    line_height_for_fit_check = json_line_height_multiplier * current_font_size_px
-                else:
-                    line_height_for_fit_check = font_metrics_for_current_size.fDescent - font_metrics_for_current_size.fAscent + font_metrics_for_current_size.fLeading
-                
-                # Ensure line_height_for_fit_check is not zero if there are lines, to prevent infinite loops or division by zero.
-                if len(wrapped_lines_for_current_size) > 0 and line_height_for_fit_check <= 0:
-                    line_height_for_fit_check = current_font_size_px # Fallback to font size itself as line height
+            # Fallback: if wrapping produced no lines but text exists, keep the raw text as a single line
+            if not final_lines and text_to_render:
+                final_lines = [text_to_render]
 
-                total_height_for_current_size = line_height_for_fit_check * len(wrapped_lines_for_current_size)
-                
-                # Break if it fits, or if it's the smallest font size and we have some lines
-                if total_height_for_current_size <= max_height and len(wrapped_lines_for_current_size) > 0:
-                    final_lines = wrapped_lines_for_current_size
-                    break 
-                
-                if current_font_size_px <= 1.0 and len(wrapped_lines_for_current_size) > 0: # Smallest font size, take what we have
-                    final_lines = wrapped_lines_for_current_size
-                    break
-
-                if current_font_size_px <= 1.0: # Reached smallest font size and still no fit or no lines
-                    if not final_lines and text_to_render: # If text exists but couldn't be wrapped at 1px
-                         # Attempt to wrap at 1px one last time, even if it might exceed height
-                        final_lines = wrapped_lines_for_current_size if wrapped_lines_for_current_size else []
-                    break # Exit loop
-
-                current_font_size_px -= 1
             # --- End of Word Wrapping ---
-
-            # If after the loop, final_lines is still empty but text_to_render was not,
-            # it means even at 1px, it couldn't be wrapped (e.g. max_width too small).
-            # We'll proceed with empty final_lines, resulting in no text drawn.
-            if not final_lines and text_to_render and current_font_size_px < 1.0: # Safety net if loop exited due to font size < 1
-                current_font_size_px = 1.0 # Reset to 1px for final font
-                temp_font_fallback = skia.Font(typeface, current_font_size_px)
-                temp_font_fallback.setEdging(skia.Font.Edging.kAntiAlias)
-                temp_font_fallback.setSubpixel(True)
-                final_lines = [] # Recalculate for 1px
-                for para in text_to_render.split('\n'):
-                    final_lines.extend(wrap_text(para, temp_font_fallback, max_width))
-
 
             final_font = skia.Font(typeface, current_font_size_px)
             final_font.setEdging(skia.Font.Edging.kAntiAlias)
