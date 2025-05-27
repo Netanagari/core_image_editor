@@ -1,57 +1,90 @@
-[
+{
+  "content_json": [
     {
-      "type": "image",
       "box": {
+        "x_px": 0,
+        "y_px": 0,
+        "rotation": 0,
+        "width_px": 1080,
+        "alignment": "center",
+        "height_px": 1080,
         "x_percent": 0,
         "y_percent": 0,
         "width_percent": 100,
-        "height_percent": 100,
-        "alignment": "center",
-        "rotation": 0
+        "height_percent": 100
       },
-      "content": {
-        "url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549917602"
-      },
+      "tag": "TemplateElementTag.background",
+      "type": "image",
+      "group": null,
       "style": {
-        "font_size": 0,
         "color": "#000000",
-        "font_family": "English",
-        "font_weight": "FontWeight.w400",
-        "line_height": 1.2,
-        "is_italic": false,
+        "opacity": 0.8,
         "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null,
-        "border_radius": null,
-        "opacity": 0.25,
-        "image_shape": null,
-        "is_read_only": false,
+        "font_size": 0,
+        "is_italic": false,
         "box_shadow": null,
         "text_align": null,
-        "text_vertical_align": "center",
-        "text_shadow": null
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "line_height": 1.2,
+        "text_shadow": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "url": "https://netanagri-bucket.s3.amazonaws.com/assets/backgrounds/bjp.png"
       },
       "z_index": 0,
-      "tag": "TemplateElementTag.background",
-      "nested_content": null,
-      "group": null
+      "nested_content": null
     },
     {
-      "type": "shape",
       "box": {
-        "x_percent": 26.3388327383154,
-        "y_percent": 10.270695493342368,
-        "width_percent": 47.83266415505989,
-        "height_percent": 46.718507027803554,
-        "x_px": 315,
-        "y_px": 151,
-        "width_px": 450,
-        "height_px": 450,
+        "x_px": 502.8211414593461,
+        "y_px": 181,
+        "rotation": 0,
+        "width_px": 495,
         "alignment": "center",
-        "rotation": 0
+        "height_px": 495,
+        "x_percent": 46.5575130980876,
+        "y_percent": 16.75925925925926,
+        "width_percent": 45.7876666428041,
+        "height_percent": 44.36676768972606
+      },
+      "tag": "TemplateElementTag.keyVisual",
+      "type": "shape",
+      "group": null,
+      "style": {
+        "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 0,
+        "is_italic": false,
+        "box_shadow": {
+          "color": "#ffffff",
+          "offsetX": 0,
+          "offsetY": 0,
+          "blurRadius": 0,
+          "spreadRadius": 1
+        },
+        "text_align": null,
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "line_height": 1.2,
+        "text_shadow": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
       },
       "content": {
         "url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549919078",
@@ -61,328 +94,786 @@
         "strokeWidth": 2,
         "isStrokeDashed": false
       },
-      "style": {
-        "font_size": 0,
-        "color": "#000000",
-        "font_family": "English",
-        "font_weight": "FontWeight.w400",
-        "line_height": 1.2,
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null,
-        "border_radius": null,
-        "opacity": 1,
-        "image_shape": null,
-        "is_read_only": false,
-        "box_shadow": {
-          "color": "#000000",
-          "offsetX": 0,
-          "offsetY": 8,
-          "blurRadius": 9,
-          "spreadRadius": 0
-        },
-        "text_align": null,
-        "text_vertical_align": "center",
-        "text_shadow": null
-      },
       "z_index": 0,
-      "tag": "TemplateElementTag.keyVisual",
       "nested_content": {
         "content": {
-          "type": "image",
           "box": {
+            "rotation": 0,
+            "alignment": "center",
             "x_percent": 0,
             "y_percent": 0,
             "width_percent": 100,
-            "height_percent": 100,
-            "alignment": "center",
-            "rotation": 0
+            "height_percent": 100
           },
-          "content": {
-            "url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1746549919078"
-          },
+          "tag": "TemplateElementTag.defaulty",
+          "type": "image",
+          "group": null,
           "style": {
-            "font_size": 0,
             "color": "#000000",
-            "font_family": "English",
-            "font_weight": "FontWeight.w400",
-            "line_height": 1.2,
-            "is_italic": false,
-            "imageFit": "BoxFit.cover",
-            "is_underlined": false,
-            "decorations": null,
-            "border_style": null,
-            "border_color": null,
-            "border_width": null,
-            "border_radius": null,
             "opacity": 1,
-            "image_shape": null,
-            "is_read_only": false,
+            "imageFit": "BoxFit.cover",
+            "font_size": 0,
+            "is_italic": false,
             "box_shadow": null,
             "text_align": null,
-            "text_vertical_align": "center",
-            "text_shadow": null
+            "decorations": null,
+            "font_family": "Lohit-Bengali",
+            "font_weight": "FontWeight.w400",
+            "image_shape": null,
+            "line_height": 1.2,
+            "text_shadow": null,
+            "border_color": null,
+            "border_style": null,
+            "border_width": null,
+            "is_read_only": false,
+            "border_radius": null,
+            "is_underlined": false
+          },
+          "content": {
+            "url": "https://netanagri-bucket.s3.amazonaws.com/assets/key_visuals/53/kv f_01523_.png"
           },
           "z_index": 0,
-          "tag": "TemplateElementTag.defaulty",
-          "nested_content": null,
-          "group": null
+          "nested_content": null
         },
         "contentFit": "BoxFit.fill",
         "contentAlignment": "Alignment.center"
-      },
-      "group": null
+      }
     },
     {
-      "type": "text",
       "box": {
-        "x_percent": 10.515334894853924,
-        "y_percent": 66.08904995590017,
-        "width_percent": 80,
-        "height_percent": 10,
-        "y_px": 717,
+        "x_px": 43.07506681703997,
+        "y_px": 421,
+        "rotation": 0,
+        "width_px": 443,
         "alignment": "center",
-        "rotation": 0
+        "height_px": 223,
+        "x_percent": 3.988432112688886,
+        "y_percent": 38.98148148148148,
+        "width_percent": 41.34968353615715,
+        "height_percent": 20.618509120028843
       },
-      "content": {
-        "bn-IN": {
-          "text": " তাঁর জন্মদিনে শ্রদ্ধাঞ্জলি"
-        },
-        "en-IN": {
-          "text": " Paying Tribute on His Birth Anniversary"
-        },
-        "hi-IN": {
-          "text": " उनकी जयंती पर श्रद्धांजलि"
-        }
-      },
-      "style": {
-        "font_size": 5,
-        "color": "#ffffff",
-        "font_family": "English",
-        "font_weight": "FontWeight.w400",
-        "line_height": 1.2,
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null,
-        "border_radius": null,
-        "opacity": 1,
-        "image_shape": null,
-        "is_read_only": false,
-        "box_shadow": null,
-        "text_align": "center",
-        "text_vertical_align": "center",
-        "text_shadow": {
-          "color": "#000000",
-          "offsetX": 0,
-          "offsetY": 2,
-          "blurRadius": 4
-        }
-      },
-      "z_index": 0,
       "tag": "TemplateElementTag.subheading",
-      "nested_content": null,
-      "group": null
-    },
-    {
       "type": "text",
-      "box": {
-        "x_percent": 14.46419973391714,
-        "y_percent": 58.16192805512499,
-        "width_percent": 72.26035466269842,
-        "height_percent": 9.6515376984127,
-        "x_px": 156.21335712630508,
-        "y_px": 628.14882299535,
-        "width_px": 780.411830357143,
-        "height_px": 104.23660714285715,
-        "alignment": "center",
-        "rotation": 0
-      },
-      "content": {
-        "bn-IN": {
-          "text": "কেশব বলিরাম হেডগেওয়ার "
-        },
-        "en-IN": {
-          "text": "Keshav Baliram Hedgewar "
-        },
-        "hi-IN": {
-          "text": "केशव बलिराम हेडगेवार "
-        }
-      },
+      "group": null,
       "style": {
-        "font_size": 8.264867021618908,
         "color": "#ffffff",
-        "font_family": "English",
-        "font_weight": "FontWeight.w400",
-        "line_height": 1.25,
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null,
-        "border_radius": null,
         "opacity": 1,
-        "image_shape": null,
-        "is_read_only": false,
+        "imageFit": "BoxFit.contain",
+        "font_size": 4,
+        "is_italic": false,
         "box_shadow": null,
         "text_align": "center",
-        "text_vertical_align": "bottom",
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w600",
+        "image_shape": null,
+        "line_height": 1.2,
         "text_shadow": {
           "color": "#000000",
           "offsetX": 0,
           "offsetY": 2,
           "blurRadius": 4
+        },
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "bn-IN": {
+          "text": " শুভ জন্মদিন"
+        },
+        "en-IN": {
+          "text": "  Best wishes on his Birthday"
+        },
+        "hi-IN": {
+          "text": " जन्मदिन की हार्दिक शुभकामनाएं"
         }
       },
       "z_index": 0,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 43.47933784534776,
+        "y_px": 195,
+        "rotation": 0,
+        "width_px": 443,
+        "alignment": "center",
+        "height_px": 216,
+        "x_percent": 4.0258646153099775,
+        "y_percent": 18.055555555555554,
+        "width_percent": 41.000175267879094,
+        "height_percent": 19.649068923109493
+      },
       "tag": "TemplateElementTag.heading",
-      "nested_content": null,
-      "group": null
-    },
-    {
       "type": "text",
-      "box": {
-        "x_percent": 11.974513457737276,
-        "y_percent": 71.92704907538395,
-        "width_percent": 80,
-        "height_percent": 19.047619047619044,
-        "x_px": 115,
-        "y_px": 808,
-        "width_px": 850,
-        "height_px": 120,
-        "alignment": "center",
-        "rotation": 0
-      },
-      "content": {
-        "bn-IN": {
-          "text": "কেশব বলিরাম হেডগেওয়ার ছিলেন ভারতীয় জাতীয়তাবাদের অন্যতম পথপ্রদর্শক। তাঁর নেতৃত্বে রাষ্ট্রীয় স্বয়ংসেবক সংঘ (RSS) গঠিত হয়, যা আজও জাতীয়তাবাদী ভাবনার ভিত্তি রক্ষা করে চলেছে।"
-        },
-        "en-IN": {
-          "text": "Keshav Baliram Hedgewar was a pioneering nationalist thinker who founded the Rashtriya Swayamsevak Sangh (RSS), laying the foundation for a strong cultural and nationalist movement in India."
-        },
-        "hi-IN": {
-          "text": "केशव बलिराम हेडगेवार भारतीय राष्ट्रवाद के एक प्रमुख विचारक थे। उनके नेतृत्व में राष्ट्रीय स्वयंसेवक संघ (RSS) की स्थापना हुई, जो आज भी राष्ट्रभक्ति और संस्कृति की रक्षा करता है।"
-        }
-      },
+      "group": null,
       "style": {
-        "font_size": 3,
         "color": "#ffffff",
-        "font_family": "English",
-        "font_weight": "FontWeight.w400",
-        "line_height": 1.6000000000000003,
-        "is_italic": false,
-        "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null,
-        "border_radius": null,
         "opacity": 1,
-        "image_shape": null,
-        "is_read_only": false,
+        "imageFit": "BoxFit.contain",
+        "font_size": 10.16255818284507,
+        "is_italic": false,
         "box_shadow": null,
         "text_align": "center",
-        "text_vertical_align": "center",
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w900",
+        "image_shape": null,
+        "line_height": 1.2,
         "text_shadow": {
           "color": "#000000",
           "offsetX": 0,
           "offsetY": 2,
           "blurRadius": 4
+        },
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "bn-IN": {
+          "text": "সচিন তেন্ডুলকর "
+        },
+        "en-IN": {
+          "text": "Sachin Tendulkar "
+        },
+        "hi-IN": {
+          "text": "सचिन तेंदुलकर "
         }
       },
       "z_index": 0,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 115.24241660974344,
+        "y_px": 681,
+        "rotation": 0,
+        "width_px": 850,
+        "alignment": "center",
+        "height_px": 176,
+        "x_percent": 10.6705941305318,
+        "y_percent": 63.05555555555556,
+        "width_percent": 78.87525721902182,
+        "height_percent": 16.286878256836225
+      },
       "tag": "TemplateElementTag.messaging",
-      "nested_content": null,
-      "group": null
-    },
-    {
-      "type": "image",
-      "box": {
-        "x_percent": 0,
-        "y_percent": 82.47851555804779,
-        "width_percent": 100,
-        "height_percent": 17.521484441952214,
-        "alignment": "center",
-        "rotation": 0
-      },
-      "content": {
-        "url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1747311413793"
-      },
+      "type": "text",
+      "group": null,
       "style": {
-        "font_size": 0,
-        "color": "#000000",
-        "font_family": "English",
-        "font_weight": "FontWeight.w400",
-        "line_height": 1.2,
-        "is_italic": false,
+        "color": "#ffffff",
+        "opacity": 1,
         "imageFit": "BoxFit.contain",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null,
-        "border_radius": null,
-        "opacity": 1,
-        "image_shape": null,
-        "is_read_only": false,
+        "font_size": 3.463039713324382,
+        "is_italic": false,
         "box_shadow": null,
-        "text_align": null,
-        "text_vertical_align": "center",
-        "text_shadow": null
-      },
-      "z_index": 0,
-      "tag": "TemplateElementTag.partySymbol",
-      "nested_content": null,
-      "group": "user_strip"
-    },
-    {
-      "type": "image",
-      "box": {
-        "x_percent": 69.42149132725825,
-        "y_percent": 62.970062989343035,
-        "width_percent": 28.8192083254998,
-        "height_percent": 35.26337228510437,
-        "alignment": "center",
-        "rotation": 0
+        "text_align": "center",
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "line_height": 1.2,
+        "text_shadow": {
+          "color": "#000000",
+          "offsetX": 0,
+          "offsetY": 2,
+          "blurRadius": 4
+        },
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
       },
       "content": {
-        "url": "https://netanagri-bucket.s3.amazonaws.com/poster/36/content/1747311620296"
-      },
-      "style": {
-        "font_size": 0,
-        "color": "#000000",
-        "font_family": "English",
-        "font_weight": "FontWeight.w400",
-        "line_height": 1.2,
-        "is_italic": false,
-        "imageFit": "BoxFit.cover",
-        "is_underlined": false,
-        "decorations": null,
-        "border_style": null,
-        "border_color": null,
-        "border_width": null,
-        "border_radius": null,
-        "opacity": 1,
-        "image_shape": "rectangle",
-        "is_read_only": false,
-        "box_shadow": null,
-        "text_align": null,
-        "text_vertical_align": "center",
-        "text_shadow": null
+        "bn-IN": {
+          "text": "দেশের জন্য অসাধারণ পারফরম্যান্স উপহার দেওয়া সচিনকে জানাই শুভ জন্মদিনের শুভেচ্ছা।"
+        },
+        "en-IN": {
+          "text": "Wishing a legend who made India proud on the global stage."
+        },
+        "hi-IN": {
+          "text": "भारत के लिए कई ऐतिहासिक जीत दिलाने वाले सचिन को जन्मदिन की शुभकामनाएँ।"
+        }
       },
       "z_index": 0,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 20,
+        "y_px": 20,
+        "rotation": 0,
+        "width_px": 1040,
+        "alignment": "left",
+        "height_px": 80,
+        "x_percent": 1.8518518518518516,
+        "y_percent": 1.8518518518518516,
+        "width_percent": 88.7525565881848,
+        "height_percent": 2.3108456286457013
+      },
+      "tag": "TemplateElementTag.leaderStrip",
+      "type": "leader_strip",
+      "group": null,
+      "style": {
+        "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 0,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": null,
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "line_height": 1.2,
+        "text_shadow": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "leaders": [
+          {
+            "box": {
+              "rotation": 0,
+              "alignment": "center",
+              "x_percent": 0,
+              "y_percent": 0,
+              "width_percent": 100,
+              "height_percent": 100
+            },
+            "tag": "TemplateElementTag.leader",
+            "type": "image",
+            "group": null,
+            "style": {
+              "color": "#000000",
+              "opacity": 1,
+              "imageFit": "BoxFit.cover",
+              "font_size": 0,
+              "is_italic": false,
+              "box_shadow": null,
+              "text_align": null,
+              "decorations": null,
+              "font_family": "Lohit-Bengali",
+              "font_weight": "FontWeight.w400",
+              "image_shape": "circle",
+              "line_height": 1.2,
+              "text_shadow": null,
+              "border_color": null,
+              "border_style": null,
+              "border_width": null,
+              "is_read_only": false,
+              "border_radius": null,
+              "is_underlined": false
+            },
+            "content": {
+              "url": "https://netanagri-bucket.s3.amazonaws.com/assets/leaders/narendra modi.png"
+            },
+            "z_index": 0,
+            "nested_content": null
+          },
+          {
+            "box": {
+              "rotation": 0,
+              "alignment": "center",
+              "x_percent": 0,
+              "y_percent": 0,
+              "width_percent": 100,
+              "height_percent": 100
+            },
+            "tag": "TemplateElementTag.leader",
+            "type": "image",
+            "group": null,
+            "style": {
+              "color": "#000000",
+              "opacity": 1,
+              "imageFit": "BoxFit.cover",
+              "font_size": 0,
+              "is_italic": false,
+              "box_shadow": null,
+              "text_align": null,
+              "decorations": null,
+              "font_family": "Lohit-Bengali",
+              "font_weight": "FontWeight.w400",
+              "image_shape": "circle",
+              "line_height": 1.2,
+              "text_shadow": null,
+              "border_color": null,
+              "border_style": null,
+              "border_width": null,
+              "is_read_only": false,
+              "border_radius": null,
+              "is_underlined": false
+            },
+            "content": {
+              "url": "https://netanagri-bucket.s3.amazonaws.com/assets/leaders/amit shah.png"
+            },
+            "z_index": 0,
+            "nested_content": null
+          },
+          {
+            "box": {
+              "rotation": 0,
+              "alignment": "center",
+              "x_percent": 0,
+              "y_percent": 0,
+              "width_percent": 100,
+              "height_percent": 100
+            },
+            "tag": "TemplateElementTag.leader",
+            "type": "image",
+            "group": null,
+            "style": {
+              "color": "#000000",
+              "opacity": 1,
+              "imageFit": "BoxFit.cover",
+              "font_size": 0,
+              "is_italic": false,
+              "box_shadow": null,
+              "text_align": null,
+              "decorations": null,
+              "font_family": "Lohit-Bengali",
+              "font_weight": "FontWeight.w400",
+              "image_shape": "circle",
+              "line_height": 1.2,
+              "text_shadow": null,
+              "border_color": null,
+              "border_style": null,
+              "border_width": null,
+              "is_read_only": false,
+              "border_radius": null,
+              "is_underlined": false
+            },
+            "content": {
+              "url": "https://netanagri-bucket.s3.amazonaws.com/assets/leaders/jp nadda.png"
+            },
+            "z_index": 0,
+            "nested_content": null
+          },
+          {
+            "box": {
+              "rotation": 0,
+              "alignment": "center",
+              "x_percent": 0,
+              "y_percent": 0,
+              "width_percent": 100,
+              "height_percent": 100
+            },
+            "tag": "TemplateElementTag.leader",
+            "type": "image",
+            "group": null,
+            "style": {
+              "color": "#000000",
+              "opacity": 1,
+              "imageFit": "BoxFit.cover",
+              "font_size": 0,
+              "is_italic": false,
+              "box_shadow": null,
+              "text_align": null,
+              "decorations": null,
+              "font_family": "Lohit-Bengali",
+              "font_weight": "FontWeight.w400",
+              "image_shape": "circle",
+              "line_height": 1.2,
+              "text_shadow": null,
+              "border_color": null,
+              "border_style": null,
+              "border_width": null,
+              "is_read_only": false,
+              "border_radius": null,
+              "is_underlined": false
+            },
+            "content": {
+              "url": "https://netanagri-bucket.s3.amazonaws.com/assets/leaders/sukanta%20majumdar.png"
+            },
+            "z_index": 0,
+            "nested_content": null
+          },
+          {
+            "box": {
+              "rotation": 0,
+              "alignment": "center",
+              "x_percent": 0,
+              "y_percent": 0,
+              "width_percent": 100,
+              "height_percent": 100
+            },
+            "tag": "TemplateElementTag.leader",
+            "type": "image",
+            "group": null,
+            "style": {
+              "color": "#000000",
+              "opacity": 1,
+              "imageFit": "BoxFit.cover",
+              "font_size": 0,
+              "is_italic": false,
+              "box_shadow": null,
+              "text_align": null,
+              "decorations": null,
+              "font_family": "Lohit-Bengali",
+              "font_weight": "FontWeight.w400",
+              "image_shape": "circle",
+              "line_height": 1.2,
+              "text_shadow": null,
+              "border_color": null,
+              "border_style": null,
+              "border_width": null,
+              "is_read_only": false,
+              "border_radius": null,
+              "is_underlined": false
+            },
+            "content": {
+              "url": "https://netanagri-bucket.s3.amazonaws.com/assets/leaders/suvendhu%20adhikari.png"
+            },
+            "z_index": 0,
+            "nested_content": null
+          }
+        ],
+        "spacing": 5,
+        "stripSize": "medium"
+      },
+      "z_index": 1,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 0,
+        "y_px": 873.6035197798211,
+        "rotation": 0,
+        "width_px": 1080,
+        "alignment": "center",
+        "height_px": 190.0674720852318,
+        "x_percent": 0,
+        "y_percent": 80.88921479442787,
+        "width_percent": 100,
+        "height_percent": 17.321062230114055
+      },
+      "tag": "TemplateElementTag.partyStrip",
+      "type": "image",
+      "group": "user_strip",
+      "style": {
+        "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 0,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": null,
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "line_height": 1.2,
+        "text_shadow": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "url": "https://netanagri-bucket.s3.amazonaws.com/assets/party_strip/bjp.png"
+      },
+      "z_index": 0,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 883,
+        "y_px": 845,
+        "rotation": 0,
+        "width_px": 187,
+        "alignment": "center",
+        "height_px": 211,
+        "x_percent": 81.75925925925925,
+        "y_percent": 78.24074074074075,
+        "width_percent": 16.605318951587044,
+        "height_percent": 15.685072021326109
+      },
       "tag": "TemplateElementTag.userPicture",
-      "nested_content": null,
-      "group": "user_strip"
+      "type": "image",
+      "group": "user_strip",
+      "style": {
+        "color": "#000000",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 0,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": null,
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "line_height": 1.2,
+        "text_shadow": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "url": "https://netanagri-bucket.s3.amazonaws.com/poster/460/content/1747904396561"
+      },
+      "z_index": 2,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 201,
+        "y_px": 961,
+        "rotation": 0,
+        "width_px": 456,
+        "alignment": "right",
+        "height_px": 59,
+        "x_percent": 18.61111111111111,
+        "y_percent": 88.98148148148148,
+        "width_percent": 12.10634002665764,
+        "height_percent": 2.2290426077488132
+      },
+      "tag": "TemplateElementTag.userName",
+      "type": "text",
+      "group": "user_strip",
+      "style": {
+        "color": "#e45c29",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 10.307017543859647,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": null,
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w600",
+        "image_shape": null,
+        "line_height": 1.2,
+        "text_shadow": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "bn-IN": {
+          "text": "নাম"
+        },
+        "en-IN": {
+          "text": "Name"
+        },
+        "hi-IN": {
+          "text": "नाम"
+        }
+      },
+      "z_index": 3,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 660,
+        "y_px": 970,
+        "rotation": 0,
+        "width_px": 218,
+        "alignment": "left",
+        "height_px": 26,
+        "x_percent": 61.111111111111114,
+        "y_percent": 89.81481481481481,
+        "width_percent": 31.32923863169544,
+        "height_percent": 2.2290406574946475
+      },
+      "tag": "TemplateElementTag.userDesignation",
+      "type": "text",
+      "group": "user_strip",
+      "style": {
+        "color": "#e45c29",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 9.12194711194299,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": "left",
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w600",
+        "image_shape": null,
+        "line_height": 1.2,
+        "text_shadow": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "bn-IN": {
+          "text": "পদ"
+        },
+        "en-IN": {
+          "text": "Designation"
+        },
+        "hi-IN": {
+          "text": "पदनाम"
+        }
+      },
+      "z_index": 4,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 660,
+        "y_px": 992,
+        "rotation": 0,
+        "width_px": 240,
+        "alignment": "left",
+        "height_px": 28,
+        "x_percent": 61.111111111111114,
+        "y_percent": 91.85185185185183,
+        "width_percent": 34.3967192980458,
+        "height_percent": 6.114520328747323
+      },
+      "tag": "TemplateElementTag.userAddress",
+      "type": "text",
+      "group": "user_strip",
+      "style": {
+        "color": "#e45c29",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 8.333333333333332,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": "left",
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "line_height": 1.2,
+        "text_shadow": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "bn-IN": {
+          "text": "জেলা/এলাকা"
+        },
+        "en-IN": {
+          "text": "District/Area"
+        },
+        "hi-IN": {
+          "text": "जिला/क्षेत्र"
+        }
+      },
+      "z_index": 5,
+      "nested_content": null
+    },
+    {
+      "box": {
+        "x_px": 183,
+        "y_px": 1050,
+        "rotation": 0,
+        "width_px": 699,
+        "alignment": "center",
+        "height_px": 27,
+        "x_percent": 16.944444444444446,
+        "y_percent": 97.2222222222222,
+        "width_percent": 70.59304654819834,
+        "height_percent": 1.7382451550615816
+      },
+      "tag": "TemplateElementTag.facebookHandle",
+      "type": "text",
+      "group": "user_strip",
+      "style": {
+        "color": "#ffffff",
+        "opacity": 1,
+        "imageFit": "BoxFit.contain",
+        "font_size": 2.110520008189793,
+        "is_italic": false,
+        "box_shadow": null,
+        "text_align": null,
+        "decorations": null,
+        "font_family": "Lohit-Bengali",
+        "font_weight": "FontWeight.w400",
+        "image_shape": null,
+        "line_height": 1.2,
+        "text_shadow": null,
+        "border_color": null,
+        "border_style": null,
+        "border_width": null,
+        "is_read_only": false,
+        "border_radius": null,
+        "is_underlined": false
+      },
+      "content": {
+        "bn-IN": {
+          "text": "সোশ্যাল মিডিয়া/ফোন নম্বর"
+        },
+        "en-IN": {
+          "text": "Other Details (Social Media or Phone Number)"
+        },
+        "hi-IN": {
+          "text": "अन्य विवरण (सोशियल मीडिया या फोन नंबर)"
+        }
+      },
+      "z_index": 6,
+      "nested_content": null
     }
-  ]
+  ],
+  "language_settings": {
+    "current_language": "bn-IN",
+    "default_language": {
+      "code": "bn-IN",
+      "name": "Bengali",
+      "flagEmoji": null,
+      "fontFamily": "Lohit-Bengali",
+      "nativeName": "Bengali",
+      "textDirection": "TextDirection.ltr"
+    },
+    "enabled_languages": [
+      {
+        "code": "bn-IN",
+        "name": "Bengali",
+        "flagEmoji": null,
+        "fontFamily": "Lohit-Bengali",
+        "nativeName": "Bengali",
+        "textDirection": "TextDirection.ltr"
+      },
+      {
+        "code": "hi-IN",
+        "name": "Hindi",
+        "flagEmoji": null,
+        "fontFamily": "Lohit-Devanagri",
+        "nativeName": "Hindi",
+        "textDirection": "TextDirection.ltr"
+      },
+      {
+        "code": "en-IN",
+        "name": "English",
+        "flagEmoji": null,
+        "fontFamily": "English",
+        "nativeName": "English",
+        "textDirection": "TextDirection.ltr"
+      }
+    ]
+  }
+}

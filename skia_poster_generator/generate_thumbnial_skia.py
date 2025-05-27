@@ -125,7 +125,7 @@ def get_language_font_family(lang_settings, lang_code):
 def apply_shadow_paint(canvas, paint, shadow_data, stroke_paint=None):
     """Helper function to apply shadow effects."""
     if shadow_data is None:
-        return paint
+        return paint, 0, 0
 
     # Extract shadow parameters
     shadow_color_str = shadow_data.get('color', '#000000')
