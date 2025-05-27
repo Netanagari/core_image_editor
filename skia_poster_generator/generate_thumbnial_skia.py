@@ -469,7 +469,14 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
                 total_text_height = final_render_line_height * len(final_lines)
                 total_text_height = max(0, total_text_height)
 
-            y_cursor = (el_height - total_text_height) / 2 - font_metrics.fAscent
+            # Handle vertical text alignment
+            text_vertical_align = style.get('text_vertical_align', 'center')
+            if text_vertical_align == 'top':
+                y_cursor = -font_metrics.fAscent
+            elif text_vertical_align == 'bottom':
+                y_cursor = el_height - total_text_height - font_metrics.fAscent
+            else:  # center or any other value
+                y_cursor = (el_height - total_text_height) / 2 - font_metrics.fAscent
 
             print(f"[DEBUG] Final font size px: {current_font_size_px}, lines: {len(final_lines)}, line_height: {final_render_line_height}, total_text_height: {total_text_height}")
             
