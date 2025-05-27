@@ -156,6 +156,75 @@ def apply_shadow_paint(canvas, paint, shadow_data, stroke_paint=None):
     return shadow_paint, shadow_offset_x, shadow_offset_y
 
 def render_template_element_skia(canvas, element_data, parent_canvas_width, parent_canvas_height, current_language, default_language_code, font_asset_path, lang_settings=None):
+    # Handle leader_strip type first
+    if element_data.get('type') == 'leader_strip':
+        box_data = element_data.get('box', {})
+        x = box_data.get('x_px', 0)
+        y = box_data.get('y_px', 0)
+        width = box_data.get('width_px', 0)
+        height = box_data.get('height_px', 0)
+        
+        # Get leaders from content
+        leaders = element_data.get('content', {}).get('leaders', [])
+        if not leaders:
+            return
+        
+        # Calculate spacing and layout
+        horizontal_spacing = element_data.get('content', {}).get('spacing', 8.0)
+        alignment = box_data.get('alignment', 'left')
+        # Convert alignment to justify_content values
+        if alignment == 'left':
+            justify_content = 'start'
+        elif alignment == 'right':
+            justify_content = 'end'
+        else:  # center
+            justify_content = 'center'
+        
+        # Calculate image size based on height
+        image_size = height
+        total_width = len(leaders) * image_size + (len(leaders) - 1) * horizontal_spacing
+        
+        # Calculate starting x based on justification
+        if justify_content == 'center':
+            start_x = x + (width - total_width) / 2
+        elif justify_content == 'end':
+            start_x = x + width - total_width
+        else:  # 'start' or default
+            start_x = x
+        
+        # Draw each leader
+        current_x = start_x
+        for leader in leaders:
+            leader_content = leader.get('content', {})
+            image_url = leader_content.get('url')
+            if not image_url:
+                continue
+                
+            try:
+                # Fetch and load the image
+                response = requests.get(image_url, timeout=10)
+                response.raise_for_status()
+                image_data = skia.Data(response.content)
+                image = skia.Image.MakeFromEncoded(image_data)
+                
+                if image:
+                    # Create circular clip for the image
+                    with skia.AutoCanvasRestore(canvas):
+                        # Create circular path
+                        circle_path = skia.Path()
+                        circle_path.addCircle(current_x + image_size/2, y + image_size/2, image_size/2)
+                        canvas.clipPath(circle_path, skia.ClipOp.kIntersect)
+                        
+                        # Draw the image
+                        src_rect = skia.Rect.MakeWH(image.width(), image.height())
+                        dst_rect = skia.Rect.MakeXYWH(current_x, y, image_size, image_size)
+                        canvas.drawImageRect(image, src_rect, dst_rect)
+            except Exception as e:
+                print(f"Error loading leader image {image_url}: {e}")
+            
+            current_x += image_size + horizontal_spacing
+        
+        return
     """Renders a single TemplateElement onto the Skia canvas."""
     box = element_data['box']
     style = element_data.get('style', {})
