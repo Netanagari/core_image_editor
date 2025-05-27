@@ -54,10 +54,14 @@ def get_skia_font_weight(font_weight_str):
     }
     return weights.get(font_weight_str, skia.FontStyle.kNormal_Weight)
 
-def get_skia_text_align(text_align_str):
-    if text_align_str == "center":
+def get_skia_text_align(text_align_str, box_alignment=None, is_multiline=False):
+    # For multiline text, use text_align_str if provided, otherwise use box_alignment
+    # For single line text, always use box_alignment
+    align = text_align_str if is_multiline and text_align_str else box_alignment
+    
+    if align == "center":
         return skia.TextBlobBuilder.kCenter_Align
-    elif text_align_str == "right":
+    elif align == "right":
         return skia.TextBlobBuilder.kRight_Align
     return skia.TextBlobBuilder.kLeft_Align # Default for null or "left"
 
@@ -335,9 +339,14 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
             font_weight_str = style.get('font_weight', 'FontWeight.w400')
             is_italic = style.get('is_italic', False)
             is_underlined = style.get('is_underlined', False)
-            text_align_style = style.get('text_align') # Can be None
-
-            # Calculate font size based on the element's own width, matching Flutter implementation
+            # Get text alignment from box and style
+            box_alignment = box.get('alignment')
+            text_align_style = style.get('text_align')
+            
+            # Check if text is multiline
+            lines = text_to_render.split('\n')
+            is_multiline = len(lines) > 1
+            
             initial_font_size_px = max(1.0, (font_size_vw / 100.0) * el_width)
             skia_font_weight = get_skia_font_weight(font_weight_str)
             skia_font_slant = skia.FontStyle.kItalic_Slant if is_italic else skia.FontStyle.kUpright_Slant
@@ -434,12 +443,23 @@ def render_template_element_skia(canvas, element_data, parent_canvas_width, pare
 
             for line_text in final_lines:
                 line_width = final_font.measureText(line_text)
-                x_text_offset = 0
-                if text_align_style == 'center':
-                    x_text_offset = (el_width - line_width) / 2
-                elif text_align_style == 'right':
-                    x_text_offset = el_width - line_width
-                
+                # Calculate x_offset based on box alignment for single line text
+                # or text_align for multiline text
+                line_width = final_font.measureText(line_text)
+                if is_multiline:
+                    if text_align_style == 'center':
+                        x_text_offset = (el_width - line_width) / 2
+                    elif text_align_style == 'right':
+                        x_text_offset = el_width - line_width
+                    else: # left or None
+                        x_text_offset = 0
+                else:
+                    if box_alignment == 'center':
+                        x_text_offset = (el_width - line_width) / 2
+                    elif box_alignment == 'right':
+                        x_text_offset = el_width - line_width
+                    else: # left or None
+                        x_text_offset = 0
                 print(f"[DEBUG] Drawing text line: '{line_text}', x: {x_text_offset}, y: {y_cursor}, width: {line_width}")
                 if 'text_shadow' in style:
                     shadow_paint, shadow_x, shadow_y = apply_shadow_paint(canvas, text_paint, style['text_shadow'])
