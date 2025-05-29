@@ -371,7 +371,7 @@ class _ImageRendererState extends State<ImageRenderer> {
       final boundary = _repaintBoundaryKey.currentContext?.findRenderObject()
           as RenderRepaintBoundary?;
       if (boundary != null) {
-        final image = await boundary.toImage(pixelRatio: 1.0);
+        final image = await boundary.toImage(pixelRatio: 4.0);
         final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
         final bytes = byteData!.buffer.asUint8List();
         widget.onImageRendered(bytes);
