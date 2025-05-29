@@ -222,6 +222,8 @@ class LanguageManager extends ChangeNotifier {
     if (templateCurrentLang != null &&
         _enabledLanguages.any((lang) => lang.code == templateCurrentLang)) {
       _currentLanguage = templateCurrentLang;
+      _currentLanguageModel =
+          _enabledLanguages.firstWhere((e) => e.code == _currentLanguage);
       notifyListeners();
     }
   }

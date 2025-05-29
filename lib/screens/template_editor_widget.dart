@@ -271,94 +271,22 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
           ),
         ],
       ),
-      body: ResponsiveLayoutBuilder(
-        builder: (context, isMobile) {
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              final viewportSize = ResponsiveUtils.calculateViewportSize(
-                constraints,
-                editorState.canvasAspectRatio,
-              );
-
-              if (viewportSize != editorState.viewportSize) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  editorState.setViewportSize(viewportSize);
-                });
-              }
-
-              if (isMobile) {
-                return _buildMobileLayout(context, viewportSize);
-              }
-              return _buildDesktopLayout(context, viewportSize);
-            },
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final viewportSize = ResponsiveUtils.calculateViewportSize(
+            constraints,
+            editorState.canvasAspectRatio,
           );
+
+          if (viewportSize != editorState.viewportSize) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              editorState.setViewportSize(viewportSize);
+            });
+          }
+
+          return _buildDesktopLayout(context, viewportSize);
         },
       ),
-    );
-  }
-
-  Widget _buildMobileLayout(BuildContext context, Size viewportSize) {
-    final editorState = context.watch<EditorState>();
-
-    return Stack(
-      children: [
-        Center(
-          child: _buildCanvas(context, viewportSize),
-        ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            height: 80,
-            decoration: const BoxDecoration(
-              color: AppColors.primary100,
-              border: Border(
-                top: BorderSide(
-                  color: AppColors.secondary100,
-                  width: 0.75,
-                ),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(
-                  isSelected: selectedIndex == 0,
-                  icon: Icons.abc,
-                  label: 'Text',
-                  onTap: () => onItemTapped(0),
-                ),
-                _buildNavItem(
-                  isSelected: selectedIndex == 1,
-                  icon: Icons.image,
-                  label: 'Image',
-                  onTap: () => onItemTapped(1),
-                ),
-                _buildNavItem(
-                  isSelected: selectedIndex == 2,
-                  icon: Icons.plus_one,
-                  label: 'Calendar',
-                  onTap: () => onItemTapped(2),
-                ),
-                _buildNavItem(
-                  isSelected: selectedIndex == 3,
-                  icon: Icons.person,
-                  label: 'You',
-                  onTap: () => onItemTapped(3),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-            bottom: 80,
-            left: 0,
-            right: 0,
-            child: Container(
-              child: bottomContent[selectedIndex],
-            )),
-      ],
     );
   }
 
@@ -430,45 +358,6 @@ class _CoreImageEditorContentState extends State<_CoreImageEditorContent> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required bool isSelected,
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isSelected ? AppColors.secondary100 : Colors.transparent,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              size: 24,
-              color: isSelected ? AppColors.primary100 : AppColors.secondary100,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: isSelected
-                ? AppTextStyles.labelSmMedium.copyWith(
-                    color: AppColors.secondary100,
-                  )
-                : AppTextStyles.labelSmRegular.copyWith(
-                    color: AppColors.tertiary100,
-                  ),
-          ),
-        ],
       ),
     );
   }
