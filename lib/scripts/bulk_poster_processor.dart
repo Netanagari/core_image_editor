@@ -136,6 +136,61 @@ class BulkPosterProcessor {
     }
   }
 
+  /// Preload all images from content JSON to avoid race conditions
+  Future<void> _preloadImages(
+      Map<String, dynamic> contentJson, BuildContext context) async {
+    onLog('Preloading images from content JSON');
+
+    // Extract all image URLs from the content JSON
+    final List<String> imageUrls = [];
+
+    // Add base image if present
+    final String baseImageUrl = contentJson['base_image_url'] ?? '';
+    if (baseImageUrl.isNotEmpty) {
+      imageUrls.add(baseImageUrl);
+    }
+
+    // Process all elements to find image URLs
+    final List<dynamic> elementsJson = contentJson['content_json'] ?? [];
+    for (final elementJson in elementsJson) {
+      // Check for image elements
+      if (elementJson['type'] == 'image' &&
+          elementJson['content']?['url'] != null) {
+        imageUrls.add(elementJson['content']['url']);
+      }
+
+      // Check for leader strip elements
+      if (elementJson['type'] == 'leader_strip' &&
+          elementJson['content']?['leaders'] != null) {
+        for (final leader in elementJson['content']['leaders']) {
+          if (leader['content']?['url'] != null) {
+            imageUrls.add(leader['content']['url']);
+          }
+        }
+      }
+
+      // Check for nested content with images
+      if (elementJson['nestedContent']?['content']?['type'] == 'image' &&
+          elementJson['nestedContent']['content']['content']?['url'] != null) {
+        imageUrls
+            .add(elementJson['nestedContent']['content']['content']['url']);
+      }
+    }
+
+    onLog('Found ${imageUrls.length} images to preload');
+
+    // Preload all images
+    final List<Future<void>> precacheFutures = [];
+    for (final url in imageUrls) {
+      precacheFutures.add(precacheImage(NetworkImage(url), context)
+          .catchError((e) => onLog('Error preloading image $url: $e')));
+    }
+
+    // Wait for all images to be loaded
+    await Future.wait(precacheFutures);
+    onLog('All images preloaded successfully');
+  }
+
   /// Render poster image using widget-based approach (web-compatible)
   Future<Uint8List> _renderPosterImage(Map<String, dynamic> contentJson) async {
     onLog('Rendering image for content JSON');
@@ -145,6 +200,9 @@ class BulkPosterProcessor {
     }
 
     final completer = Completer<Uint8List>();
+
+    // Preload all images before rendering
+    await _preloadImages(contentJson, context!);
 
     // For web, we need to use the overlay approach
     late OverlayEntry overlayEntry;
@@ -176,8 +234,8 @@ class BulkPosterProcessor {
     // Wait for widget to render then capture
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
-        // Wait a bit for the widget to fully render
-        await Future.delayed(const Duration(milliseconds: 500));
+        // Since we've preloaded images, we can reduce the delay
+        await Future.delayed(const Duration(milliseconds: 200));
 
         final boundary = boundaryKey.currentContext?.findRenderObject()
             as RenderRepaintBoundary?;

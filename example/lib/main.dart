@@ -997,10 +997,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: ImageFromJsonWidget(
-          contentJson: exampleJson,
-          // posterIds: [36, 464],
-          // apiBaseUrl: "https://netanagri-backend.onrender.com/api",
+        child: BulkPosterProcessorWidget(
+          // contentJson: exampleJson,
+          posterIds: [36, 464],
+          apiBaseUrl: "https://netanagri-backend.onrender.com/api",
         ),
       ),
     );
