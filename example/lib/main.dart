@@ -1,3 +1,4 @@
+import 'package:core_image_editor/scripts/bulk_poster_processor.dart';
 import 'package:core_image_editor/widgets/image_from_json_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -9,9 +10,9 @@ final exampleJson = {
   "id": 1020,
   "poster": 464,
   "base_image_url":
-      "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/005_05_ekJfL91.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250529%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250529T094400Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=99828441434a5d55c2af7733c8da29de1d3d5cb43bec4f123271c2835eeafa5c",
+      "https://netanagri-bucket.s3.amazonaws.com/poster_base_images/005_05_ekJfL91.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250529%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250529T121702Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=4d17f67309f7517ad5cf677d61feaa03db5f26a6933c5a30b59fcef4dbbddc28",
   "thumbnail_url":
-      "https://netanagri-bucket.s3.amazonaws.com/https%3A//netanagri-bucket.s3.amazonaws.com/poster/464/content/1748443207942?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250529%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250529T094401Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1bf76b54797fa2cf8999f4776beeccda458a4a2625c4d626f4eb6e244d9cd957",
+      "https://netanagri-bucket.s3.amazonaws.com/https%3A//netanagri-bucket.s3.amazonaws.com/poster/464/content/1748520904325?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU7IC7N7V53BDVH2P%2F20250529%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250529T121702Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=0d76c1f6f76cc1693ea0c89de54bc0988b1cba32069bc9ec893216fdee426c36",
   "original_width": 1080,
   "original_height": 1080,
   "aspect_ratio": 1.0,
@@ -996,7 +997,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: ImageFromJsonWidget(contentJson: exampleJson),
+        child: ImageFromJsonWidget(
+          contentJson: exampleJson,
+          // posterIds: [36, 464],
+          // apiBaseUrl: "https://netanagri-backend.onrender.com/api",
+        ),
       ),
     );
   }

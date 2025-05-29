@@ -7,10 +7,12 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  args: ^2.7.0
   flutter:
     sdk: flutter
   flutter_colorpicker: ^1.1.0
   image_picker: ^1.1.2
+  path_provider: ^2.1.5
   provider: ^6.1.2
   universal_html: ^2.2.4
   widgets_to_image: ^1.0.0
