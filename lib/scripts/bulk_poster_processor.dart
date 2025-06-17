@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -91,20 +92,34 @@ class BulkPosterProcessor {
 
       // Step 1: Fetch content JSON
       final contentJson = await _fetchContentJson(posterId);
+      final copy = Map<String, dynamic>.from(contentJson);
       _contentJsons[posterId] = contentJson;
 
-      // Step 2: Render the image
-      final imageBytes = await _renderPosterImage(contentJson);
+      final allLanguages = Stream.fromIterable(
+          contentJson['language_settings']['enabled_languages'] ?? []);
+      final Map<String, String> thumbnailUrls = {};
 
-      // Step 3: Upload the image
-      final thumbnailUrl = await _uploadImage(imageBytes, posterId);
-      _thumbnailUrls[posterId] = thumbnailUrl;
+      await for (final lang in allLanguages) {
+        final langCode = lang['code'] as String;
+        onLog('Generating poster for language: $langCode ($posterId)');
+
+        // Step 2: Render the image for the specific language
+        // update contentJson language_settings default_language to langCode
+        contentJson['language_settings']['current_language'] = langCode;
+        final preProcessedJson = _preProcessContentJson(contentJson);
+        final imageBytes = await _renderPosterImage(preProcessedJson);
+
+        // Step 3: Upload the image
+        final thumbnailUrl = await _uploadImage(imageBytes, posterId);
+        _thumbnailUrls[posterId] = thumbnailUrl;
+        thumbnailUrls[langCode] = thumbnailUrl;
+      }
 
       // Step 4: Update content JSON with thumbnail URL
-      contentJson['thumbnail_url'] = thumbnailUrl;
+      copy['thumbnail_url'] = thumbnailUrls;
 
       // Step 5: Update the poster with the new content JSON
-      await _updatePoster(posterId, contentJson);
+      await _updatePoster(posterId, copy);
 
       onLog('Successfully processed poster ID: $posterId');
     } catch (e) {
@@ -134,6 +149,23 @@ class BulkPosterProcessor {
       throw Exception(
           'Failed to fetch content JSON for poster ID: $posterId - Status: ${response.statusCode}');
     }
+  }
+
+  Map<String, dynamic> _preProcessContentJson(Map<String, dynamic> json) {
+    // remove all the elements with tag TemplateTag.leaderStrip
+    json['content_json'] = json['content_json']
+        .where((e) => e['tag'] != 'TemplateTag.leaderStrip')
+        .toList();
+
+    // remove all the elements where group is "user_strip" and tag is not TemplateElementTag.partyStrip and TemplateElementTag.partySymbol
+    json['content_json'] = json['content_json']
+        .where((e) =>
+            e['group'] != 'user_strip' ||
+            (e['tag'] == 'TemplateElementTag.partyStrip' ||
+                e['tag'] == 'TemplateElementTag.partySymbol'))
+        .toList();
+
+    return json;
   }
 
   /// Preload all images from content JSON to avoid race conditions
