@@ -1,0 +1,15 @@
+main-cache-key: lastCahced
+
+day 1: Cached all images (uopdate key)
+day 2: Precached
+day 3: Precached
+
+.
+.
+.
+day 8: 8 + 7 ()update key
+day 9....
+
+
+
+7 days before + cache current + 7 days after - (precached_network_image: ^1.3.0)

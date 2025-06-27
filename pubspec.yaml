@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_colorpicker: ^1.1.0
+  flutter_image_compress: ^2.4.0
   image_picker: ^1.1.2
   path_provider: ^2.1.5
   provider: ^6.1.2

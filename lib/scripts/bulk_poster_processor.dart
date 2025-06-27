@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import '../widgets/image_from_json_widget.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 /// A class that handles bulk processing of posters
 /// It fetches content_json for each poster ID, renders images,
@@ -104,13 +105,32 @@ class BulkPosterProcessor {
         onLog('Generating poster for language: $langCode ($posterId)');
 
         // Step 2: Render the image for the specific language
-        // update contentJson language_settings default_language to langCode
         contentJson['language_settings']['current_language'] = langCode;
         final preProcessedJson = _preProcessContentJson(contentJson);
         final imageBytes = await _renderPosterImage(preProcessedJson);
 
-        // Step 3: Upload the image
-        final thumbnailUrl = await _uploadImage(imageBytes, posterId);
+        // Log original image dimensions
+        await _logImageDimensions(imageBytes, 'Original');
+
+        // Step 2.5: Compress the image using JPEG (lossy)
+        double toKB(int bytes) => bytes / 1024.0;
+        onLog(
+            'Original image size: \\${toKB(imageBytes.length).toStringAsFixed(1)} KB');
+        final compressedBytes = await FlutterImageCompress.compressWithList(
+          imageBytes,
+          format: CompressFormat.jpeg,
+          minWidth: 1080,
+          minHeight: 1080,
+          quality: 85, // 85 is a good balance for thumbnails
+        );
+        onLog(
+            'Compressed JPEG image size: \\${toKB(compressedBytes.length).toStringAsFixed(1)} KB (saved: \\${toKB(imageBytes.length - compressedBytes.length).toStringAsFixed(1)} KB)');
+
+        // Log compressed image dimensions
+        await _logImageDimensions(compressedBytes, 'Compressed JPEG');
+
+        // Step 3: Upload the compressed image
+        final thumbnailUrl = await _uploadImage(compressedBytes, posterId);
         _thumbnailUrls[posterId] = thumbnailUrl;
         thumbnailUrls[langCode] = thumbnailUrl;
       }
@@ -139,7 +159,7 @@ class BulkPosterProcessor {
       Uri.parse('$apiBaseUrl/poster-template/$posterId/'),
       headers: {
         'Content-Type': 'application/json',
-        'authorization': 'Token 07a2c31005b269fc51ec53a4b3454cd17802186b',
+        'authorization': 'Token 908ca2cfad64a66e5bc34421a37f9f94c34655ea',
       },
     );
 
@@ -154,7 +174,7 @@ class BulkPosterProcessor {
   Map<String, dynamic> _preProcessContentJson(Map<String, dynamic> json) {
     // remove all the elements with tag TemplateTag.leaderStrip
     json['content_json'] = json['content_json']
-        .where((e) => e['tag'] != 'TemplateTag.leaderStrip')
+        .where((e) => e['tag'] != 'TemplateElementTag.leaderStrip')
         .toList();
 
     // remove all the elements where group is "user_strip" and tag is not TemplateElementTag.partyStrip and TemplateElementTag.partySymbol
@@ -305,11 +325,11 @@ class BulkPosterProcessor {
         uploadUrl,
         headers: {
           'Content-Type': 'application/json',
-          'authorization': 'Token 07a2c31005b269fc51ec53a4b3454cd17802186b',
+          'authorization': 'Token 908ca2cfad64a66e5bc34421a37f9f94c34655ea',
         },
         body: jsonEncode({
           "folder_name": "poster/$templateId/content",
-          'content_type': "image/png",
+          'content_type': "image/jpeg",
         }),
       );
 
@@ -322,7 +342,7 @@ class BulkPosterProcessor {
           Uri.parse(uploadUrl0),
           body: imageBytes,
           headers: {
-            'Content-Type': "image/png",
+            'Content-Type': "image/jpeg",
             'Content-Length': imageBytes.length.toString(),
           },
         );
@@ -356,6 +376,17 @@ class BulkPosterProcessor {
     if (response.statusCode != 200) {
       throw Exception(
           'Failed to update poster ID: $posterId - Status: ${response.statusCode}');
+    }
+  }
+
+  Future<void> _logImageDimensions(Uint8List bytes, String label) async {
+    try {
+      final codec = await ui.instantiateImageCodec(bytes);
+      final frame = await codec.getNextFrame();
+      final image = frame.image;
+      onLog('$label image dimensions: \\${image.width}x\\${image.height}');
+    } catch (e) {
+      onLog('Failed to get $label image dimensions: $e');
     }
   }
 }
@@ -403,7 +434,7 @@ class _ImageRendererState extends State<ImageRenderer> {
       final boundary = _repaintBoundaryKey.currentContext?.findRenderObject()
           as RenderRepaintBoundary?;
       if (boundary != null) {
-        final image = await boundary.toImage(pixelRatio: 4.0);
+        final image = await boundary.toImage(pixelRatio: 1.0);
         final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
         final bytes = byteData!.buffer.asUint8List();
         widget.onImageRendered(bytes);
