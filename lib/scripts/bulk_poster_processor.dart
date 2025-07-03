@@ -132,9 +132,12 @@ class BulkPosterProcessor {
         final langCode = lang['code'] as String;
         onLog('Generating poster for language: $langCode ($posterId)');
 
+        // Deep copy contentJson for this language
+        final contentJsonForLang = jsonDecode(jsonEncode(contentJson));
+
         // Step 2: Render the image for the specific language
-        contentJson['language_settings']['current_language'] = langCode;
-        final preProcessedJson = _preProcessContentJson(contentJson);
+        contentJsonForLang['language_settings']['current_language'] = langCode;
+        final preProcessedJson = _preProcessContentJson(contentJsonForLang);
         final imageBytes = await _renderPosterImage(preProcessedJson);
 
         // Log original image dimensions
