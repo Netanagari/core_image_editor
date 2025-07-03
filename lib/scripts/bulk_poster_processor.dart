@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -24,7 +25,7 @@ class BulkPosterProcessor {
   final Map<int, String> _thumbnailUrls = {};
   final List<int> _processingQueue = [];
   final List<int> _failedIds = [];
-  int _currentlyProcessing = 0;
+  final int _currentlyProcessing = 0;
 
   // Callbacks
   final Function(String) onLog;
@@ -50,40 +51,67 @@ class BulkPosterProcessor {
 
   /// Start processing all poster IDs
   Future<void> startProcessing() async {
-    onLog('Starting bulk processing of ${posterIds.length} posters');
+    onLog('Starting bulk processing of \\${posterIds.length} posters');
+    final queue = List<int>.from(_processingQueue);
+    final failedIds = <int>[];
+    const int maxRetries = 3;
 
-    // Process up to concurrentTasks posters at a time
-    while (_processingQueue.isNotEmpty) {
-      if (_currentlyProcessing < concurrentTasks) {
-        final posterId = _processingQueue.removeAt(0);
-        _currentlyProcessing++;
+    // Worker function
+    Future<void> worker() async {
+      while (true) {
+        int? posterId;
+        // Synchronized queue pop
+        if (queue.isNotEmpty) {
+          posterId = queue.removeAt(0);
+        } else {
+          break;
+        }
 
-        // Process in separate isolate to avoid blocking the UI
-        _processPosterId(posterId).then((_) {
-          _currentlyProcessing--;
-          onProgress(
-              posterIds.length - _processingQueue.length - _currentlyProcessing,
-              posterIds.length);
-
-          // If all done, call the completion callback
-          if (_processingQueue.isEmpty && _currentlyProcessing == 0) {
-            onComplete(_failedIds);
+        int attempt = 0;
+        while (attempt < maxRetries) {
+          try {
+            await _processPosterId(posterId);
+            break; // Success
+          } catch (e) {
+            attempt++;
+            if (attempt >= maxRetries) {
+              failedIds.add(posterId);
+              onError('Error processing poster ID $posterId', e);
+            } else {
+              onLog('Retrying poster ID $posterId (attempt $attempt)');
+              await Future.delayed(const Duration(milliseconds: 500));
+            }
           }
-        }).catchError((error) {
-          _currentlyProcessing--;
-          _failedIds.add(posterId);
-          onError('Error processing poster ID $posterId', error);
+        }
 
-          // If all done, call the completion callback
-          if (_processingQueue.isEmpty && _currentlyProcessing == 0) {
-            onComplete(_failedIds);
-          }
-        });
-      } else {
-        // Wait a bit before checking again
-        await Future.delayed(const Duration(milliseconds: 100));
+        onProgress(
+          posterIds.length - queue.length - 1, // processed count
+          posterIds.length,
+        );
       }
     }
+
+    // Launch a pool of workers
+    final workers = List.generate(
+      concurrentTasks,
+      (_) => worker(),
+    );
+
+    await Future.wait(workers);
+
+    // Write failed IDs to filed_ids.txt
+    if (failedIds.isNotEmpty) {
+      try {
+        final failedIdsString = failedIds.join(',');
+        final file = File('filed_ids.txt');
+        await file.writeAsString(failedIdsString);
+        onLog('Failed IDs written to filed_ids.txt');
+      } catch (e) {
+        onLog('Failed to write failed IDs to filed_ids.txt: $e');
+      }
+    }
+
+    onComplete(failedIds);
   }
 
   /// Process a single poster ID
@@ -185,12 +213,23 @@ class BulkPosterProcessor {
                 e['tag'] == 'TemplateElementTag.partySymbol'))
         .toList();
 
+    final indexOfBackground = json['content_json']
+        .indexWhere((e) => e['tag'] == 'TemplateElementTag.background');
+
+    // By default all the posters will be generated with OP background with 0.25 opacity
+    var el = json['content_json'][indexOfBackground] as Map<String, dynamic>;
+    el['content']['url'] =
+        'https://netanagri-bucket.s3.amazonaws.com/assets/backgrounds/op.png';
+    el['style']['opacity'] = 0.25;
+
     return json;
   }
 
   /// Preload all images from content JSON to avoid race conditions
   Future<void> _preloadImages(
-      Map<String, dynamic> contentJson, BuildContext context) async {
+    Map<String, dynamic> contentJson,
+    BuildContext context,
+  ) async {
     onLog('Preloading images from content JSON');
 
     // Extract all image URLs from the content JSON
